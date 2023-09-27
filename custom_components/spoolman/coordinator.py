@@ -10,8 +10,6 @@ from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
 from .const import (API_SPOOL_ENDPOINT, CONF_API_KEY, CONF_UPDATE_INTERVAL,
                     CONF_URL, DOMAIN)
 
-from classes.spool import Spool
-
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -42,7 +40,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
             'coordinator': self
         }
 
-    async def _async_update_data(self) -> list[Spool]:
+    async def _async_update_data(self):
         _LOGGER.info("SpoolManCoordinator._async_update_data")
         api_key = self.hass.data[DOMAIN][CONF_API_KEY]
         url = self.hass.data[DOMAIN][CONF_URL]
