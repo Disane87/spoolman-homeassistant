@@ -1,0 +1,20 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Configuration",
+                "data": {
+                    "api-key": "API-Key",
+                    "spoolman_url": "Host (incl. protocol)",
+                    "update-interval": "Update interval (minutes)"
+                }
+            }
+        },
+        "error": {
+            "already_configured": "Device is already configured"
+        },
+        "abort": {
+            "already_configured": "Device is already configured"
+        }
+    }
+}
