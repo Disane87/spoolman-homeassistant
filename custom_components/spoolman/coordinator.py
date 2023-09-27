@@ -1,19 +1,15 @@
-from typing import Any, Dict, List
-
-from config.custom_components.spoolman.classes.spool import Spool
-from homeassistant.core import HomeAssistant
-from .const import (
-    API_SPOOL_ENDPOINT,
-    DOMAIN,
-    CONF_API_KEY,
-    CONF_UPDATE_INTERVAL,
-    CONF_URL)
-
-import aiohttp
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-
 import logging
 from datetime import timedelta
+from typing import Any, Dict, List
+
+import aiohttp
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
+                                                      UpdateFailed)
+
+from .classes.spool import Spool
+from .const import (API_SPOOL_ENDPOINT, CONF_API_KEY, CONF_UPDATE_INTERVAL,
+                    CONF_URL, DOMAIN)
 
 _LOGGER = logging.getLogger(__name__)
 

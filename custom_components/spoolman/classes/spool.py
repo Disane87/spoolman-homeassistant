@@ -1,7 +1,7 @@
-from typing import Any
 from dataclasses import dataclass
+from typing import Any
 
-from config.custom_components.spoolman.classes.filament import Filament
+from .classes.filament import Filament
 
 
 @dataclass

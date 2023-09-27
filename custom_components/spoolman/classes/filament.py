@@ -1,7 +1,7 @@
-from typing import Any
 from dataclasses import dataclass
+from typing import Any
 
-from config.custom_components.spoolman.classes.vendor import Vendor
+from .classes.vendor import Vendor
 
 
 @dataclass
