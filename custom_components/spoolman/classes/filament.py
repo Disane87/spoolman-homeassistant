@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import Any
 
-from .classes.vendor import Vendor
 
 
 @dataclass

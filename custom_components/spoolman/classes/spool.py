@@ -1,9 +1,6 @@
 from dataclasses import dataclass
 from typing import Any
 
-from .classes.filament import Filament
-
-
 @dataclass
 class Spool:
     id: int

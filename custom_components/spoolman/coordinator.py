@@ -7,7 +7,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)
 
-from .classes.spool import Spool
 from .const import (API_SPOOL_ENDPOINT, CONF_API_KEY, CONF_UPDATE_INTERVAL,
                     CONF_URL, DOMAIN)
 
