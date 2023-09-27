@@ -10,3 +10,4 @@ www
 **.db**
 **.log**
 .history
+**/__pycache__
