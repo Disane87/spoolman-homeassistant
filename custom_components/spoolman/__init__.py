@@ -1,12 +1,9 @@
-import asyncio
+"""Spoolman home assistant integration."""
 import logging
 import aiohttp
 
-# import websockets
-import json
 from homeassistant.const import Platform, CONF_NAME
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
@@ -30,7 +27,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 async def async_setup_platform(
     hass: HomeAssistant, config, add_devices, discovery_info=None
 ):
-    """Set up date afval sensor."""
+    """Set up Spoolman sensor."""
     _LOGGER.debug("__init__.async_setup_platform")
 
 

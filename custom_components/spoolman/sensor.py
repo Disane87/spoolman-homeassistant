@@ -1,32 +1,29 @@
+"""Spoolman home assistant sensor."""
 import os
-import logging
 from PIL import Image
 
 from homeassistant.components.sensor.const import SensorStateClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.device_registry import DeviceEntryType
-from homeassistant.helpers.entity import DeviceInfo, Entity
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
 from homeassistant.const import (
-    CONF_NAME,
     UnitOfMass,
-    UnitOfTemperature,
-    UnitOfLength,
 )
 from .const import CONF_URL, DOMAIN, PUBLIC_IMAGE_PATH, LOCAL_IMAGE_PATH
 from .coordinator import SpoolManCoordinator
 
-_LOGGER = logging.getLogger(__name__)
 ICON = "mdi:printer-3d-nozzle"
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ):
+    """Spoolman home assistant sensor init."""
     coordinator = SpoolManCoordinator(hass, config_entry)
     await coordinator.async_config_entry_first_refresh()
 
@@ -43,14 +40,13 @@ async def async_setup_entry(
 class Spool(CoordinatorEntity, SensorEntity):
     """Representation of a Spoolman Sensor."""
 
-    def __init__(
-        self, hass, coordinator, spool_data, idx, config_entry
-    ) -> None:
+    def __init__(self, hass, coordinator, spool_data, idx, config_entry) -> None:
+        """Spoolman home assistant spool sensor init."""
         super().__init__(coordinator)
         self._spool = spool_data
         self._filament = self._spool["filament"]
         self._entry = config_entry
-        self._attr_unique_id = self._filament['name']
+        self._attr_unique_id = self._filament["name"]
         self._attr_has_entity_name = False
         self._attr_name = self._filament["name"]
         # self._firne
@@ -80,11 +76,13 @@ class Spool(CoordinatorEntity, SensorEntity):
     def extra_state_attributes(self):
         """Return the attributes of the sensor."""
         spool = self._spool
-        spool["used_percentage"] = round(self._spool["used_weight"] / self._filament["weight"], 3) * 100
+        spool["used_percentage"] = (
+            round(self._spool["used_weight"] / self._filament["weight"], 3) * 100
+        )
         return self.flatten_dict(spool)
 
-
-    def flatten_dict(self, d, parent_key='', sep='_'):
+    def flatten_dict(self, d, parent_key="", sep="_"):
+        """Flattens a dictionary."""
         flat_dict = {}
         if isinstance(d, dict):
             for key, value in d.items():
@@ -101,7 +99,6 @@ class Spool(CoordinatorEntity, SensorEntity):
 
         else:
             return {}
-
 
     # def _get_sensor_properties(self, key):
     #     device_class = None
@@ -198,6 +195,7 @@ class Spool(CoordinatorEntity, SensorEntity):
     async def async_update(self):
         """Fetch the latest data from the coordinator."""
         await self.coordinator.async_request_refresh()
+
 
 # class SpoolSensor(SensorEntity):
 #     def __init__(self, entry_id, entity_id, name, state, icon, device_class, unit_of_measurement, manufacturer, model, suggested_area, device_name):

@@ -6,13 +6,11 @@ from typing import Any
 import aiohttp
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 
 from .const import (
     API_HEALTH_ENDPOINT,
-    API_SPOOL_ENDPOINT,
     CONF_API_KEY,
     CONF_UPDATE_INTERVAL,
     CONF_URL,

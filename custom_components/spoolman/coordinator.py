@@ -1,6 +1,6 @@
+"""Spoolman home assistant data coordinator."""
 import logging
 from datetime import timedelta
-from typing import Any, Dict, List
 
 import aiohttp
 from homeassistant.core import HomeAssistant
@@ -21,11 +21,11 @@ class SpoolManCoordinator(DataUpdateCoordinator):
     """My custom coordinator."""
 
     def __init__(self, hass: HomeAssistant, entry) -> None:
+        """Initialize my coordinator."""
         _LOGGER.info("SpoolManCoordinator.__init__")
         api_key = entry.data[CONF_API_KEY]
         url = f"{entry.data[CONF_URL]}{API_SPOOL_ENDPOINT}"
         update_interval = entry.data[CONF_UPDATE_INTERVAL]
-        """Initialize my coordinator."""
         super().__init__(
             hass,
             _LOGGER,
