@@ -2,6 +2,5 @@
     "name": "Spoolman",
     "country": "DE",
     "homeassistant": "2023.9.0",
-    "persistent_directory": "custom_components",
-    "issue_tracker": "https://github.com/Disane87/spoolman-homeassistant/issues"
+    "persistent_directory": "custom_components"
 }

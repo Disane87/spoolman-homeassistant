@@ -7,6 +7,7 @@
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/Disane87/spoolman-homeassistant",
+  "issue_tracker": "https://github.com/Disane87/spoolman-homeassistant/issues",
   "homekit": {},
   "iot_class": "local_polling",
   "requirements": [],
