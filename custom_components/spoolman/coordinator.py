@@ -4,11 +4,15 @@ from typing import Any, Dict, List
 
 import aiohttp
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
-                                                      UpdateFailed)
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import (API_SPOOL_ENDPOINT, CONF_API_KEY, CONF_UPDATE_INTERVAL,
-                    CONF_URL, DOMAIN)
+from .const import (
+    API_SPOOL_ENDPOINT,
+    CONF_API_KEY,
+    CONF_UPDATE_INTERVAL,
+    CONF_URL,
+    DOMAIN,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,7 +41,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
             CONF_API_KEY: api_key,
             CONF_URL: url,
             CONF_UPDATE_INTERVAL: update_interval,
-            'coordinator': self
+            "coordinator": self,
         }
 
     async def _async_update_data(self):

@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import aiohttp
+
 # import websockets
 import json
 from homeassistant.const import Platform, CONF_NAME
@@ -26,20 +27,22 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 
-async def async_setup_platform(hass: HomeAssistant, config, add_devices, discovery_info=None):
+async def async_setup_platform(
+    hass: HomeAssistant, config, add_devices, discovery_info=None
+):
     """Set up date afval sensor."""
-    _LOGGER.info("__init__.async_setup_platform")
+    _LOGGER.debug("__init__.async_setup_platform")
 
 
 async def async_setup(hass: HomeAssistant, config):
     """Set up the Spoolman component."""
-    _LOGGER.info("__init__.async_setup")
+    _LOGGER.debug("__init__.async_setup")
     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry):
     """Set up the Spoolman component from a config entry."""
-    _LOGGER.info("__init__.async_setup_entry")
+    _LOGGER.debug("__init__.async_setup_entry")
     # session = async_create_clientsession(hass)
     coordinator = SpoolManCoordinator(hass, entry)
     await coordinator.async_refresh()
@@ -49,7 +52,7 @@ async def async_setup_entry(hass: HomeAssistant, entry):
 
 async def async_unload_entry(hass: HomeAssistant, entry):
     """Unload a config entry."""
-    _LOGGER.info("__init__.async_unload_entry")
+    _LOGGER.debug("__init__.async_unload_entry")
     unload_ok = await hass.config_entries.async_forward_entry_unload(entry, "sensor")
     if unload_ok:
         hass.data.pop(entry.domain)
@@ -58,7 +61,7 @@ async def async_unload_entry(hass: HomeAssistant, entry):
 
 async def async_get_data(hass: HomeAssistant):
     """Get the latest data from the Spoolman API."""
-    _LOGGER.info("__init__.async_get_data")
+    _LOGGER.debug("__init__.async_get_data")
     api_key = hass.data[DOMAIN][CONF_API_KEY]
     url = hass.data[DOMAIN][CONF_URL]
 
@@ -76,7 +79,7 @@ async def async_get_data(hass: HomeAssistant):
 
 
 # async def async_setup_websocket(hass, websocket_url, callback):
-#     _LOGGER.info("__init__.async_setup_websocket")
+#     _LOGGER.debug("__init__.async_setup_websocket")
 #     """Set up a WebSocket connection for real-time updates."""
 #     while True:
 #         try:
@@ -90,7 +93,7 @@ async def async_get_data(hass: HomeAssistant):
 
 
 # async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-#     _LOGGER.info("__init__.async_setup_platform")
+#     _LOGGER.debug("__init__.async_setup_platform")
 #     """Set up the Spoolman sensor platform."""
 #     coordinator = hass.data[DOMAIN]["coordinator"]
 #     spool_data = coordinator.data

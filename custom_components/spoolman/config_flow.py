@@ -1,28 +1,25 @@
 """Config flow for spoolman integration."""
 from __future__ import annotations
 
-
 from typing import Any
 
+import aiohttp
 import voluptuous as vol
-
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 
-import aiohttp
-
-
 from .const import (
     API_HEALTH_ENDPOINT,
     API_SPOOL_ENDPOINT,
-    DEFAULT_NAME,
-    DOMAIN,
     CONF_API_KEY,
     CONF_UPDATE_INTERVAL,
-    CONF_URL
+    CONF_URL,
+    DEFAULT_NAME,
+    DOMAIN,
 )
+
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for spoolman."""
@@ -48,10 +45,15 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     async with aiohttp.ClientSession() as session:
                         async with session.get(test_url) as response:
                             if response.status == 200:
-                                if "application/json" in response.headers.get("content-type", ""):
+                                if "application/json" in response.headers.get(
+                                    "content-type", ""
+                                ):
                                     try:
                                         data = await response.json()
-                                        if isinstance(data, dict) and data.get("status") == "healthy":
+                                        if (
+                                            isinstance(data, dict)
+                                            and data.get("status") == "healthy"
+                                        ):
                                             return self.async_create_entry(
                                                 title=DEFAULT_NAME,
                                                 data={
@@ -61,13 +63,21 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                                                 },
                                             )
                                         else:
-                                            errors[CONF_URL] = "URL does not return a JSON object with a 'status' property set to 'healthy'"
+                                            errors[
+                                                CONF_URL
+                                            ] = "URL does not return a JSON object with a 'status' property set to 'healthy'"
                                     except ValueError:
-                                        errors[CONF_URL] = "URL does not return valid JSON data"
+                                        errors[
+                                            CONF_URL
+                                        ] = "URL does not return valid JSON data"
                                 else:
-                                    errors[CONF_URL] = "URL does not return JSON content"
+                                    errors[
+                                        CONF_URL
+                                    ] = "URL does not return JSON content"
                             else:
-                                errors[CONF_URL] = f"Failed to connect to the URL. Status code: {response.status}"
+                                errors[
+                                    CONF_URL
+                                ] = f"Failed to connect to the URL. Status code: {response.status}"
                 except Exception as e:
                     errors[CONF_URL] = f"Error testing URL: {str(e)}"
 
@@ -79,7 +89,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Optional(CONF_API_KEY): str,
                     vol.Optional(CONF_UPDATE_INTERVAL, default=15): vol.All(
                         vol.Coerce(int), vol.Range(min=1)
-                    )
+                    ),
                 }
             ),
             errors=errors,
