@@ -10,6 +10,7 @@ tests
 config
 
 .history
+.ruff**
 
 # custom_components/mail_and_packages/camera.py.old
 # custom_components/mail_and_packages/.backup/__init__.py
