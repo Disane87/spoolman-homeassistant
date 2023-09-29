@@ -99,65 +99,6 @@ class Spool(CoordinatorEntity, SensorEntity):
         else:
             return {}
 
-    # def _get_sensor_properties(self, key):
-    #     device_class = None
-    #     unit_of_measurement = None
-
-    #     if key.endswith("_temp"):
-    #         device_class = SensorDeviceClass.TEMPERATURE
-    #         unit_of_measurement = UnitOfTemperature.CELSIUS
-    #     elif key.endswith("_weight"):
-    #         device_class = SensorDeviceClass.WEIGHT
-    #         unit_of_measurement = UnitOfMass.GRAMS
-    #     elif key.endswith("_length"):
-    #         device_class = SensorDeviceClass.DISTANCE
-    #         unit_of_measurement = UnitOfLength.MILLIMETERS
-    #     elif key in ["registered", "first_used", "last_used"]:
-    #         device_class = SensorDeviceClass.DATE
-
-    #     return device_class, unit_of_measurement
-
-    # def create_child_sensors(self):
-    #     def _create_child_sensors_recursive(parent_key, data):
-    #         sensors = []
-    #         for key, value in data.items():
-    #             if isinstance(value, dict):
-    #                 sensors.extend(_create_child_sensors_recursive(f"{parent_key}_{key}", value))
-    #             else:
-    #                 device_class, unit_of_measurement = self._get_sensor_properties(key)
-    #                 sensor_key = f"{parent_key}_{key}".strip("_")
-    #                 sensor_name = f"{sensor_key}".replace("_", " ").title()
-    #                 sensors.append(self.create_sensor(sensor_key, sensor_name, value, unit_of_measurement, device_class, self._attr_name))
-
-    #         return sensors
-
-    #     sensors = []
-    #     for key, value in self._spool.items():
-    #         if isinstance(value, dict):
-    #             sensors.extend(_create_child_sensors_recursive(key, value))
-    #         else:
-    #             device_class, unit_of_measurement = self._get_sensor_properties(key)
-    #             sensor_key = f"{self.name}_{key}".replace("_", " ").title()
-    #             sensors.append(self.create_sensor(sensor_key, sensor_key, value, unit_of_measurement, device_class, self._attr_name))
-
-    #     return sensors
-
-    # def create_sensor(self, key, name, value, unit_of_measurement, device_class, device_name):
-    #     _LOGGER.info(f"Creating child sensor for '{self._attr_name}' '{key}' and name '{name}'")
-    #     return SpoolSensor(
-    #         self._entry.entry_id,
-    #         f"sensor.{self._attr_name}_{self._entry.entry_id}_{self.idx}_{key}",
-    #         name,
-    #         value,
-    #         ICON,
-    #         device_class,
-    #         unit_of_measurement,
-    #         self._spool['filament']['vendor']['name'],
-    #         self._spool['filament']['material'],
-    #         self._spool['location'],
-    #         device_name
-    #     )
-
     @property
     def state(self):
         """Return the state of the sensor."""
