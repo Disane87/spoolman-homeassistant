@@ -2,5 +2,7 @@
     "name": "Spoolman",
     "country": "DE",
     "homeassistant": "2023.9.0",
-    "render_readme": true
+    "render_readme": true,
+    "zip_release": true,
+    "filename": "release.zip"
 }
