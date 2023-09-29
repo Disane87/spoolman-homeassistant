@@ -29,11 +29,9 @@ async def async_setup_entry(
 
     if coordinator.data:
         spool_entities = []
-        # spool_entities.append(MyCustomSensor(CONF_NAME, DOMAIN))
         for idx, spool_data in enumerate(coordinator.data):
             spool_device = Spool(hass, coordinator, spool_data, idx, config_entry)
             spool_entities.append(spool_device)
-            # spool_entities.extend(spool_device.create_child_sensors())
         async_add_entities(spool_entities)
 
 
@@ -54,12 +52,8 @@ class Spool(CoordinatorEntity, SensorEntity):
         self._attr_native_unit_of_measurement = UnitOfMass.GRAMS
         self._attr_icon = ICON
         self._attr_device_info = DeviceInfo(
-            # , "spool", self.name
             identifiers={(DOMAIN, CONF_URL)},
-            # manufacturer=self._filament["vendor"]["name"],
-            # model=self._filament["material"],
             name=DOMAIN,
-            # suggested_area=self._spool["location"],
         )
         self.idx = idx
 
@@ -135,45 +129,3 @@ class Spool(CoordinatorEntity, SensorEntity):
     async def async_update(self):
         """Fetch the latest data from the coordinator."""
         await self.coordinator.async_request_refresh()
-
-
-# class SpoolSensor(SensorEntity):
-#     def __init__(self, entry_id, entity_id, name, state, icon, device_class, unit_of_measurement, manufacturer, model, suggested_area, device_name):
-#         self._entry_id = entry_id
-#         self._entity_id = entity_id
-#         self._attr_has_entity_name = True
-#         self._name = name
-#         self._state = state
-#         self._icon = icon
-#         self._device_class = device_class
-#         self._unit_of_measurement = unit_of_measurement
-#         self._manufacturer = manufacturer
-#         self._model = model
-#         self._suggested_area = suggested_area
-#         self._device_name = device_name
-
-#     @property
-#     def unique_id(self):
-#         return f"{self._entry_id}_{self._entity_id}"
-
-#     @property
-#     def name(self):
-#         return self._name
-
-#     @property
-#     def state(self):
-#         return self._state
-
-#     @property
-#     def icon(self):
-#         return self._icon
-
-#     @property
-#     def device_info(self):
-#         return DeviceInfo(
-#             identifiers={(DOMAIN, self._entry_id, "spool", self._device_name)},
-#             manufacturer=self._manufacturer,
-#             model=self._model,
-#             suggested_area=self._suggested_area,
-#             name=self._name,
-#         )
