@@ -18,8 +18,9 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Install zip
-      uses: montudor/action-zip@v1
+    - uses: montudor/action-zip@v1
+      with:
+        args: zip -r dist/release.zip custom-components/spoolman
 
     - name: Python Semantic Release
       uses: python-semantic-release/python-semantic-release@master

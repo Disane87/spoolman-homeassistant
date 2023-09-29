@@ -5,7 +5,7 @@ commit_parser = "angular"
 logging_use_named_masks = false
 major_on_zero = true
 tag_format = "v{version}"
-build_command = "zip -r dist/release.zip custom-components/spoolman"
+# build_command = "zip -r dist/release.zip custom-components/spoolman"
 
 [tool.semantic_release.branches.main]
 match = "(main|master)"
