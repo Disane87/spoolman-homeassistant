@@ -5,6 +5,7 @@ commit_parser = "angular"
 logging_use_named_masks = false
 major_on_zero = true
 tag_format = "v{version}"
+build_command = "zip -r dist/release.zip custom-components/spoolman"
 
 [tool.semantic_release.branches.main]
 match = "(main|master)"
@@ -59,5 +60,5 @@ ignore_token_for_push = false
 env = "GH_TOKEN"
 
 [tool.semantic_release.publish]
-dist_glob_patterns = ["custom_components/*"]
+dist_glob_patterns = ["dist/**"]
 upload_to_vcs_release = true
