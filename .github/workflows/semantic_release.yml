@@ -20,7 +20,7 @@ jobs:
 
     - uses: montudor/action-zip@v1
       with:
-        args: zip -r dist/release.zip custom-components/spoolman
+        args: zip -r dist/release.zip custom_components/spoolman
 
     - name: Python Semantic Release
       uses: python-semantic-release/python-semantic-release@master
