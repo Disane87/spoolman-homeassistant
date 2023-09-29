@@ -2,7 +2,6 @@
     "name": "Spoolman",
     "country": "DE",
     "homeassistant": "2023.9.0",
-    "persistent_directory": "custom_components",
     "render_readme": true,
     "zip_release": true
 }
