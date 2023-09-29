@@ -20,7 +20,7 @@ jobs:
 
     - name: Create dir
       run: |
-        mkdir dist
+        [ -d dist ] && echo "Directory Exists" || mkdir dist
 
     - uses: montudor/action-zip@v1
       with:
