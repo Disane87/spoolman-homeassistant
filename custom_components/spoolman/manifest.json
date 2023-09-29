@@ -12,6 +12,6 @@
   "issue_tracker": "https://github.com/Disane87/spoolman-homeassistant/issues",
   "requirements": [],
   "ssdp": [],
-  "version": "0.0.1",
+  "version": "0.0.0",
   "zeroconf": []
 }

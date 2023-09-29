@@ -49,7 +49,6 @@ class Spool(CoordinatorEntity, SensorEntity):
         self._attr_unique_id = self._filament["name"]
         self._attr_has_entity_name = False
         self._attr_name = self._filament["name"]
-        # self._firne
         self._attr_device_class = SensorDeviceClass.WEIGHT
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_native_unit_of_measurement = UnitOfMass.GRAMS
