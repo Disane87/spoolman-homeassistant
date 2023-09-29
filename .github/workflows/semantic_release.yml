@@ -18,6 +18,9 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Install deps
+      run: sudo apt-get install zip
+
     - name: Python Semantic Release
       uses: python-semantic-release/python-semantic-release@master
       with:
