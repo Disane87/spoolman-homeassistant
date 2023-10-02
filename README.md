@@ -14,8 +14,6 @@ Just add a new integration for Spoolman and fill in the URL to your Spoolman ins
 
 ![image](https://github.com/Disane87/spoolman-homeassistant/blob/main/resources/images/spoolman-integration-config.png?raw=true)
 
-If you are using an authorization, please fill in your API key provided by spoolman.
-
 You should now see a new integration entry with one device (your spoolman instance) and all non archived spools:
 
 ![image](https://github.com/Disane87/spoolman-homeassistant/blob/main/resources/images/spoolman-integration-hass.png?raw=true)
