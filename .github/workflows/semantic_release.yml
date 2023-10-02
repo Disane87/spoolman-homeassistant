@@ -3,7 +3,7 @@ name: Semantic Release
 on:
   push:
     branches: ['main']
-    # paths: ['custom_components/**']
+    paths: ['custom_components/**']
 
 jobs:
   release:
