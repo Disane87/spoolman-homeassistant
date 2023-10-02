@@ -8,7 +8,7 @@ from homeassistant.components.sensor import PLATFORM_SCHEMA
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 
-from .const import DOMAIN, CONF_URL, DEFAULT_NAME, CONF_API_KEY
+from .const import DOMAIN, CONF_URL, DEFAULT_NAME
 from .coordinator import SpoolManCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -19,7 +19,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
         vol.Required(CONF_URL): cv.string,
-        vol.Required(CONF_API_KEY): cv.string,
     }
 )
 
@@ -59,14 +58,11 @@ async def async_unload_entry(hass: HomeAssistant, entry):
 async def async_get_data(hass: HomeAssistant):
     """Get the latest data from the Spoolman API."""
     _LOGGER.debug("__init__.async_get_data")
-    api_key = hass.data[DOMAIN][CONF_API_KEY]
     url = hass.data[DOMAIN][CONF_URL]
 
     async with aiohttp.ClientSession() as session:
         try:
             headers = {}
-            if api_key:
-                headers["Authorization"] = f"Bearer {api_key}"
 
             async with session.get(url, headers=headers) as response:
                 data = await response.json()

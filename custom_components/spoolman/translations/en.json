@@ -4,7 +4,6 @@
             "user": {
                 "title": "Configuration",
                 "data": {
-                    "api-key": "API-Key",
                     "spoolman_url": "Host (incl. protocol)",
                     "update-interval": "Update interval (minutes)"
                 }

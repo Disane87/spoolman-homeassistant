@@ -41,6 +41,9 @@ class Spool(CoordinatorEntity, SensorEntity):
     def __init__(self, hass, coordinator, spool_data, idx, config_entry) -> None:
         """Spoolman home assistant spool sensor init."""
         super().__init__(coordinator)
+
+        conf_url = hass.data[DOMAIN][CONF_URL]
+
         self._spool = spool_data
         self._filament = self._spool["filament"]
         self._entry = config_entry
@@ -52,8 +55,11 @@ class Spool(CoordinatorEntity, SensorEntity):
         self._attr_native_unit_of_measurement = UnitOfMass.GRAMS
         self._attr_icon = ICON
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, CONF_URL)},
+            identifiers={(DOMAIN, conf_url)},
             name=DOMAIN,
+            manufacturer="https://github.com/Donkie/Spoolman",
+            model="Spoolman",
+            configuration_url=conf_url,
         )
         self.idx = idx
 

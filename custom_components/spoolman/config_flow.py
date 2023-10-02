@@ -11,7 +11,6 @@ from homeassistant.exceptions import HomeAssistantError
 
 from .const import (
     API_HEALTH_ENDPOINT,
-    CONF_API_KEY,
     CONF_UPDATE_INTERVAL,
     CONF_URL,
     DEFAULT_NAME,
@@ -24,14 +23,19 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+    def add_trailing_slash(self, input_string):
+        """Adds traling slashed when not present"""
+        if not input_string.endswith("/"):
+            input_string += "/"
+        return input_string
+
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Handle the initial step."""
         errors: dict[str, str] = {}
         if user_input is not None:
-            api_key = user_input.get(CONF_API_KEY)
-            url = user_input.get(CONF_URL)
+            url = self.add_trailing_slash(user_input.get(CONF_URL))
             update_interval = user_input.get(CONF_UPDATE_INTERVAL)
 
             # Test the API key and URLs here if necessary
@@ -55,7 +59,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                                             return self.async_create_entry(
                                                 title=DEFAULT_NAME,
                                                 data={
-                                                    CONF_API_KEY: api_key,
                                                     CONF_URL: url,
                                                     CONF_UPDATE_INTERVAL: update_interval,
                                                 },
@@ -84,7 +87,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_URL): str,
-                    vol.Optional(CONF_API_KEY): str,
                     vol.Optional(CONF_UPDATE_INTERVAL, default=15): vol.All(
                         vol.Coerce(int), vol.Range(min=1)
                     ),
