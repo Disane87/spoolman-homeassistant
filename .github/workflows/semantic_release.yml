@@ -3,7 +3,9 @@ name: Semantic Release
 on:
   push:
     branches: ['main']
+    workflows: ["Run Tests"]
     paths: ['custom_components/**']
+    workflows: ["Validate"]
   workflow_dispatch:
 
 jobs:

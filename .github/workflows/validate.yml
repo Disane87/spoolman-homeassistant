@@ -2,6 +2,7 @@ name: "Validate"
 
 on:
   push:
+    workflows: ["Lint"]
     branches: ['main']
     pull_request: ['main']
     paths: ['custom_components/**']
