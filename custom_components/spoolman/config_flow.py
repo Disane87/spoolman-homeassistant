@@ -24,7 +24,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     def add_trailing_slash(self, input_string):
-        """Adds traling slashed when not present"""
+        """Add traling slashed when not present."""
         if not input_string.endswith("/"):
             input_string += "/"
         return input_string
