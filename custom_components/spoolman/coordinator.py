@@ -57,7 +57,6 @@ class SpoolManCoordinator(DataUpdateCoordinator):
             try:
                 async with session.get(url) as response:
                     data = await response.json()
-                    # _LOGGER.info(f"SpoolManCoordinator._async_update_data: {data}")
                     return data
             except Exception as e:
                 raise UpdateFailed(f"Error fetching data from Spoolman API: {e}")
