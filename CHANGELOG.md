@@ -1,3 +1,10 @@
+## [0.2.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.1.4-dev.1...v0.2.0-dev.1) (2023-10-04)
+
+
+### 🚀 Features
+
+* :sparkles: Spools are now grouped by location ([0be99a0](https://github.com/Disane87/spoolman-homeassistant/commit/0be99a0c72090ff64187efd110f17a8cb773b6c5)), closes [#21](https://github.com/Disane87/spoolman-homeassistant/issues/21)
+
 ## [0.1.4-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.1.3...v0.1.4-dev.1) (2023-10-04)
 
 
