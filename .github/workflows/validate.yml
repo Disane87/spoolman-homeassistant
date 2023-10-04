@@ -3,8 +3,8 @@ name: "Validate"
 on:
   push:
     workflows: ["Lint"]
-    branches: ['main']
-    pull_request: ['main']
+    branches: ['main', 'dev']
+    pull_request: ['main', 'dev']
     paths: ['custom_components/**']
 
 jobs:
