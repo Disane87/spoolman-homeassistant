@@ -1,4 +1,5 @@
 """Spoolman home assistant sensor."""
+
 import os
 from PIL import Image
 
@@ -60,7 +61,7 @@ class Spool(CoordinatorEntity, SensorEntity):
         )
 
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, conf_url, location_name)},
+            identifiers={(DOMAIN, conf_url)},
             name=location_name,
             manufacturer="https://github.com/Donkie/Spoolman",
             model="Spoolman",

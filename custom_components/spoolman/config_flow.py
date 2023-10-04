@@ -74,15 +74,15 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                             errors[
                                 CONF_URL
                             ] = f"Failed to connect to the URL. Status code: {response.status}"
-                except Exception as e:
-                    errors[CONF_URL] = f"Error testing URL: {str(e)}"
+                except Exception as error_message:
+                    errors[CONF_URL] = f"Error testing URL: {str(error_message)}"
 
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_URL): str,
-                    vol.Optional(CONF_UPDATE_INTERVAL, default=15): vol.All(
+                    vol.Optional(CONF_UPDATE_INTERVAL, default=15): vol.All(  # type: ignore
                         vol.Coerce(int), vol.Range(min=1)
                     ),
                     vol.Required(CONF_SHOW_ARCHIVED): bool,

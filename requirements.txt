@@ -3,3 +3,4 @@ homeassistant>=2023.9.3
 pip>=23.2,<24
 ruff==0.0.292
 pre-commit
+black

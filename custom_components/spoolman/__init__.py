@@ -17,7 +17,7 @@ PLATFORMS = [Platform.SENSOR]
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
-        vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
+        vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,  # type: ignore
         vol.Required(CONF_URL): cv.string,
     }
 )
@@ -67,5 +67,5 @@ async def async_get_data(hass: HomeAssistant):
             async with session.get(url, headers=headers) as response:
                 data = await response.json()
                 return data
-        except Exception as e:
-            _LOGGER.error(f"Error fetching data from Spoolman API: {e}")
+        except Exception as ex:
+            _LOGGER.error("Error fetching data from Spoolman API: %s", ex)
