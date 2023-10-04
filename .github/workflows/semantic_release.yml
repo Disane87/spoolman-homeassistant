@@ -24,7 +24,7 @@ jobs:
         node-version: 18
 
     - run: npm init --yes
-    - run: npm install semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/exec --save-dev
+    - run: npm install semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/exec conventional-changelog-conventionalcommits --save-dev
     - run: npx semantic-release
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
