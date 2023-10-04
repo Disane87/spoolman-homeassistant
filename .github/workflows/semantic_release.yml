@@ -2,7 +2,7 @@ name: "Semantic Release"
 
 on:
   workflow_run:
-    workflows: ["Validate"]
+    workflows: [Validate]
     types:
       - completed
   # push:

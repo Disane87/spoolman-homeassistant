@@ -2,7 +2,7 @@ name: "Validate"
 
 on:
   workflow_run:
-    workflows: ["Lint"]
+    workflows: [Lint]
     types:
       - completed
   # push:
