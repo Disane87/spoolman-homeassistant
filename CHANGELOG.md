@@ -1,3 +1,10 @@
+## [0.2.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.0-dev.1...v0.2.0-dev.2) (2023-10-04)
+
+
+### 🚀 Features
+
+* :sparkles: Added thresholds to consume via automations ([af9accc](https://github.com/Disane87/spoolman-homeassistant/commit/af9accc07758f95f33bafa64d091fd0322f39ec2)), closes [#22](https://github.com/Disane87/spoolman-homeassistant/issues/22)
+
 ## [0.2.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.1.4-dev.1...v0.2.0-dev.1) (2023-10-04)
 
 
