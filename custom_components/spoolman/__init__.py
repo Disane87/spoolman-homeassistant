@@ -69,27 +69,3 @@ async def async_get_data(hass: HomeAssistant):
                 return data
         except Exception as e:
             _LOGGER.error(f"Error fetching data from Spoolman API: {e}")
-
-
-# async def async_setup_websocket(hass, websocket_url, callback):
-#     _LOGGER.debug("__init__.async_setup_websocket")
-#     """Set up a WebSocket connection for real-time updates."""
-#     while True:
-#         try:
-#             async with websockets.connect(websocket_url) as ws:
-#                 while True:
-#                     data = await ws.recv()
-#                     data_json = json.loads(data)
-#                     await callback()
-#         except Exception as e:
-#             _LOGGER.error(f"WebSocket error: {e}")
-
-
-# async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-#     _LOGGER.debug("__init__.async_setup_platform")
-#     """Set up the Spoolman sensor platform."""
-#     coordinator = hass.data[DOMAIN]["coordinator"]
-#     spool_data = coordinator.data
-#     if spool_data:
-#         sensors = [SpoolSensor(spool) for spool in spool_data]
-#         async_add_entities(sensors)
