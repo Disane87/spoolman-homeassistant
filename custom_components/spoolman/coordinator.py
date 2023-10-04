@@ -8,6 +8,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .const import (
     API_SPOOL_ENDPOINT,
+    CONF_SHOW_ARCHIVED,
     CONF_UPDATE_INTERVAL,
     CONF_URL,
     DOMAIN,
@@ -24,6 +25,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
         _LOGGER.info("SpoolManCoordinator.__init__")
         url = entry.data[CONF_URL]
         update_interval = entry.data[CONF_UPDATE_INTERVAL]
+
         super().__init__(
             hass,
             _LOGGER,
@@ -36,14 +38,20 @@ class SpoolManCoordinator(DataUpdateCoordinator):
         self.hass = hass
 
         hass.data[DOMAIN] = {
-            CONF_URL: url,
-            CONF_UPDATE_INTERVAL: update_interval,
+            **entry.data,
             "coordinator": self,
         }
 
     async def _async_update_data(self):
         _LOGGER.info("SpoolManCoordinator._async_update_data")
-        url = f"{self.hass.data[DOMAIN][CONF_URL]}{API_SPOOL_ENDPOINT}"
+        config = self.hass.data[DOMAIN]
+
+        if CONF_SHOW_ARCHIVED in config:
+            show_archived = config[CONF_SHOW_ARCHIVED]
+        else:
+            show_archived = False
+
+        url = f"{config[CONF_URL]}{API_SPOOL_ENDPOINT}?allow_archived={show_archived}"
 
         async with aiohttp.ClientSession() as session:
             try:

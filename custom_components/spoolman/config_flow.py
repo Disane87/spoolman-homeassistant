@@ -13,8 +13,8 @@ from .const import (
     API_HEALTH_ENDPOINT,
     CONF_UPDATE_INTERVAL,
     CONF_URL,
-    DEFAULT_NAME,
     DOMAIN,
+    CONF_SHOW_ARCHIVED,
 )
 
 
@@ -36,7 +36,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
         if user_input is not None:
             url = self.add_trailing_slash(user_input.get(CONF_URL))
-            update_interval = user_input.get(CONF_UPDATE_INTERVAL)
 
             # Test the API key and URLs here if necessary
             # If valid, create an entry
@@ -57,11 +56,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                                             and data.get("status") == "healthy"
                                         ):
                                             return self.async_create_entry(
-                                                title=DEFAULT_NAME,
-                                                data={
-                                                    CONF_URL: url,
-                                                    CONF_UPDATE_INTERVAL: update_interval,
-                                                },
+                                                title=DOMAIN,
+                                                data={**user_input, CONF_URL: url},
                                             )
                                         else:
                                             errors[
@@ -90,6 +86,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Optional(CONF_UPDATE_INTERVAL, default=15): vol.All(
                         vol.Coerce(int), vol.Range(min=1)
                     ),
+                    vol.Required(CONF_SHOW_ARCHIVED): bool,
                 }
             ),
             errors=errors,

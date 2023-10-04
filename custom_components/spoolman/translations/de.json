@@ -5,7 +5,8 @@
                 "title": "Konfiguration",
                 "data": {
                     "spoolman_url": "Host (inkl. Protokol)",
-                    "update-interval": "Update Interval (Minuten)"
+                    "update-interval": "Update Interval (Minuten)",
+                    "show_archived": "Archivierte anzeigen"
                 }
             }
         },

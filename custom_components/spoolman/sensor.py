@@ -54,12 +54,18 @@ class Spool(CoordinatorEntity, SensorEntity):
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_native_unit_of_measurement = UnitOfMass.GRAMS
         self._attr_icon = ICON
+
+        location_name = (
+            self._spool["location"] if spool_data["archived"] == False else "Archived"
+        )
+
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, conf_url)},
-            name=DOMAIN,
+            identifiers={(DOMAIN, conf_url, location_name)},
+            name=location_name,
             manufacturer="https://github.com/Donkie/Spoolman",
             model="Spoolman",
             configuration_url=conf_url,
+            suggested_area=location_name,
         )
         self.idx = idx
 
