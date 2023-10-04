@@ -1,0 +1,16 @@
+{
+    "recommendations": [
+        "ms-python.black-formatter",
+        "vadimcn.vscode-lldb",
+        "vivaxy.vscode-conventional-commits",
+        "ryanluker.vscode-coverage-gutters",
+        "serayuzgur.crates",
+        "dbaeumer.vscode-eslint",
+        "tamasfe.even-better-toml",
+        "github.vscode-pull-request-github",
+        "eamodio.gitlens",
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "charliermarsh.ruff"
+    ]
+}

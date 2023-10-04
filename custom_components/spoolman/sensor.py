@@ -1,28 +1,29 @@
 """Spoolman home assistant sensor."""
-from .const import (
-    CONF_URL,
-    DOMAIN,
-    EVENT_THRESHOLD_EXCEEDED,
-    NOTIFICATION_THRESHOLDS,
-    PUBLIC_IMAGE_PATH,
-    LOCAL_IMAGE_PATH,
-)
-from .coordinator import SpoolManCoordinator
-
 import logging
 import os
-from PIL import Image
 
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.components.sensor.const import SensorStateClass
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import (
+    UnitOfMass,
+)
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
-from homeassistant.const import (
-    UnitOfMass,
+from PIL import Image
+
+from .const import (
+    CONF_URL,
+    DOMAIN,
+    EVENT_THRESHOLD_EXCEEDED,
+    LOCAL_IMAGE_PATH,
+    NOTIFICATION_THRESHOLDS,
+    PUBLIC_IMAGE_PATH,
+    SPOOLMAN_INFO_PROPERTY,
 )
+from .coordinator import SpoolManCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -54,8 +55,9 @@ class Spool(CoordinatorEntity, SensorEntity):
         """Spoolman home assistant spool sensor init."""
         super().__init__(coordinator)
 
-        conf_url = hass.data[DOMAIN][CONF_URL]
         self.config = hass.data[DOMAIN]
+        conf_url = self.config[CONF_URL]
+        spoolman_info = self.config[SPOOLMAN_INFO_PROPERTY]
 
         self._spool = spool_data
         self.handled_threshold_events = []
@@ -80,6 +82,7 @@ class Spool(CoordinatorEntity, SensorEntity):
             model="Spoolman",
             configuration_url=conf_url,
             suggested_area=location_name,
+            sw_version=f"{spoolman_info.get('version', 'unknown')} ({spoolman_info.get('git_commit', 'unknown')})",
         )
         self.idx = idx
 
