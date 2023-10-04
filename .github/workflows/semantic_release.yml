@@ -9,7 +9,7 @@ on:
   #   branches: ['main', 'dev']
   #   paths: ['custom_components/**']
 
-  # workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   release:
