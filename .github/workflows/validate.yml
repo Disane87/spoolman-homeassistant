@@ -5,10 +5,10 @@ on:
     workflows: ["Lint"]
     types:
       - completed
-  push:
-    branches: ['main', 'dev']
-    pull_request: ['main', 'dev']
-    paths: ['custom_components/**']
+  # push:
+  #   branches: ['main', 'dev']
+  #   pull_request: ['main', 'dev']
+  #   paths: ['custom_components/**']
 
 jobs:
   hassfest: # https://developers.home-assistant.io/blog/2020/04/16/hassfest

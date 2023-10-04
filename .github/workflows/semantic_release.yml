@@ -5,11 +5,11 @@ on:
     workflows: ["Validate"]
     types:
       - completed
-  push:
-    branches: ['main', 'dev']
-    paths: ['custom_components/**']
+  # push:
+  #   branches: ['main', 'dev']
+  #   paths: ['custom_components/**']
 
-  workflow_dispatch:
+  # workflow_dispatch:
 
 jobs:
   release:
