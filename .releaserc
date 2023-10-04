@@ -1,0 +1,131 @@
+{
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "conventionalcommits"
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "noteKeywords": [
+          "BREAKING CHANGE",
+          "BREAKING CHANGES",
+          "BREAKING"
+        ],
+        "writerOpts": {
+          "groupBy": "type",
+          "commitGroupsSort": [
+            "feat",
+            "fix",
+            "perf",
+            "docs"
+          ],
+          "commitsSort": "header"
+        },
+        "linkCompare": true,
+        "preset": "conventionalcommits",
+        "linkReferences": true,
+        "presetConfig": {
+          "types": [
+            {
+              "type": "build",
+              "section": "🦊 CI/CD",
+              "hidden": true
+            },
+            {
+              "type": "chore",
+              "section": "🧹 Other",
+              "hidden": true
+            },
+            {
+              "type": "ci",
+              "section": "🦊 CI/CD",
+              "hidden": true
+            },
+            {
+              "type": "docs",
+              "section": "📔 Docs",
+              "hidden": false
+            },
+            {
+              "type": "example",
+              "section": "📝 Examples",
+              "hidden": false
+            },
+            {
+              "type": "feat",
+              "section": "🚀 Features",
+              "hidden": false
+            },
+            {
+              "type": "fix",
+              "section": "🛠️ Fixes",
+              "hidden": false
+            },
+            {
+              "type": "perf",
+              "section": "⏩ Performance"
+            },
+            {
+              "type": "refactor",
+              "section": ":scissors: Refactor",
+              "hidden": true
+            },
+            {
+              "type": "revert",
+              "section": "🙅‍️ Reverts"
+            },
+            {
+              "type": "style",
+              "section": "💈 Style",
+              "hidden": true
+            },
+            {
+              "type": "test",
+              "section": "🧪 Tests",
+              "hidden": true
+            }
+          ]
+        }
+      }
+    ],
+    "@semantic-release/changelog",
+    [
+      "@semantic-release/git",
+      {
+        "message": "chore(release): 📢 ${nextRelease.version}\n\n${nextRelease.notes}",
+        "assets": [
+          "CHANGELOG.md",
+          "README.md"
+        ]
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          "./dist/*.zip"
+        ],
+        "fail": true
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "verifyReleaseCmd": "echo \"version=${nextRelease.version}\" >> $GITHUB_OUTPUT",
+        "successCmd": "echo \"new_release_published=${'true'}\" >> $GITHUB_OUTPUT",
+        "prepare": "zip custom_components/spoolman dist/spoolman-homeassistant_${nextRelease.version}.zip -j"
+      }
+    ]
+  ],
+  "branches": [
+    "main",
+    {
+      "name": "dev",
+      "prerelease": true,
+      "channel": "dev"
+    }
+  ]
+}

@@ -4,6 +4,7 @@ on:
   push:
     branches: ['main']
     # paths: ['custom_components/**']
+  workflow_dispatch:
 
 jobs:
   release:
@@ -17,6 +18,12 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
+
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - run: npm init && npm install semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/exec --save-dev
 
     - name: Create dir
       run: |
