@@ -56,7 +56,7 @@ class Spool(CoordinatorEntity, SensorEntity):
         self._attr_icon = ICON
 
         location_name = (
-            self._spool["location"] if spool_data["archived"] == False else "Archived"
+            self._spool["location"] if spool_data["archived"] is False else "Archived"
         )
 
         self._attr_device_info = DeviceInfo(

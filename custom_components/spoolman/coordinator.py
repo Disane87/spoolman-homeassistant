@@ -46,10 +46,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
         _LOGGER.info("SpoolManCoordinator._async_update_data")
         config = self.hass.data[DOMAIN]
 
-        if CONF_SHOW_ARCHIVED in config:
-            show_archived = config[CONF_SHOW_ARCHIVED]
-        else:
-            show_archived = False
+        show_archived = config.get(CONF_SHOW_ARCHIVED, False)
 
         url = f"{config[CONF_URL]}{API_SPOOL_ENDPOINT}?allow_archived={show_archived}"
 
