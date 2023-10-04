@@ -3,7 +3,7 @@ name: Semantic Release
 on:
   push:
     branches: ['main']
-    # paths: ['custom_components/**']
+    paths: ['custom_components/**']
   workflow_dispatch:
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
@@ -24,20 +24,21 @@ jobs:
         node-version: 18
 
     - run: npm init && npm install semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/exec --save-dev
+    - run: npx semantic-release
 
-    - name: Create dir
-      run: |
-        [ -d dist ] && echo "Directory Exists" || mkdir dist
+    # - name: Create dir
+    #   run: |
+    #     [ -d dist ] && echo "Directory Exists" || mkdir dist
 
-    - uses: montudor/action-zip@v1
-      with:
-        args: zip -r dist/release.zip custom_components/spoolman
+    # - uses: montudor/action-zip@v1
+    #   with:
+    #     args: zip -r dist/release.zip custom_components/spoolman
 
-    - name: Python Semantic Release
-      uses: python-semantic-release/python-semantic-release@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Python Semantic Release
+    #   uses: python-semantic-release/python-semantic-release@master
+    #   with:
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Delete dir if exists
-      run: |
-        [[ -d dist ]] && rm -r dist
+    # - name: Delete dir if exists
+    #   run: |
+    #     [[ -d dist ]] && rm -r dist
