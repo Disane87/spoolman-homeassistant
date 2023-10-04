@@ -6,7 +6,10 @@
                 "data": {
                     "spoolman_url": "Host (inkl. Protokol)",
                     "update-interval": "Update Interval (Minuten)",
-                    "show_archived": "Archivierte anzeigen"
+                    "show_archived": "Archivierte anzeigen",
+                    "notification_threshold_info": "Schwellenwert Info",
+                    "notification_threshold_warning": "Schwellenwert Warnung",
+                    "notification_threshold_critical": "Schwellenwert Kritisch"
                 }
             }
         },

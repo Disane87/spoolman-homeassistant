@@ -11,10 +11,14 @@ from homeassistant.exceptions import HomeAssistantError
 
 from .const import (
     API_HEALTH_ENDPOINT,
+    CONF_NOTIFICATION_THRESHOLD_CRITICAL,
+    CONF_NOTIFICATION_THRESHOLD_INFO,
+    CONF_NOTIFICATION_THRESHOLD_WARNING,
     CONF_UPDATE_INTERVAL,
     CONF_URL,
     DOMAIN,
     CONF_SHOW_ARCHIVED,
+    NOTIFICATION_THRESHOLDS,
 )
 
 
@@ -85,6 +89,18 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Optional(CONF_UPDATE_INTERVAL, default=15): vol.All(  # type: ignore
                         vol.Coerce(int), vol.Range(min=1)
                     ),
+                    vol.Required(
+                        CONF_NOTIFICATION_THRESHOLD_INFO,
+                        default=NOTIFICATION_THRESHOLDS.get("info", 0),  # type: ignore
+                    ): vol.All(int, vol.Range(min=0, max=100)),
+                    vol.Required(
+                        CONF_NOTIFICATION_THRESHOLD_WARNING,
+                        default=NOTIFICATION_THRESHOLDS.get("warning", 0),  # type: ignore
+                    ): vol.All(int, vol.Range(min=0, max=100)),
+                    vol.Required(
+                        CONF_NOTIFICATION_THRESHOLD_CRITICAL,
+                        default=NOTIFICATION_THRESHOLDS.get("critical", 0),  # type: ignore
+                    ): vol.All(int, vol.Range(min=0, max=100)),
                     vol.Required(CONF_SHOW_ARCHIVED): bool,
                 }
             ),
