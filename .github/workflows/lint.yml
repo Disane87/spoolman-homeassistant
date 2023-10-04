@@ -2,11 +2,9 @@ name: "Lint"
 
 on:
   push:
-    branches:
-      - "main"
-  pull_request:
-    branches:
-      - "main"
+    branches: ['main']
+    pull_request: ['main']
+    paths: ['custom_components/**']
 
 jobs:
   ruff:
