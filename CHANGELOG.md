@@ -1,3 +1,10 @@
+## [0.2.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.0-dev.2...v0.2.0-dev.3) (2023-10-04)
+
+
+### 🚀 Features
+
+* Spoolman version in device info closes [#25](https://github.com/Disane87/spoolman-homeassistant/issues/25) ([f3f72eb](https://github.com/Disane87/spoolman-homeassistant/commit/f3f72eb274203f3eff173890a5d49ee09918c724))
+
 ## [0.2.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.0-dev.1...v0.2.0-dev.2) (2023-10-04)
 
 
