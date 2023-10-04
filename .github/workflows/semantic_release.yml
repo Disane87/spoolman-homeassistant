@@ -5,6 +5,8 @@ on:
     branches: ['main', 'dev']
     paths: ['custom_components/**']
     workflows: ["Validate"]
+    types:
+      - completed
   workflow_dispatch:
 
 jobs:
