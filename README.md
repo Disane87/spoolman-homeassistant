@@ -18,7 +18,7 @@ You should now see a new integration entry with one device (your spoolman instan
 
 ![image](https://github.com/Disane87/spoolman-homeassistant/blob/main/resources/images/spoolman-integration-hass.png?raw=true)
 
-For every spool there is a sensor created with the exact color you've provided. Additionally the integration tracks your curent weight and lenghts.
+For every spool there is a sensor created with the exact color you've provided. Additionally the integration tracks your current weight and lenghts.
 
 All other information provides by Spoolman are stored in the attributes of the sensor:
 
