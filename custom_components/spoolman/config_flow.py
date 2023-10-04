@@ -43,38 +43,37 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             test_url = f"{url}{API_HEALTH_ENDPOINT}"
             if not errors:
                 try:
-                    async with aiohttp.ClientSession() as session:
-                        async with session.get(test_url) as response:
-                            if response.status == 200:
-                                if "application/json" in response.headers.get(
-                                    "content-type", ""
-                                ):
-                                    try:
-                                        data = await response.json()
-                                        if (
-                                            isinstance(data, dict)
-                                            and data.get("status") == "healthy"
-                                        ):
-                                            return self.async_create_entry(
-                                                title=DOMAIN,
-                                                data={**user_input, CONF_URL: url},
-                                            )
-                                        else:
-                                            errors[
-                                                CONF_URL
-                                            ] = "URL does not return a JSON object with a 'status' property set to 'healthy'"
-                                    except ValueError:
+                    async with aiohttp.ClientSession() as session, session.get(
+                        test_url
+                    ) as response:
+                        if response.status == 200:
+                            if "application/json" in response.headers.get(
+                                "content-type", ""
+                            ):
+                                try:
+                                    data = await response.json()
+                                    if (
+                                        isinstance(data, dict)
+                                        and data.get("status") == "healthy"
+                                    ):
+                                        return self.async_create_entry(
+                                            title=DOMAIN,
+                                            data={**user_input, CONF_URL: url},
+                                        )
+                                    else:
                                         errors[
                                             CONF_URL
-                                        ] = "URL does not return valid JSON data"
-                                else:
+                                        ] = "URL does not return a JSON object with a 'status' property set to 'healthy'"
+                                except ValueError:
                                     errors[
                                         CONF_URL
-                                    ] = "URL does not return JSON content"
+                                    ] = "URL does not return valid JSON data"
                             else:
-                                errors[
-                                    CONF_URL
-                                ] = f"Failed to connect to the URL. Status code: {response.status}"
+                                errors[CONF_URL] = "URL does not return JSON content"
+                        else:
+                            errors[
+                                CONF_URL
+                            ] = f"Failed to connect to the URL. Status code: {response.status}"
                 except Exception as e:
                     errors[CONF_URL] = f"Error testing URL: {str(e)}"
 

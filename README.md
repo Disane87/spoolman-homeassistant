@@ -23,4 +23,3 @@ For every spool there is a sensor created with the exact color you've provided. 
 All other information provides by Spoolman are stored in the attributes of the sensor:
 
 ![image](https://github.com/Disane87/spoolman-homeassistant/blob/main/resources/images/spoolman-integration-sensor.png?raw=true)
-
