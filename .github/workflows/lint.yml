@@ -2,8 +2,8 @@ name: "Lint"
 
 on:
   push:
-    branches: ['dev']
-    pull_request: ['main']
+    branches: ['dev', 'main']
+    pull_request: ['dev', 'main']
     paths: ['custom_components/**']
 
 jobs:
