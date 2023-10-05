@@ -119,6 +119,4 @@ A spool has this structure (according to the [OpenAPI description](https://donki
 }
 ```
 
-```
-
 # Cheers 🔥
