@@ -1,55 +1,44 @@
-name: "Semantic Release"
+name: "Combined Workflow"
 
 on:
   push:
-    branches: ['dev']
-    paths: ['custom_components/**']
+    branches:
+      - 'dev'
+    paths:
+      - 'custom_components/**'
   pull_request:
-    branches: ['main']
-    paths: ['custom_components/**']
-  # push:
-  #   branches: ['main', 'dev']
-  #   paths: ['custom_components/**']
-
-
-  workflow_dispatch:
+    branches:
+      - 'main'
+    paths:
+      - 'custom_components/**'
 
 jobs:
-  release:
+  lint:
+    uses: ./.github/workflows/lint.yml
+
+  validate:
+    uses: ./.github/workflows/validate.yml
+
+  semantic_release:
+    name: "Semantic Release"
+    needs: [lint, validate]
     runs-on: ubuntu-latest
-    concurrency: release
     permissions:
       id-token: write
       contents: write
-
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: "Checkout the repository"
+        uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
 
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - name: "Setup Node"
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-    - run: npm init --yes
-    - run: npm install semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/exec conventional-changelog-conventionalcommits --save-dev
-    - run: npx semantic-release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
-    # - name: Create dir
-    #   run: |
-    #     [ -d dist ] && echo "Directory Exists" || mkdir dist
-
-    # - uses: montudor/action-zip@v1
-    #   with:
-    #     args: zip -r dist/release.zip custom_components/spoolman
-
-    # - name: Python Semantic Release
-    #   uses: python-semantic-release/python-semantic-release@master
-    #   with:
-    #     github_token: ${{ secrets.GITHUB_TOKEN }}
-
-    # - name: Delete dir if exists
-    #   run: |
-    #     [[ -d dist ]] && rm -r dist
+      - run: npm init --yes
+      - run: npm install semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/exec conventional-changelog-conventionalcommits --save-dev
+      - run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
