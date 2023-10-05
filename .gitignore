@@ -61,7 +61,8 @@ venv
 .venv
 Pipfile*
 share/*
-Scripts/
+scripts/*
+!/scripts/publish.sh
 
 # vimmy stuff
 *.swp
