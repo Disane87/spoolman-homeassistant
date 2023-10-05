@@ -12,8 +12,10 @@ branchName="$2"
 commitsLength="$3"
 timestamp="$4"
 
+mkdir dist
+
 # Befehl ausführen, um das ZIP-Archiv zu erstellen
-zipCommand="zip dist/spoolman-homeassistant_${nextReleaseVersion}.zip custom_components/spoolman -j"
+zipCommand="zip ./dist/spoolman-homeassistant_${nextReleaseVersion}.zip ./custom_components/spoolman/** -j"
 echo "Führe folgenden Befehl aus: $zipCommand"
 $zipCommand
 
