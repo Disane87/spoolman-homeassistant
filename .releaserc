@@ -91,12 +91,6 @@
         }
       }
     ],
-    [
-      "@semantic-release/exec",
-      {
-        "prepareCmd": "./scripts/publish.sh ${nextRelease.version} ${branch.name} ${commits.length} ${Date.now()}"
-      }
-    ],
     "@semantic-release/changelog",
     [
       "@semantic-release/git",
