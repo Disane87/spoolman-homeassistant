@@ -1,4 +1,4 @@
-name: "Combined Workflow"
+name: "Semantic Release"
 
 on:
   push:
