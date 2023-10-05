@@ -29,9 +29,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
         super().__init__(
             hass,
             _LOGGER,
-            # Name of the data. For logging purposes.
             name="Spoolman data",
-            # Polling interval. Will only be polled if there are subscribers.
             update_interval=timedelta(minutes=update_interval),
         )
         self.my_api = url

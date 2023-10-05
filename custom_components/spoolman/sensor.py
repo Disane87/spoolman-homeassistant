@@ -138,7 +138,7 @@ class Spool(CoordinatorEntity, SensorEntity):
                     EVENT_THRESHOLD_EXCEEDED,
                     {
                         "entity_id": self.entity_id,
-                        "data": spool,
+                        "spool": spool,
                         "threshold_name": threshold_name,
                         "threshold_value": config_threshold,
                         "used_percentage": used_percentage,
