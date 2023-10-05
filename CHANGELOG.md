@@ -1,3 +1,10 @@
+## [0.2.0-dev.6](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.0-dev.5...v0.2.0-dev.6) (2023-10-05)
+
+
+### 🛠️ Fixes
+
+* removed dead code + test commit ([bda57bc](https://github.com/Disane87/spoolman-homeassistant/commit/bda57bc08698dc7f6a36f8c5f58fd9728312325a))
+
 ## [0.2.0-dev.5](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.0-dev.4...v0.2.0-dev.5) (2023-10-05)
 
 
