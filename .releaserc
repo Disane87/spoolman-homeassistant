@@ -94,9 +94,7 @@
     [
       "@semantic-release/exec",
       {
-        "verifyReleaseCmd": "echo \"version=${nextRelease.version}\" >> $GITHUB_OUTPUT",
-        "successCmd": "echo \"new_release_published=${'true'}\" >> $GITHUB_OUTPUT",
-        "prepareCmd": "zip dist/release.zip custom_components/spoolman -j"
+        "prepareCmd": "./scripts/publish.sh ${nextRelease.version} ${branch.name} ${commits.length} ${Date.now()}"
       }
     ],
     "@semantic-release/changelog",
