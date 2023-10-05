@@ -1,3 +1,10 @@
+## [0.2.0-dev.4](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.0-dev.3...v0.2.0-dev.4) (2023-10-05)
+
+
+### 🛠️ Fixes
+
+* fixed event name + data and added some docs aboiut the usage of the event ([a164d99](https://github.com/Disane87/spoolman-homeassistant/commit/a164d99b5d9ee078f79cc5bab69cf5b7bbb4d51b))
+
 ## [0.2.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.0-dev.2...v0.2.0-dev.3) (2023-10-04)
 
 
