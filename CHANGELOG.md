@@ -1,3 +1,10 @@
+## [0.2.0-dev.5](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.0-dev.4...v0.2.0-dev.5) (2023-10-05)
+
+
+### 🛠️ Fixes
+
+* removed openapi.json ([3635ab7](https://github.com/Disane87/spoolman-homeassistant/commit/3635ab7cfe6db5ca68e5b67c62bf520b0493ef96))
+
 ## [0.2.0-dev.4](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.0-dev.3...v0.2.0-dev.4) (2023-10-05)
 
 
