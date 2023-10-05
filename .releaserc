@@ -103,6 +103,7 @@
       {
         "message": "chore(release): 📢 ${nextRelease.version}\n\n${nextRelease.notes}",
         "assets": [
+          "hacs.json",
           "CHANGELOG.md",
           "README.md"
         ]
@@ -112,7 +113,7 @@
       "@semantic-release/github",
       {
         "assets": [
-          "./dist/*.zip"
+          "dist/*.zip"
         ],
         "fail": true
       }
