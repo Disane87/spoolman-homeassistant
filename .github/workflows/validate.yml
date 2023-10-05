@@ -1,6 +1,7 @@
 name: "Validate"
 
 on:
+  workflow_call:
   push:
     branches: ['dev']
     paths: ['custom_components/**']
