@@ -38,7 +38,6 @@ async def async_setup(hass: HomeAssistant, config):
 async def async_setup_entry(hass: HomeAssistant, entry):
     """Set up the Spoolman component from a config entry."""
     _LOGGER.debug("__init__.async_setup_entry")
-    # session = async_create_clientsession(hass)
 
     coordinator = SpoolManCoordinator(hass, entry)
     await coordinator.async_refresh()
@@ -58,17 +57,6 @@ async def async_unload_entry(hass: HomeAssistant, entry):
 async def async_get_data(hass: HomeAssistant):
     """Get the latest data from the Spoolman API."""
     _LOGGER.debug("__init__.async_get_data")
-    # url = hass.data[DOMAIN][CONF_URL]
     return await hass.data[DOMAIN][SPOOLMAN_API_WRAPPER].get_spool(
         {"allow_archived": False}
     )
-
-    # async with aiohttp.ClientSession() as session:
-    #     try:
-    #         headers = {}
-
-    #         async with session.get(url, headers=headers) as response:
-    #             data = await response.json()
-    #             return data
-    #     except Exception as ex:
-    #         _LOGGER.error("Error fetching data from Spoolman API: %s", ex)

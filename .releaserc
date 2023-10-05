@@ -91,18 +91,13 @@
         }
       }
     ],
-    [
-      "@semantic-release/exec",
-      {
-        "prepareCmd": "./scripts/publish.sh ${nextRelease.version} ${branch.name} ${commits.length} ${Date.now()}"
-      }
-    ],
     "@semantic-release/changelog",
     [
       "@semantic-release/git",
       {
         "message": "chore(release): 📢 ${nextRelease.version}\n\n${nextRelease.notes}",
         "assets": [
+          "hacs.json",
           "CHANGELOG.md",
           "README.md"
         ]
@@ -112,7 +107,7 @@
       "@semantic-release/github",
       {
         "assets": [
-          "./dist/*.zip"
+          "dist/*.zip"
         ],
         "fail": true
       }
