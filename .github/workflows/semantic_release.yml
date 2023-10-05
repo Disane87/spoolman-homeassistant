@@ -1,10 +1,12 @@
 name: "Semantic Release"
 
 on:
-  workflow_run:
-    workflows: [Validate]
-    types:
-      - completed
+  push:
+    branches: ['dev']
+    paths: ['custom_components/**']
+  pull_request:
+    branches: ['main']
+    paths: ['custom_components/**']
   # push:
   #   branches: ['main', 'dev']
   #   paths: ['custom_components/**']
