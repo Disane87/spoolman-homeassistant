@@ -2,15 +2,16 @@
 import logging
 from datetime import timedelta
 
-import aiohttp
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
+from .classes.spoolman_api import SpoolmanAPI
 from .const import (
-    API_SPOOL_ENDPOINT,
+    CONF_SHOW_ARCHIVED,
     CONF_UPDATE_INTERVAL,
     CONF_URL,
     DOMAIN,
+    SPOOLMAN_API_WRAPPER,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -24,6 +25,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
         _LOGGER.info("SpoolManCoordinator.__init__")
         url = entry.data[CONF_URL]
         update_interval = entry.data[CONF_UPDATE_INTERVAL]
+
         super().__init__(
             hass,
             _LOGGER,
@@ -34,22 +36,27 @@ class SpoolManCoordinator(DataUpdateCoordinator):
         )
         self.my_api = url
         self.hass = hass
+        self.spoolman_api = SpoolmanAPI(entry.data[CONF_URL])
 
         hass.data[DOMAIN] = {
-            CONF_URL: url,
-            CONF_UPDATE_INTERVAL: update_interval,
+            **entry.data,
+            SPOOLMAN_API_WRAPPER: self.spoolman_api,
             "coordinator": self,
         }
 
     async def _async_update_data(self):
         _LOGGER.info("SpoolManCoordinator._async_update_data")
-        url = f"{self.hass.data[DOMAIN][CONF_URL]}{API_SPOOL_ENDPOINT}"
+        config = self.hass.data[DOMAIN]
 
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.get(url) as response:
-                    data = await response.json()
-                    # _LOGGER.info(f"SpoolManCoordinator._async_update_data: {data}")
-                    return data
-            except Exception as e:
-                raise UpdateFailed(f"Error fetching data from Spoolman API: {e}")
+        show_archived = config.get(CONF_SHOW_ARCHIVED, False)
+
+        try:
+            spools = await self.spoolman_api.get_spool(
+                {"allow_archived": show_archived}
+            )
+            return spools
+
+        except Exception as exception:
+            raise UpdateFailed(
+                f"Error fetching data from Spoolman API: {exception}"
+            ) from exception

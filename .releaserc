@@ -91,6 +91,14 @@
         }
       }
     ],
+    [
+      "@semantic-release/exec",
+      {
+        "verifyReleaseCmd": "echo \"version=${nextRelease.version}\" >> $GITHUB_OUTPUT",
+        "successCmd": "echo \"new_release_published=${'true'}\" >> $GITHUB_OUTPUT",
+        "prepareCmd": "zip dist/release.zip custom_components/spoolman -j"
+      }
+    ],
     "@semantic-release/changelog",
     [
       "@semantic-release/git",
@@ -109,14 +117,6 @@
           "./dist/*.zip"
         ],
         "fail": true
-      }
-    ],
-    [
-      "@semantic-release/exec",
-      {
-        "verifyReleaseCmd": "echo \"version=${nextRelease.version}\" >> $GITHUB_OUTPUT",
-        "successCmd": "echo \"new_release_published=${'true'}\" >> $GITHUB_OUTPUT",
-        "prepare": "zip dist/spoolman-homeassistant_${nextRelease.version}.zip custom_components/spoolman -j"
       }
     ]
   ],

@@ -5,7 +5,11 @@
                 "title": "Configuration",
                 "data": {
                     "spoolman_url": "Host (incl. protocol)",
-                    "update-interval": "Update interval (minutes)"
+                    "update-interval": "Update interval (minutes)",
+                    "show_archived": "Show archived",
+                    "notification_threshold_info": "Threshold Info",
+                    "notification_threshold_warning": "Threshold Warning",
+                    "notification_threshold_critical": "Threshold Critical"
                 }
             }
         },

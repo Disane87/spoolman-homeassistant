@@ -1,19 +1,32 @@
 """Spoolman home assistant sensor."""
+import logging
 import os
-from PIL import Image
 
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.components.sensor.const import SensorStateClass
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import (
+    UnitOfMass,
+)
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
-from homeassistant.const import (
-    UnitOfMass,
+from PIL import Image
+
+from .const import (
+    CONF_URL,
+    DOMAIN,
+    EVENT_THRESHOLD_EXCEEDED,
+    LOCAL_IMAGE_PATH,
+    NOTIFICATION_THRESHOLDS,
+    PUBLIC_IMAGE_PATH,
+    SPOOLMAN_INFO_PROPERTY,
 )
-from .const import CONF_URL, DOMAIN, PUBLIC_IMAGE_PATH, LOCAL_IMAGE_PATH
 from .coordinator import SpoolManCoordinator
+
+_LOGGER = logging.getLogger(__name__)
+
 
 ICON = "mdi:printer-3d-nozzle"
 
@@ -42,9 +55,12 @@ class Spool(CoordinatorEntity, SensorEntity):
         """Spoolman home assistant spool sensor init."""
         super().__init__(coordinator)
 
-        conf_url = hass.data[DOMAIN][CONF_URL]
+        self.config = hass.data[DOMAIN]
+        conf_url = self.config[CONF_URL]
+        spoolman_info = self.config[SPOOLMAN_INFO_PROPERTY]
 
         self._spool = spool_data
+        self.handled_threshold_events = []
         self._filament = self._spool["filament"]
         self._entry = config_entry
         self._attr_name = f"{self._filament['vendor']['name']} {self._filament['name']} {self._filament['material']}"
@@ -54,12 +70,19 @@ class Spool(CoordinatorEntity, SensorEntity):
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_native_unit_of_measurement = UnitOfMass.GRAMS
         self._attr_icon = ICON
+
+        location_name = (
+            self._spool["location"] if spool_data["archived"] is False else "Archived"
+        )
+
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, conf_url)},
-            name=DOMAIN,
+            identifiers={(DOMAIN, conf_url, location_name)},  # type: ignore
+            name=location_name,
             manufacturer="https://github.com/Donkie/Spoolman",
             model="Spoolman",
             configuration_url=conf_url,
+            suggested_area=location_name,
+            sw_version=f"{spoolman_info.get('version', 'unknown')} ({spoolman_info.get('git_commit', 'unknown')})",
         )
         self.idx = idx
 
@@ -69,16 +92,60 @@ class Spool(CoordinatorEntity, SensorEntity):
         self._spool = self.coordinator.data[self.idx]
 
         self._filament = self._spool["filament"]
+        self._spool["used_percentage"] = (
+            round(self._spool["used_weight"] / self._filament["weight"], 3) * 100
+        )
+
+        if self._spool["archived"] is False:
+            self.check_for_threshold(self._spool, self._spool["used_percentage"])
+
         self.async_write_ha_state()
 
     @property
     def extra_state_attributes(self):
         """Return the attributes of the sensor."""
         spool = self._spool
-        spool["used_percentage"] = (
-            round(self._spool["used_weight"] / self._filament["weight"], 3) * 100
-        )
+
         return self.flatten_dict(spool)
+
+    def check_for_threshold(self, spool, used_percentage):
+        """Check if the used percentage is above a threshold and fire an event if it is."""
+        for key, _value in sorted(
+            NOTIFICATION_THRESHOLDS.items(), key=lambda x: x[1], reverse=True
+        ):
+            threshold_name = key
+            config_threshold = self.config[f"notification_threshold_{threshold_name}"]
+
+            if threshold_name in self.handled_threshold_events:
+                _LOGGER.debug(
+                    "SpoolManCoordinator.check_for_threshold: '%s' already handled for spool '%s' in '%s' with '%s'",
+                    threshold_name,
+                    self._attr_name,
+                    self._spool["location"],
+                    used_percentage,
+                )
+                break
+
+            if used_percentage >= config_threshold:
+                _LOGGER.debug(
+                    "SpoolManCoordinator.check_for_threshold: '%s' reached for spool '%s' in '%s' with '%s'",
+                    threshold_name,
+                    self._attr_name,
+                    self._spool["location"],
+                    used_percentage,
+                )
+                self.hass.bus.fire(
+                    EVENT_THRESHOLD_EXCEEDED,
+                    {
+                        "entity_id": self.entity_id,
+                        "data": spool,
+                        "threshold_name": threshold_name,
+                        "threshold_value": config_threshold,
+                        "used_percentage": used_percentage,
+                    },
+                )
+                self.handled_threshold_events.append(threshold_name)
+                break
 
     def flatten_dict(self, d, parent_key="", sep="_"):
         """Flattens a dictionary."""

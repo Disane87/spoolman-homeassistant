@@ -1,11 +1,15 @@
 name: "Validate"
 
 on:
-  push:
-    workflows: ["Lint"]
-    branches: ['main', 'dev']
-    pull_request: ['main', 'dev']
-    paths: ['custom_components/**']
+  workflow_run:
+    workflows: [Lint]
+    types:
+      - completed
+  # push:
+  #   branches: ['main', 'dev']
+  #   pull_request: ['main', 'dev']
+  #   paths: ['custom_components/**']
+
 
 jobs:
   hassfest: # https://developers.home-assistant.io/blog/2020/04/16/hassfest
