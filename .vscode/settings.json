@@ -6,5 +6,11 @@
     "conventionalCommits.scopes": [
         "lint"
     ],
-    "python.analysis.typeCheckingMode": "basic"
+    "python.analysis.typeCheckingMode": "basic",
+    "cSpell.words": [
+        "HACS",
+        "Homeassistant",
+        "Jayo",
+        "spoolman"
+    ]
 }

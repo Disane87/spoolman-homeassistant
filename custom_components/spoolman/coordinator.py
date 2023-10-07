@@ -22,7 +22,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
 
     def __init__(self, hass: HomeAssistant, entry) -> None:
         """Initialize my coordinator."""
-        _LOGGER.info("SpoolManCoordinator.__init__")
+        _LOGGER.debug("SpoolManCoordinator.__init__")
         url = entry.data[CONF_URL]
         update_interval = entry.data[CONF_UPDATE_INTERVAL]
 
@@ -43,7 +43,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
         }
 
     async def _async_update_data(self):
-        _LOGGER.info("SpoolManCoordinator._async_update_data")
+        _LOGGER.debug("SpoolManCoordinator._async_update_data")
         config = self.hass.data[DOMAIN]
 
         show_archived = config.get(CONF_SHOW_ARCHIVED, False)

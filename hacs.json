@@ -1,5 +1,7 @@
 {
   "name": "Spoolman",
   "homeassistant": "2023.9.0",
-  "render_readme": true
+  "render_readme": true,
+  "filename": "spoolman-homeassistant_0.2.0-dev.7.zip",
+  "zip_release": true
 }
