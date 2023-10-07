@@ -5,9 +5,7 @@
 ![GitHub](https://img.shields.io/github/license/Disane87/spoolman-homeassistant)
 ![GitHub issues by-label](https://img.shields.io/github/issues/Disane87/spoolman-homeassistant/bug?color=red)
 ![GitHub contributors](https://img.shields.io/github/contributors/Disane87/spoolman-homeassistant)
-[![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
-
-
+[![semantic-release: angular](https://img.shields.io/badge/semantic--release-conventionalcommits-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
 
 # Spoolman Home Assistant Integration
@@ -17,7 +15,7 @@ This integration integrates Spoolman (https://github.com/Donkie/Spoolman/) into 
 # ✨ Features
 - Locations in Spoolman are created as devices
 - Spools are added to the devices
-- Monitoring of filament consumption (used and remaining lenght/weight)
+- Monitoring of filament consumption (used and remaining length/weight)
 - Configurable thresholds for info, warning and critical states. This is useful to trigger notifications in HomeAssistant within an automation (see the [automation example](#automation-example))
 - Enable/disabled archived spools
 - Archived spools are grouped into one `Archived` device
@@ -43,14 +41,14 @@ You should now see a new integration entry with one device per location (your sp
 
 ![image](resources/images/spoolman-integration-hass.png?raw=true)
 
-For every spool there is a sensor created with the exact color you've provided. Additionally the integration tracks your current weight and lenghts.
+For every spool there is a sensor created with the exact color you've provided. Additionally the integration tracks your current weight and lengths.
 
 All other information provides by Spoolman are stored in the attributes of the sensor:
 
 ![image](resources/images/spoolman-integration-sensor.png?raw=true)
 
 # Automation example
-An automation in Homeassistant could be somethiong like this:
+An automation in Homeassistant could be something like this:
 ```yaml
 alias: Filament almost empty
 description: ""
@@ -81,7 +79,7 @@ You can use the following data within your templates:
 }
 ```
 
-A spool has this structure (according to the [OpenAPI description](https://donkie.github.io/Spoolman/) of Spoolman.):
+A spool has this structure (according to the [OpenAPI description](https://donkie.github.io/Spoolman/) of Spoolman):
 
 ```json
 {

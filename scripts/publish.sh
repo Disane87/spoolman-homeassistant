@@ -13,9 +13,12 @@ commitsLength="$3"
 timestamp="$4"
 
 # Befehl ausführen, um das ZIP-Archiv zu erstellen
-zipCommand="zip dist/spoolman-homeassistant_${nextReleaseVersion}.zip custom_components/spoolman -j"
+zipCommand="zip ../../dist/spoolman-homeassistant_${nextReleaseVersion}.zip . -r"
 echo "Führe folgenden Befehl aus: $zipCommand"
-$zipCommand
+
+mkdir ./dist/
+
+(cd ./custom_components/spoolman && ls -la && $zipCommand)
 
 # JSON-Datei bearbeiten
 jsonFile="hacs.json"
