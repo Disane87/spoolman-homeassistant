@@ -1,8 +1,6 @@
+
 ## [0.2.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.0...v0.2.1) (2023-10-07)
-
-
 ### 🛠️ Fixes
-
 * fixed debug logs from info to debug ([f8defbb](https://github.com/Disane87/spoolman-homeassistant/commit/f8defbb56d679573845e98dcd299ea7a19bc376e))
 
 ## [0.2.0](https://github.com/Disane87/spoolman-homeassistant/compare/v0.1.3...v0.2.0) (2023-10-05)
