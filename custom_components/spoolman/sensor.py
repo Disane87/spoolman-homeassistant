@@ -26,10 +26,7 @@ from .const import (
 from .coordinator import SpoolManCoordinator
 
 _LOGGER = logging.getLogger(__name__)
-
-
 ICON = "mdi:printer-3d-nozzle"
-
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -46,7 +43,6 @@ async def async_setup_entry(
             spool_device = Spool(hass, coordinator, spool_data, idx, config_entry)
             spool_entities.append(spool_device)
         async_add_entities(spool_entities)
-
 
 class Spool(CoordinatorEntity, SensorEntity):
     """Representation of a Spoolman Sensor."""
