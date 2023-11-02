@@ -10,6 +10,8 @@ on:
   pull_request:
     branches:
       - 'main'
+    types:
+      - closed
     paths:
       - 'custom_components/**'
 
@@ -21,6 +23,7 @@ jobs:
     uses: ./.github/workflows/validate.yml
 
   semantic_release:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
     name: "Semantic Release"
     needs: [lint, validate]
     runs-on: ubuntu-latest
