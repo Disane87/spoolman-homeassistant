@@ -71,7 +71,6 @@ class Spool(CoordinatorEntity, SensorEntity):
             "Unknown" if not self._spool.get("location") else self._spool["location"]
         ) if spool_data["archived"] is False else "Archived"
 
-
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, conf_url, location_name)},  # type: ignore
             name=location_name,
