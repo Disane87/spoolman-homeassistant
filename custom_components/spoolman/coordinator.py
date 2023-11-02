@@ -16,7 +16,6 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-
 class SpoolManCoordinator(DataUpdateCoordinator):
     """My custom coordinator."""
 
