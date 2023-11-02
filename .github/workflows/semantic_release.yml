@@ -5,15 +5,16 @@ on:
   push:
     branches:
       - 'dev'
-    paths:
-      - 'custom_components/**'
-  pull_request:
-    branches:
       - 'main'
-    types:
-      - closed
     paths:
       - 'custom_components/**'
+  #pull_request:
+  #  branches:
+  #    - 'main'
+  #  types:
+  #    - closed
+  #  paths:
+  #    - 'custom_components/**'
 
 jobs:
   lint:
@@ -23,7 +24,7 @@ jobs:
     uses: ./.github/workflows/validate.yml
 
   semantic_release:
-    if: (github.event_name == 'pull_request' && github.event.action == 'closed') || github.ref == 'refs/heads/dev'
+    #if: (github.event_name == 'pull_request' && github.event.action == 'closed') || github.ref == 'refs/heads/dev'
     name: "Semantic Release"
     needs: [lint, validate]
     runs-on: ubuntu-latest
