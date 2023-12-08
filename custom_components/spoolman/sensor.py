@@ -43,6 +43,9 @@ async def async_setup_entry(
     if coordinator.data:
         spool_entities = []
         for idx, spool_data in enumerate(coordinator.data):
+            if spool_data['filament'].get('name') is None or spool_data['filament'].get('material') is None:
+                _LOGGER.warning("SpoolManCoordinator: Spool with ID '%s' has no name or material set. Can't create sensor. Skipping.", spool_data['filament'].get('id'))
+                return
             spool_device = Spool(hass, coordinator, spool_data, idx, config_entry)
             spool_entities.append(spool_device)
         async_add_entities(spool_entities)
@@ -62,19 +65,27 @@ class Spool(CoordinatorEntity, SensorEntity):
         self._spool = spool_data
         self.handled_threshold_events = []
         self._filament = self._spool["filament"]
+
+        vendor_name = self._filament.get('vendor', {}).get('name')
+
+        if vendor_name is None:
+            spool_name = f"{self._filament['name']} {self._filament.get('material')}"
+        else:
+            spool_name = f"{vendor_name} {self._filament['name']} {self._filament.get('material')}"
+
+        location_name = (
+            "Unknown" if not self._spool.get("location") else self._spool["location"]
+        ) if spool_data["archived"] is False else "Archived"
+
+
         self._entry = config_entry
-        self._attr_name = f"{self._filament['vendor']['name']} {self._filament['name']} {self._filament['material']}"
+        self._attr_name = spool_name
         self._attr_unique_id = f"{self._attr_name}_{spool_data['id']}"
         self._attr_has_entity_name = False
         self._attr_device_class = SensorDeviceClass.WEIGHT
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_native_unit_of_measurement = UnitOfMass.GRAMS
         self._attr_icon = ICON
-
-        location_name = (
-            "Unknown" if not self._spool.get("location") else self._spool["location"]
-        ) if spool_data["archived"] is False else "Archived"
-
 
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, conf_url, location_name)},  # type: ignore
@@ -91,8 +102,17 @@ class Spool(CoordinatorEntity, SensorEntity):
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
         self._spool = self.coordinator.data[self.idx]
-
         self._filament = self._spool["filament"]
+
+        if self._filament["weight"] is None:
+            _LOGGER.warning("SpoolManCoordinator: Spool with ID '%s' has no weight set. Can't calculate usage. Skipping.", self._spool['id'])
+            return
+
+        if self._filament["used_weight"] is None:
+            _LOGGER.warning("SpoolManCoordinator: Spool with ID '%s' has no used_weight set. Can't calculate usage. Skipping.", self._spool['id'])
+            return
+
+
         self._spool["used_percentage"] = (
             round(self._spool["used_weight"] / self._filament["weight"], 3) * 100
         )
@@ -171,14 +191,21 @@ class Spool(CoordinatorEntity, SensorEntity):
     def state(self):
         """Return the state of the sensor."""
 
-        return round(self._spool["remaining_weight"], 3)
+        return round(self._spool.get('remaining_weight',0), 3)
 
     @property
     def entity_picture(self):
         """Return the entity picture."""
         filament = self._spool["filament"]
-        color_hex = filament["color_hex"]
-        return self.generate_entity_picture(color_hex)
+
+        if filament.get("color_hex") is None:
+            _LOGGER.warning("SpoolManCoordinator: Spool with ID '%s' has no color_hex set. Can't create entity picture.", self._spool['id'])
+            # color_hex = 'FFFFFF'
+        else:
+            color_hex = filament.get("color_hex", 'FFFFFF')
+            return self.generate_entity_picture(color_hex)
+
+
 
     def generate_entity_picture(self, color_hex):
         """Generate an entity picture with the specified color and save it to the www directory."""
