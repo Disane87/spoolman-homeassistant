@@ -3,9 +3,9 @@ name: "Lint"
 on:
   workflow_call:
 
-  pull_request:
-    branches: ['main']
-    paths: ['custom_components/**']
+  #pull_request:
+  #  branches: ['main']
+  #  paths: ['custom_components/**']
 
 jobs:
   lint:

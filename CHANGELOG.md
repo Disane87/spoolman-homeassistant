@@ -1,9 +1,14 @@
-## [0.2.1-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.0...v0.2.1-dev.1) (2023-11-01)
+## [0.2.2-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.1...v0.2.2-dev.1) (2023-11-02)
 
 
 ### 🛠️ Fixes
 
 * :bug: fixed a bug where location from spoolman is empty ([8ce5abd](https://github.com/Disane87/spoolman-homeassistant/commit/8ce5abd6a90b77ab4f233305ae5475623c042aa0)), closes [#44](https://github.com/Disane87/spoolman-homeassistant/issues/44)
+* build ci system ([b8fa3eb](https://github.com/Disane87/spoolman-homeassistant/commit/b8fa3eba855c9c6efc3c01a1f08f47b2971abe7e))
+* interims commit ([33949b6](https://github.com/Disane87/spoolman-homeassistant/commit/33949b6bc0e5cb2691e3a6349bd10062528c6f7e)), closes [#44](https://github.com/Disane87/spoolman-homeassistant/issues/44) [#44](https://github.com/Disane87/spoolman-homeassistant/issues/44)
+
+## [0.2.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.0...v0.2.1) (2023-10-07)
+### 🛠️ Fixes
 * fixed debug logs from info to debug ([f8defbb](https://github.com/Disane87/spoolman-homeassistant/commit/f8defbb56d679573845e98dcd299ea7a19bc376e))
 
 ## [0.2.0](https://github.com/Disane87/spoolman-homeassistant/compare/v0.1.3...v0.2.0) (2023-10-05)
