@@ -47,6 +47,51 @@ All other information provides by Spoolman are stored in the attributes of the s
 
 ![image](resources/images/spoolman-integration-sensor.png?raw=true)
 
+# Usage in cards
+You can use the default `entities` card for this:
+
+![image](./docs/entity-card.png)
+
+Or `auto-entities-card` for getting all entities by this integration dynamically:
+https://github.com/thomasloven/lovelace-auto-entities
+
+And some `mushroom-template-card` cards for example.
+https://github.com/piitaya/lovelace-mushroom/blob/main/docs/cards/template.md
+
+I've created a simple card utilizing `mushroom-template-card` and `auto-entities` to dynamically show all spools:
+```yaml
+type: custom:auto-entities
+filter:
+  include:
+    - integration: '*spoolman*'
+      options:
+        type: custom:mushroom-template-card
+        vertical: false
+        icon_color: >-
+          #{{ state_attr(entity, 'filament_color_hex') }}
+        icon: 'mdi:printer-3d'
+        primary: >-
+          {{ state_attr(entity, 'filament_name') }}
+        secondary:  >-
+          {{ (state_attr(entity, 'remaining_weight')/ 1000 | float)  | round(1) }} kg
+
+sort:
+  method: state
+  reverse: true
+card:
+  type: grid
+  columns: 2
+  square: false
+card_param: cards
+
+```
+
+![image](./docs/auto-entities.png)
+
+It's pretty neat. I think I gonna document this in the readme.
+
+
+
 # Automation example
 An automation in Homeassistant could be something like this:
 ```yaml
