@@ -48,7 +48,7 @@ All other information provides by Spoolman are stored in the attributes of the s
 ![image](resources/images/spoolman-integration-sensor.png?raw=true)
 
 > [!IMPORTANT]
-> YOur spool needs at least a name and a material to get added to Home Assistant.
+> Your spool needs at least a name and a material to get added to Home Assistant.
 
 # Usage in cards
 You can use the default `entities` card for this:
