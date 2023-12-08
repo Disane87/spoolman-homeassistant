@@ -58,10 +58,10 @@ You can use the default `entities` card for this:
 Or `auto-entities-card` for getting all entities by this integration dynamically:
 https://github.com/thomasloven/lovelace-auto-entities
 
-And some `mushroom-template-card` cards for example.
+And a `mushroom-template-card` card for example.
 https://github.com/piitaya/lovelace-mushroom/blob/main/docs/cards/template.md
 
-I've created a simple card utilizing `mushroom-template-card` and `auto-entities` to dynamically show all spools:
+A simple card utilizing `mushroom-template-card` and `auto-entities` to dynamically show all spools could look like this:
 ```yaml
 type: custom:auto-entities
 filter:
@@ -90,10 +90,6 @@ card_param: cards
 ```
 
 ![image](./docs/auto-entities.png)
-
-It's pretty neat. I think I gonna document this in the readme.
-
-
 
 # Automation example
 An automation in Homeassistant could be something like this:
