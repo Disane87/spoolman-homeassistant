@@ -1,3 +1,15 @@
+## [0.2.2-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.2-dev.1...v0.2.2-dev.2) (2023-12-08)
+
+
+### 🛠️ Fixes
+
+* Better handling of null values ([aa0d763](https://github.com/Disane87/spoolman-homeassistant/commit/aa0d7636d69ccd87fe4be1feba90b4c69cc50858)), closes [#61](https://github.com/Disane87/spoolman-homeassistant/issues/61) [#58](https://github.com/Disane87/spoolman-homeassistant/issues/58)
+
+
+### 📔 Docs
+
+* added usage of entities in cards to readme ([c99262f](https://github.com/Disane87/spoolman-homeassistant/commit/c99262f452e82c8f7da0c89cf5d2385c919aaca2)), closes [#62](https://github.com/Disane87/spoolman-homeassistant/issues/62)
+
 ## [0.2.2-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.1...v0.2.2-dev.1) (2023-11-02)
 
 
