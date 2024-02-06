@@ -1,3 +1,10 @@
+## [0.3.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.2-dev.3...v0.3.0-dev.1) (2024-02-06)
+
+
+### 🚀 Features
+
+* :bug: Add debug logging for spool information ([df84521](https://github.com/Disane87/spoolman-homeassistant/commit/df845215c0a90bd1f12f60866de8b02d0d1c0ed3)), closes [#77](https://github.com/Disane87/spoolman-homeassistant/issues/77)
+
 ## [0.2.2-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.2-dev.2...v0.2.2-dev.3) (2024-02-06)
 
 
