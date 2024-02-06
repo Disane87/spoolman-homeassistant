@@ -1,3 +1,10 @@
+## [0.3.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.3.0-dev.1...v0.3.0-dev.2) (2024-02-06)
+
+
+### 🛠️ Fixes
+
+* :bug: Refactor debug log message for filament weight calculation ([956e5ba](https://github.com/Disane87/spoolman-homeassistant/commit/956e5bac8f94de2b0f4eba73ba2b2d44ba54e37f)), closes [#77](https://github.com/Disane87/spoolman-homeassistant/issues/77)
+
 ## [0.3.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.2-dev.3...v0.3.0-dev.1) (2024-02-06)
 
 
