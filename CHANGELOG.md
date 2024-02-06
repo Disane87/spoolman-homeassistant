@@ -1,3 +1,10 @@
+## [0.2.2-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.2-dev.2...v0.2.2-dev.3) (2024-02-06)
+
+
+### 🛠️ Fixes
+
+* :bug: Refactor SpoolmanAPI and SpoolManCoordinator warnings ([b1c0cb8](https://github.com/Disane87/spoolman-homeassistant/commit/b1c0cb82487cc1a2895ee1944becfedf9c90b394)), closes [#77](https://github.com/Disane87/spoolman-homeassistant/issues/77)
+
 ## [0.2.2-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.2-dev.1...v0.2.2-dev.2) (2023-12-08)
 
 
