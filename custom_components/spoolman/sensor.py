@@ -111,7 +111,7 @@ class Spool(CoordinatorEntity, SensorEntity):
             _LOGGER.warning("SpoolManCoordinator: Spool with ID '%s' has no 'weight' set or property is missing in filament. Can't calculate usage. Skipping.", self._spool['id'])
             return
 
-        if self._filament.get("used_weight") is None:
+        if self._spool.get("used_weight") is None:
             _LOGGER.warning("SpoolManCoordinator: Spool with ID '%s' has no 'used_weight' set or property is missing in filament. Can't calculate usage. Skipping.", self._spool['id'])
             return
 
