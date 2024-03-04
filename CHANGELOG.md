@@ -1,3 +1,10 @@
+## [0.3.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v0.3.0-dev.2...v0.3.0-dev.3) (2024-03-04)
+
+
+### 🛠️ Fixes
+
+* :bug: Fixed a bug where `used_weight` is empty sometimes ([03ce8fc](https://github.com/Disane87/spoolman-homeassistant/commit/03ce8fc133713b5a5be70b5acfce02740a323b38)), closes [#77](https://github.com/Disane87/spoolman-homeassistant/issues/77)
+
 ## [0.3.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.3.0-dev.1...v0.3.0-dev.2) (2024-02-06)
 
 
