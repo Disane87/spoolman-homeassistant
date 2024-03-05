@@ -70,22 +70,24 @@ filter:
       options:
         type: custom:mushroom-template-card
         vertical: false
-        icon_color: >-
-          #{{ state_attr(entity, 'filament_color_hex') }}
-        icon: 'mdi:printer-3d'
-        primary: >-
-          {{ state_attr(entity, 'filament_name') }}
-        secondary:  >-
-          {{ (state_attr(entity, 'remaining_weight')/ 1000 | float)  | round(1) }} kg
-
+        icon_color: '#{{ state_attr(entity, ''filament_color_hex'') }}'
+        icon: mdi:printer-3d-nozzle
+        badge_icon: >-
+          {% if state_attr(entity, 'archived') == true %} mdi:archive {% endif
+          %}
+        badge_color: orange
+        primary: '{{ state_attr(entity, ''filament_name'') }}'
+        secondary: '{{ (state_attr(entity, ''remaining_weight'') | float)  | round(2) }} g'
 sort:
   method: state
   reverse: true
+  numeric: true
 card:
   type: grid
   columns: 2
   square: false
 card_param: cards
+
 
 ```
 
@@ -101,15 +103,18 @@ trigger:
     event_type: spoolman_spool_threshold_exceeded
 condition: []
 action:
-  - service: notify.mobile_app_iphone_marco
+  - service: notify.notify
     data_template:
-      title: "{{ trigger.event.data.threshold_name }}: Spool almost empty"
+      title: >-
+        {{ trigger.event.data['threshold_name'] | capitalize }}: Spool almost
+        empty
       message: >-
-        The spool {{ trigger.event.data.spool.filament.vendor.name }} {{
-        trigger.event.data.spool.filament.filament.name }} {{
-        trigger.event.data.spool.filament.filament.material }} has reached {{
-        trigger.event.data.spool.used_percentage }}% usage
+        The spool {{ trigger.event.data['spool']['filament']['vendor']['name']
+        }} {{ trigger.event.data['spool']['filament']['name'] }} {{
+        trigger.event.data['spool']['filament']['material'] }} has reached {{
+        trigger.event.data['spool']['used_percentage'] }}% usage
 mode: restart
+
 ```
 
 You can use the following data within your templates:
