@@ -47,6 +47,52 @@ All other information provides by Spoolman are stored in the attributes of the s
 
 ![image](resources/images/spoolman-integration-sensor.png?raw=true)
 
+> [!IMPORTANT]
+> Your spool needs at least a name and a material to get added to Home Assistant.
+
+# Usage in cards
+You can use the default `entities` card for this:
+
+![image](./docs/entity-card.png)
+
+Or `auto-entities-card` for getting all entities by this integration dynamically:
+https://github.com/thomasloven/lovelace-auto-entities
+
+And a `mushroom-template-card` card for example.
+https://github.com/piitaya/lovelace-mushroom/blob/main/docs/cards/template.md
+
+A simple card utilizing `mushroom-template-card` and `auto-entities` to dynamically show all spools could look like this:
+```yaml
+type: custom:auto-entities
+filter:
+  include:
+    - integration: '*spoolman*'
+      options:
+        type: custom:mushroom-template-card
+        vertical: false
+        icon_color: '#{{ state_attr(entity, ''filament_color_hex'') }}'
+        icon: mdi:printer-3d-nozzle
+        badge_icon: >-
+          {% if state_attr(entity, 'archived') == true %} mdi:archive {% endif
+          %}
+        badge_color: orange
+        primary: '{{ state_attr(entity, ''filament_name'') }}'
+        secondary: '{{ (state_attr(entity, ''remaining_weight'') | float)  | round(2) }} g'
+sort:
+  method: state
+  reverse: true
+  numeric: true
+card:
+  type: grid
+  columns: 2
+  square: false
+card_param: cards
+
+
+```
+
+![image](./docs/auto-entities.png)
+
 # Automation example
 An automation in Homeassistant could be something like this:
 ```yaml
@@ -57,15 +103,18 @@ trigger:
     event_type: spoolman_spool_threshold_exceeded
 condition: []
 action:
-  - service: notify.mobile_app_iphone_marco
+  - service: notify.notify
     data_template:
-      title: "{{ trigger.event.data.threshold_name }}: Spool almost empty"
+      title: >-
+        {{ trigger.event.data['threshold_name'] | capitalize }}: Spool almost
+        empty
       message: >-
-        The spool {{ trigger.event.data.spool.filament.vendor.name }} {{
-        trigger.event.data.spool.filament.filament.name }} {{
-        trigger.event.data.spool.filament.filament.material }} has reached {{
-        trigger.event.data.spool.used_percentage }}% usage
+        The spool {{ trigger.event.data['spool']['filament']['vendor']['name']
+        }} {{ trigger.event.data['spool']['filament']['name'] }} {{
+        trigger.event.data['spool']['filament']['material'] }} has reached {{
+        trigger.event.data['spool']['used_percentage'] }}% usage
 mode: restart
+
 ```
 
 You can use the following data within your templates:

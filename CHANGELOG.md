@@ -1,11 +1,58 @@
-## [0.2.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.1...v0.2.2) (2023-11-02)
+
+## [0.3.0-dev.4](https://github.com/Disane87/spoolman-homeassistant/compare/v0.3.0-dev.3...v0.3.0-dev.4) (2024-03-05)
+
+
+### 🚀 Features
+
+* :sparkles: Configuration of Entry can be edited later (to change values like `update_interval`) ([ed201f9](https://github.com/Disane87/spoolman-homeassistant/commit/ed201f9a35ea6f4aea49fdda1e27b4ec122071e4)), closes [#82](https://github.com/Disane87/spoolman-homeassistant/issues/82)
+
+## [0.3.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v0.3.0-dev.2...v0.3.0-dev.3) (2024-03-04)
 
 
 ### 🛠️ Fixes
 
+* :bug: Fixed a bug where `used_weight` is empty sometimes ([03ce8fc](https://github.com/Disane87/spoolman-homeassistant/commit/03ce8fc133713b5a5be70b5acfce02740a323b38)), closes [#77](https://github.com/Disane87/spoolman-homeassistant/issues/77)
+
+## [0.3.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.3.0-dev.1...v0.3.0-dev.2) (2024-02-06)
+
+
+### 🛠️ Fixes
+
+* :bug: Refactor debug log message for filament weight calculation ([956e5ba](https://github.com/Disane87/spoolman-homeassistant/commit/956e5bac8f94de2b0f4eba73ba2b2d44ba54e37f)), closes [#77](https://github.com/Disane87/spoolman-homeassistant/issues/77)
+
+## [0.3.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.2-dev.3...v0.3.0-dev.1) (2024-02-06)
+
+
+### 🚀 Features
+
+* :bug: Add debug logging for spool information ([df84521](https://github.com/Disane87/spoolman-homeassistant/commit/df845215c0a90bd1f12f60866de8b02d0d1c0ed3)), closes [#77](https://github.com/Disane87/spoolman-homeassistant/issues/77)
+
+## [0.2.2-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.2-dev.2...v0.2.2-dev.3) (2024-02-06)
+=======
+## [0.2.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.1...v0.2.2) (2023-11-02)
+
+
+
+### 🛠️ Fixes
+
+* :bug: Refactor SpoolmanAPI and SpoolManCoordinator warnings ([b1c0cb8](https://github.com/Disane87/spoolman-homeassistant/commit/b1c0cb82487cc1a2895ee1944becfedf9c90b394)), closes [#77](https://github.com/Disane87/spoolman-homeassistant/issues/77)
+
+## [0.2.2-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.2-dev.1...v0.2.2-dev.2) (2023-12-08)
+
+
+### 🛠️ Fixes
+
+* Better handling of null values ([aa0d763](https://github.com/Disane87/spoolman-homeassistant/commit/aa0d7636d69ccd87fe4be1feba90b4c69cc50858)), closes [#61](https://github.com/Disane87/spoolman-homeassistant/issues/61) [#58](https://github.com/Disane87/spoolman-homeassistant/issues/58)
+
+
+### 📔 Docs
+
+* added usage of entities in cards to readme ([c99262f](https://github.com/Disane87/spoolman-homeassistant/commit/c99262f452e82c8f7da0c89cf5d2385c919aaca2)), closes [#62](https://github.com/Disane87/spoolman-homeassistant/issues/62)
+=======
 * :bug: fixed a bug where location from spoolman is empty ([8ce5abd](https://github.com/Disane87/spoolman-homeassistant/commit/8ce5abd6a90b77ab4f233305ae5475623c042aa0)), closes [#44](https://github.com/Disane87/spoolman-homeassistant/issues/44)
 * build ci system ([b8fa3eb](https://github.com/Disane87/spoolman-homeassistant/commit/b8fa3eba855c9c6efc3c01a1f08f47b2971abe7e))
 * interims commit ([33949b6](https://github.com/Disane87/spoolman-homeassistant/commit/33949b6bc0e5cb2691e3a6349bd10062528c6f7e)), closes [#44](https://github.com/Disane87/spoolman-homeassistant/issues/44) [#44](https://github.com/Disane87/spoolman-homeassistant/issues/44)
+
 
 ## [0.2.2-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.1...v0.2.2-dev.1) (2023-11-02)
 
