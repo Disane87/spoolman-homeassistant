@@ -1,3 +1,10 @@
+## [0.3.0-dev.4](https://github.com/Disane87/spoolman-homeassistant/compare/v0.3.0-dev.3...v0.3.0-dev.4) (2024-03-05)
+
+
+### 🚀 Features
+
+* :sparkles: Configuration of Entry can be edited later (to change values like `update_interval`) ([ed201f9](https://github.com/Disane87/spoolman-homeassistant/commit/ed201f9a35ea6f4aea49fdda1e27b4ec122071e4)), closes [#82](https://github.com/Disane87/spoolman-homeassistant/issues/82)
+
 ## [0.3.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v0.3.0-dev.2...v0.3.0-dev.3) (2024-03-04)
 
 
