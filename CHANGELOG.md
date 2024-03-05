@@ -1,3 +1,24 @@
+## [0.3.0](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.2...v0.3.0) (2024-03-05)
+
+
+### 🛠️ Fixes
+
+* :bug: Fixed a bug where `used_weight` is empty sometimes ([03ce8fc](https://github.com/Disane87/spoolman-homeassistant/commit/03ce8fc133713b5a5be70b5acfce02740a323b38)), closes [#77](https://github.com/Disane87/spoolman-homeassistant/issues/77)
+* :bug: Refactor debug log message for filament weight calculation ([956e5ba](https://github.com/Disane87/spoolman-homeassistant/commit/956e5bac8f94de2b0f4eba73ba2b2d44ba54e37f)), closes [#77](https://github.com/Disane87/spoolman-homeassistant/issues/77)
+* :bug: Refactor SpoolmanAPI and SpoolManCoordinator warnings ([b1c0cb8](https://github.com/Disane87/spoolman-homeassistant/commit/b1c0cb82487cc1a2895ee1944becfedf9c90b394)), closes [#77](https://github.com/Disane87/spoolman-homeassistant/issues/77)
+* Better handling of null values ([aa0d763](https://github.com/Disane87/spoolman-homeassistant/commit/aa0d7636d69ccd87fe4be1feba90b4c69cc50858)), closes [#61](https://github.com/Disane87/spoolman-homeassistant/issues/61) [#58](https://github.com/Disane87/spoolman-homeassistant/issues/58)
+* fixed errors in automation example and added badges for achived spools in card examples ([bb36191](https://github.com/Disane87/spoolman-homeassistant/commit/bb36191ea59a14312c61ba4eb4b998bd264ac09b))
+
+
+### 🚀 Features
+
+* :bug: Add debug logging for spool information ([df84521](https://github.com/Disane87/spoolman-homeassistant/commit/df845215c0a90bd1f12f60866de8b02d0d1c0ed3)), closes [#77](https://github.com/Disane87/spoolman-homeassistant/issues/77)
+* :sparkles: Configuration of Entry can be edited later (to change values like `update_interval`) ([ed201f9](https://github.com/Disane87/spoolman-homeassistant/commit/ed201f9a35ea6f4aea49fdda1e27b4ec122071e4)), closes [#82](https://github.com/Disane87/spoolman-homeassistant/issues/82)
+
+
+### 📔 Docs
+
+* added usage of entities in cards to readme ([c99262f](https://github.com/Disane87/spoolman-homeassistant/commit/c99262f452e82c8f7da0c89cf5d2385c919aaca2)), closes [#62](https://github.com/Disane87/spoolman-homeassistant/issues/62)
 
 ## [0.3.0-dev.4](https://github.com/Disane87/spoolman-homeassistant/compare/v0.3.0-dev.3...v0.3.0-dev.4) (2024-03-05)
 
