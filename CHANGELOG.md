@@ -1,3 +1,4 @@
+
 ## [0.3.0-dev.4](https://github.com/Disane87/spoolman-homeassistant/compare/v0.3.0-dev.3...v0.3.0-dev.4) (2024-03-05)
 
 
@@ -27,6 +28,9 @@
 * :bug: Add debug logging for spool information ([df84521](https://github.com/Disane87/spoolman-homeassistant/commit/df845215c0a90bd1f12f60866de8b02d0d1c0ed3)), closes [#77](https://github.com/Disane87/spoolman-homeassistant/issues/77)
 
 ## [0.2.2-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.2-dev.2...v0.2.2-dev.3) (2024-02-06)
+=======
+## [0.2.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.1...v0.2.2) (2023-11-02)
+
 
 
 ### 🛠️ Fixes
@@ -44,6 +48,11 @@
 ### 📔 Docs
 
 * added usage of entities in cards to readme ([c99262f](https://github.com/Disane87/spoolman-homeassistant/commit/c99262f452e82c8f7da0c89cf5d2385c919aaca2)), closes [#62](https://github.com/Disane87/spoolman-homeassistant/issues/62)
+=======
+* :bug: fixed a bug where location from spoolman is empty ([8ce5abd](https://github.com/Disane87/spoolman-homeassistant/commit/8ce5abd6a90b77ab4f233305ae5475623c042aa0)), closes [#44](https://github.com/Disane87/spoolman-homeassistant/issues/44)
+* build ci system ([b8fa3eb](https://github.com/Disane87/spoolman-homeassistant/commit/b8fa3eba855c9c6efc3c01a1f08f47b2971abe7e))
+* interims commit ([33949b6](https://github.com/Disane87/spoolman-homeassistant/commit/33949b6bc0e5cb2691e3a6349bd10062528c6f7e)), closes [#44](https://github.com/Disane87/spoolman-homeassistant/issues/44) [#44](https://github.com/Disane87/spoolman-homeassistant/issues/44)
+
 
 ## [0.2.2-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.1...v0.2.2-dev.1) (2023-11-02)
 
