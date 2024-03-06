@@ -18,7 +18,7 @@ from .const import (
 )
 
 
-class ConfigFlow(config_entries.ConfigFlow, BaseFlow, domain=DOMAIN):
+class ConfigFlow(BaseFlow, config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for spoolman."""
 
     VERSION = 1
@@ -31,11 +31,6 @@ class ConfigFlow(config_entries.ConfigFlow, BaseFlow, domain=DOMAIN):
         """Create the options flow."""
         return OptionsFlowHandler(config_entry)
 
-    def add_trailing_slash(self, input_string):
-        """Add traling slashed when not present."""
-        if not input_string.endswith("/"):
-            input_string += "/"
-        return input_string
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None

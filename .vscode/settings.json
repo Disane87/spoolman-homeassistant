@@ -12,5 +12,6 @@
         "Homeassistant",
         "Jayo",
         "spoolman"
-    ]
+    ],
+    "python.analysis.autoImportCompletions": true
 }
