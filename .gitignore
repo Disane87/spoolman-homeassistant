@@ -13,7 +13,7 @@ config
 .ruff**
 **/__pycache__
 
-# custom_components/mail_and_packages/camera.py.old
+custom_components/hacs
 # custom_components/mail_and_packages/.backup/__init__.py
 # custom_components/mail_and_packages/.backup/camera.py
 # custom_components/mail_and_packages/.backup/manifest.json

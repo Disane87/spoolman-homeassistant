@@ -18,3 +18,6 @@ EVENT_THRESHOLD_EXCEEDED = "spoolman_spool_threshold_exceeded"
 
 NOTIFICATION_THRESHOLDS = {"critical": 95, "warning": 75, "info": 50}
 SPOOLMAN_API_WRAPPER = "spoolman_api_wrapper"
+
+KLIPPER_URL = "klipper_url"
+KLIPPER_URL_DESC = "klipper_url_desc"

@@ -14,6 +14,7 @@ from .schema_helper import SchemaHelper
 from .const import (
     CONF_URL,
     DOMAIN,
+    KLIPPER_URL,
     SPOOLMAN_INFO_PROPERTY,
 )
 
@@ -36,24 +37,29 @@ class ConfigFlow(BaseFlow, config_entries.ConfigFlow, domain=DOMAIN):
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Handle the initial step."""
-        errors: dict[str, str] = {}
-        if user_input is not None:
-            info, errors, cleaned_url = await self.test_and_get_info(user_input.get(CONF_URL, ""))
+        spoolman_errors: dict[str, str] = {}
+        klipper_errors: dict[str, str] = {}
 
-            if not errors:
+        if user_input is not None:
+            spoolman_info, spoolman_errors, spoolman_url = await self.get_spoolman_api_info(user_input.get(CONF_URL, ""))
+
+            if user_input.get(KLIPPER_URL, None) is not None:
+                klipper_info, klipper_errors, klipper_url = await self.get_klipper_api_info(user_input.get(KLIPPER_URL, None))
+
+            if not spoolman_errors and not klipper_errors:
                 return self.async_create_entry(
                     title=DOMAIN,
                     data={
                         **user_input,
-                        CONF_URL: cleaned_url,
-                        SPOOLMAN_INFO_PROPERTY: info,
+                        CONF_URL: spoolman_url,
+                        SPOOLMAN_INFO_PROPERTY: spoolman_info,
                     },
                 )
 
         return self.async_show_form(
             step_id="user",
             data_schema=SchemaHelper().get_config_schema(),
-            errors=errors,
+            errors={**spoolman_errors, **klipper_errors},
         )
 
 

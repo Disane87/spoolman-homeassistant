@@ -8,6 +8,8 @@ from .const import (
     CONF_SHOW_ARCHIVED,
     CONF_UPDATE_INTERVAL,
     CONF_URL,
+    KLIPPER_URL,
+    KLIPPER_URL_DESC,
     NOTIFICATION_THRESHOLDS
 )
 
@@ -27,9 +29,7 @@ class SchemaHelper:
 
         return vol.Schema({
             vol.Required(CONF_URL, default=get_default_value(CONF_URL, "")): str,
-            vol.Optional(CONF_UPDATE_INTERVAL, default=get_default_value(CONF_UPDATE_INTERVAL, 15)): vol.All(
-                vol.Coerce(int), vol.Range(min=1)
-            ),
+
             vol.Required(
                 CONF_NOTIFICATION_THRESHOLD_INFO,
                 default=get_default_value(CONF_NOTIFICATION_THRESHOLD_INFO, NOTIFICATION_THRESHOLDS.get("info", 0)),
@@ -43,4 +43,8 @@ class SchemaHelper:
                 default=get_default_value(CONF_NOTIFICATION_THRESHOLD_CRITICAL, NOTIFICATION_THRESHOLDS.get("critical", 0)),
             ): vol.All(int, vol.Range(min=0, max=100)),
             vol.Required(CONF_SHOW_ARCHIVED, default=get_default_value(CONF_SHOW_ARCHIVED, False)): bool,
+            vol.Optional(KLIPPER_URL, msg=KLIPPER_URL_DESC, default=get_default_value(KLIPPER_URL, "")): str,
+            vol.Optional(CONF_UPDATE_INTERVAL, default=get_default_value(CONF_UPDATE_INTERVAL, 15)): vol.All(
+                vol.Coerce(int), vol.Range(min=1)
+            )
         })

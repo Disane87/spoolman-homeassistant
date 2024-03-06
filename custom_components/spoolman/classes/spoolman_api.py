@@ -45,7 +45,7 @@ class SpoolmanAPI:
             _LOGGER.debug("SpoolmanAPI: backup response %s", response)
             return response
 
-    async def get_spool(self, params):
+    async def get_spools(self, params):
         """Return a list of all spools."""
         _LOGGER.debug("SpoolmanAPI: get_spool")
         url = f"{self.base_url}/spool"

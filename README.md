@@ -19,6 +19,7 @@ This integration integrates Spoolman (https://github.com/Donkie/Spoolman/) into 
 - Configurable thresholds for info, warning and critical states. This is useful to trigger notifications in HomeAssistant within an automation (see the [automation example](#automation-example))
 - Enable/disabled archived spools
 - Archived spools are grouped into one `Archived` device
+- If a Klipper url is configured, the active spool will have an attribute `klipper_active_spool`
 
 > [!NOTE]
 > If one of the threshold is exceeded the integration fires an event. The event is named `spoolman_spool_threshold_exceeded`. Currently there are three thresholds defined: `info`, `warning` and `critical`.
@@ -67,29 +68,57 @@ type: custom:auto-entities
 filter:
   include:
     - integration: '*spoolman*'
+      sort:
+        method: attribute
+        attribute: location
+        reverse: false
+      attributes:
+        archived: false
       options:
         type: custom:mushroom-template-card
         vertical: false
         icon_color: '#{{ state_attr(entity, ''filament_color_hex'') }}'
         icon: mdi:printer-3d-nozzle
-        badge_icon: >-
-          {% if state_attr(entity, 'archived') == true %} mdi:archive {% endif
-          %}
-        badge_color: orange
-        primary: '{{ state_attr(entity, ''filament_name'') }}'
+        badge_icon: |
+          {% if state_attr(entity, 'archived') == true %}
+            mdi:archive
+          {% elif state_attr(entity, 'klipper_active_spool') == true %}
+            mdi:check-circle
+          {% endif %}
+        badge_color: |
+          {% if state_attr(entity, 'archived') == true %}
+            orange
+          {% elif state_attr(entity, 'klipper_active_spool') == true %}
+            green
+          {% else %}
+            default_color
+          {% endif %}
+        primary: |
+          {% set location = state_attr(entity, 'location') %} {% if location %}
+            {{ state_attr(entity, 'filament_name') }} ({{ location }})
+          {% else %}
+            {{ state_attr(entity, 'filament_name') }}
+          {% endif %}
         secondary: '{{ (state_attr(entity, ''remaining_weight'') | float)  | round(2) }} g'
+        tap_action:
+          action: more-info
 sort:
-  method: state
+  method: attribute
+  attribute: klipper_active_spool
   reverse: true
-  numeric: true
 card:
   type: grid
   columns: 2
   square: false
 card_param: cards
 
-
 ```
+This card does:
+- Filtering out all `archived` spools, if not filters all `archived` spools have an orange badge
+- Sort by `klipper_active_spool` (only when Klipper url is set in config, active spools is always the first one with green badge)
+- Sort by `location` from A-Z
+- Shows the `location` after the spool name
+- Click on an entity opens the `more_info` dialog
 
 ![image](./docs/auto-entities.png)
 
