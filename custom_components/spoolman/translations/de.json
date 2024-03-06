@@ -9,7 +9,9 @@
                     "show_archived": "Archivierte anzeigen",
                     "notification_threshold_info": "Schwellenwert Info",
                     "notification_threshold_warning": "Schwellenwert Warnung",
-                    "notification_threshold_critical": "Schwellenwert Kritisch"
+                    "notification_threshold_critical": "Schwellenwert Kritisch",
+                    "klipper_url": "Klipper URL",
+                    "klipper_url_desc": "Klipper URL"
                 }
             }
         },
@@ -30,7 +32,9 @@
                     "show_archived": "Archivierte anzeigen",
                     "notification_threshold_info": "Schwellenwert Info",
                     "notification_threshold_warning": "Schwellenwert Warnung",
-                    "notification_threshold_critical": "Schwellenwert Kritisch"
+                    "notification_threshold_critical": "Schwellenwert Kritisch",
+                    "klipper_url": "Klipper URL",
+                    "klipper_url_desc": "Klipper URL"
                 }
             }
         }

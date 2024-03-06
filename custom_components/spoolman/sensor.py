@@ -115,7 +115,6 @@ class Spool(CoordinatorEntity, SensorEntity):
             _LOGGER.warning("SpoolManCoordinator: Spool with ID '%s' has no 'used_weight' set or property is missing in filament. Can't calculate usage. Skipping.", self._spool['id'])
             return
 
-
         self._spool["used_percentage"] = (
             round(self._spool["used_weight"] / self._filament["weight"], 3) * 100
         )
