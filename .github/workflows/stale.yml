@@ -21,7 +21,10 @@ jobs:
     - uses: actions/stale@v8
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        stale-issue-message: 'Stale issue message'
+        stale-issue-message: 'This issue has been staled because there was no activity from you within 14 days. Please feel free to reopen this issue.'
         stale-pr-message: 'Stale pull request message'
-        stale-issue-label: 'no-issue-activity'
-        stale-pr-label: 'no-pr-activity'
+        stale-issue-label: 'Stale'
+        stale-pr-label: 'Stale'
+        only-labels: 'needs information'
+        days-before-stale: 14
+        exempt-assignees: "Disane87"
