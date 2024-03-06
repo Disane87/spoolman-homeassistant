@@ -1,3 +1,10 @@
+## [0.4.0](https://github.com/Disane87/spoolman-homeassistant/compare/v0.3.1...v0.4.0) (2024-03-06)
+
+
+### 🚀 Features
+
+* :sparkles: Added an attribute `klipper_active_spool` for spools which are active in Klipper (if Klipper url is provided in the config) ([0bd66f1](https://github.com/Disane87/spoolman-homeassistant/commit/0bd66f1673a6697c65e9ce03fd0c631258d81071)), closes [#86](https://github.com/Disane87/spoolman-homeassistant/issues/86)
+
 ## [0.4.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.3.1...v0.4.0-dev.1) (2024-03-06)
 
 
