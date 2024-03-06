@@ -1,3 +1,11 @@
+## [0.3.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.3.0...v0.3.1) (2024-03-06)
+
+
+### 🛠️ Fixes
+
+* Bugfix for broken config flow ([24b329e](https://github.com/Disane87/spoolman-homeassistant/commit/24b329e5ffa6d8077c8f7b70a85d7f7fbd7e68b7)), closes [#84](https://github.com/Disane87/spoolman-homeassistant/issues/84)
+* Proper stale bot config ([c47a1a4](https://github.com/Disane87/spoolman-homeassistant/commit/c47a1a4fc066b870899d97f362dd913ebc7b57e8))
+
 ## [0.3.0-dev.5](https://github.com/Disane87/spoolman-homeassistant/compare/v0.3.0-dev.4...v0.3.0-dev.5) (2024-03-06)
 
 
