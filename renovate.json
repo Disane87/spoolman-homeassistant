@@ -11,5 +11,14 @@
   {
   "labels": [
     "dependencies"
-  ]
+  ],
+  "minor": {
+    "automerge": true
+  },
+  "patch": {
+    "automerge": true
+  },
+  "pin": {
+    "automerge": true
+  }
 }
