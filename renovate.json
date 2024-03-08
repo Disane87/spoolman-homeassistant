@@ -7,6 +7,5 @@
   "automergeType": "pr",
   "baseBranches": [
     "dev"
-  ],
-  "prTargetBranch": "dev"
+  ]
 }
