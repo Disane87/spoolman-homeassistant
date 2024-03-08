@@ -7,5 +7,9 @@
   "automergeType": "pr",
   "baseBranches": [
     "dev"
+  ],
+  {
+  "labels": [
+    "dependencies"
   ]
 }
