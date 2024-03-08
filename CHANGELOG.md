@@ -1,3 +1,16 @@
+## [0.4.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.4.0...v0.4.1) (2024-03-08)
+
+
+### 🛠️ Fixes
+
+* Fix key access to possibly non-existent location ([7e3a016](https://github.com/Disane87/spoolman-homeassistant/commit/7e3a0166b2354c9ecf83cc1d3a3fc5d5a28dbb3b))
+* Fix key access to possibly non-existent location ([0f5f810](https://github.com/Disane87/spoolman-homeassistant/commit/0f5f810749a731773ef16ad5e3ab6aa07fa7c639))
+
+
+### 📔 Docs
+
+* Update README.md ([3b696dd](https://github.com/Disane87/spoolman-homeassistant/commit/3b696dd39d55a3a72121e7f29c5a6504acf1c130))
+
 ## [0.4.1-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.4.0...v0.4.1-dev.1) (2024-03-08)
 
 
