@@ -194,5 +194,15 @@ A spool has this structure (according to the [OpenAPI description](https://donki
     "archived": false
 }
 ```
+# Contributing
+If you're developer and want to contribute to the project, please feel free to do a PR!
+But there are some contraints I want to enforce by convention (currently I evaluate the possibility to enforce this by rules. If you have a good hint, please let me know 🎉):
+
+- Please merge your PR to the [dev](https://github.com/Disane87/spoolman-homeassistant/tree/dev) branch. PRs against `main` will be rejected.
+- Branch `main` only reflects the `latest` state of the integration
+- Branch `dev` reflects the `next` state of the integration
+- Please make use of [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/). This ensures the build pipeline works together with [semantic release](https://github.com/semantic-release/semantic-release) and your PRs will start a new release.
+- I would recommend using visual studio code (since there is everything working out of the box)
+
 
 # Cheers 🔥
