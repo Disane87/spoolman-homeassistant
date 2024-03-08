@@ -74,9 +74,10 @@ class Spool(CoordinatorEntity, SensorEntity):
             spool_name = f"{vendor_name} {self._filament['name']} {self._filament.get('material')}"
 
         location_name = (
-            "Unknown" if not self._spool.get("location") else self._spool["location"]
-        ) if spool_data["archived"] is False else "Archived"
-
+            self._spool.get("location", "Unknown")
+            if spool_data["archived"] is False
+            else "Archived"
+        )
 
         self._entry = config_entry
         self._attr_name = spool_name
@@ -144,7 +145,7 @@ class Spool(CoordinatorEntity, SensorEntity):
                     "SpoolManCoordinator.check_for_threshold: '%s' already handled for spool '%s' in '%s' with '%s'",
                     threshold_name,
                     self._attr_name,
-                    self._spool["location"],
+                    self._spool.get("location", "Unknown"),
                     used_percentage,
                 )
                 break
@@ -154,7 +155,7 @@ class Spool(CoordinatorEntity, SensorEntity):
                     "SpoolManCoordinator.check_for_threshold: '%s' reached for spool '%s' in '%s' with '%s'",
                     threshold_name,
                     self._attr_name,
-                    self._spool["location"],
+                    self._spool.get("location", "Unknown"),
                     used_percentage,
                 )
                 self.hass.bus.fire(
