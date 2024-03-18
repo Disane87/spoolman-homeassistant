@@ -26,7 +26,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow, BaseFlow):
         if user_input is not None:
             spoolman_info, spoolman_errors, spoolman_url = await self.get_spoolman_api_info(user_input.get(CONF_URL, ""))
 
-            if user_input.get(KLIPPER_URL, None) is not None:
+            klipper_url = user_input.get(KLIPPER_URL, None)
+            if klipper_url is not None and klipper_url != "":
                 klipper_info, klipper_errors, klipper_url = await self.get_klipper_api_info(user_input.get(KLIPPER_URL, None))
 
             if not spoolman_errors and not klipper_errors:
