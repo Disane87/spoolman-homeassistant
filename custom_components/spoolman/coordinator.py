@@ -56,8 +56,8 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 {"allow_archived": show_archived}
             )
 
-            klipper_url = config.get(KLIPPER_URL, None)
-            if klipper_url is not None:
+            klipper_url = config.get(KLIPPER_URL, "")
+            if klipper_url is not None and klipper_url != "":
                 klipper_active_spool: int = await KlipperAPI(klipper_url).get_active_spool_id()
                 for spool in spools:
                     if spool["id"] == klipper_active_spool:
