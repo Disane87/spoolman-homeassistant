@@ -1,3 +1,10 @@
+## [0.4.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.4.1...v0.4.2) (2024-03-18)
+
+
+### 🛠️ Fixes
+
+* :bug: Fixes a bug where klipper url wasn't checked correctly which leads to an exception ([441e4e5](https://github.com/Disane87/spoolman-homeassistant/commit/441e4e58ec25143fe7f0b0989d61c08b5168864f)), closes [#100](https://github.com/Disane87/spoolman-homeassistant/issues/100)
+
 ## [0.4.2-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.4.1...v0.4.2-dev.1) (2024-03-18)
 
 
