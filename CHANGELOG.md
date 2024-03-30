@@ -1,3 +1,10 @@
+## [0.4.2-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.4.2-dev.1...v0.4.2-dev.2) (2024-03-30)
+
+
+### 🛠️ Fixes
+
+* Fixes an issue when there is no active spool in klipper ([eda5f32](https://github.com/Disane87/spoolman-homeassistant/commit/eda5f329dd7708c2b2e997923acc7f966cd6504e)), closes [#105](https://github.com/Disane87/spoolman-homeassistant/issues/105)
+
 ## [0.4.2-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.4.1...v0.4.2-dev.1) (2024-03-18)
 
 
