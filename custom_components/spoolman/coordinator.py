@@ -58,12 +58,13 @@ class SpoolManCoordinator(DataUpdateCoordinator):
 
             klipper_url = config.get(KLIPPER_URL, "")
             if klipper_url is not None and klipper_url != "":
-                klipper_active_spool: int = await KlipperAPI(klipper_url).get_active_spool_id()
-                for spool in spools:
-                    if spool["id"] == klipper_active_spool:
-                        spool["klipper_active_spool"] = True
-                    else:
-                        spool["klipper_active_spool"] = False
+                klipper_active_spool: int | None = await KlipperAPI(klipper_url).get_active_spool_id()
+                if klipper_active_spool is not None:
+                    for spool in spools:
+                        if spool["id"] == klipper_active_spool:
+                            spool["klipper_active_spool"] = True
+                        else:
+                            spool["klipper_active_spool"] = False
 
             return spools
 
