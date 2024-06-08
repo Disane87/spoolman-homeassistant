@@ -1,61 +1,57 @@
-# Contribution guidelines
+# Contribution Guidelines
 
-Contributing to this project should be as easy and transparent as possible, whether it's:
+If you're a developer and want to contribute to the project, please feel free to create a Pull Request (PR)! However, there are some constraints that need to be enforced by convention (currently, I am evaluating the possibility of enforcing this by rules. If you have a good hint, please let me know 🎉):
 
-- Reporting a bug
-- Discussing the current state of the code
-- Submitting a fix
-- Proposing new features
+## Branching Strategy
 
-## Github is used for everything
+- **Please merge your PR to the `dev` branch.** PRs against `main` will be rejected.
+- The `main` branch only reflects the latest state of the integration.
+- The `dev` branch reflects the next state of the integration.
 
-Github is used to host code, to track issues and feature requests, as well as accept pull requests.
+## Commit Messages
 
-Pull requests are the best way to propose changes to the codebase.
+- **Please make use of conventional commits.** This ensures the build pipeline works together with semantic release, and your PRs will trigger a new release.
 
-1. Fork the repo and create your branch from `main`.
-2. If you've changed something, update the documentation.
-3. Make sure your code lints (using `scripts/lint`).
-4. Test you contribution.
-5. Issue that pull request!
+## Development Environment
 
-## Any contributions you make will be under the MIT Software License
+- I recommend using Visual Studio Code as the development environment, since everything works out of the box.
 
-In short, when you submit code changes, your submissions are understood to be under the same [MIT License](http://choosealicense.com/licenses/mit/) that covers the project. Feel free to contact the maintainers if that's a concern.
+## CI/CD Requirements
 
-## Report bugs using Github's [issues](../../issues)
+- Adhering to these guidelines is crucial because our CI/CD pipeline depends on this workflow. The `dev` branch is used for testing and validation, while `main` is reserved for stable releases.
 
-GitHub issues are used to track public bugs.
-Report a bug by [opening a new issue](../../issues/new/choose); it's that easy!
+## General Guidelines
 
-## Write bug reports with detail, background, and sample code
+1. **Code Quality:**
+   - Ensure your code is clean, well-documented, and follows the project’s coding standards.
+   - Write clear, concise, and descriptive comments where necessary.
+   - Refactor code where needed to maintain readability and simplicity.
 
-**Great Bug Reports** tend to have:
+2. **Testing:**
+   - Write unit tests for your code to ensure functionality.
+   - Run all existing tests to make sure your changes do not break any existing functionality.
+   - Ensure your code passes the CI tests before submitting a PR.
 
-- A quick summary and/or background
-- Steps to reproduce
-  - Be specific!
-  - Give sample code if you can.
-- What you expected would happen
-- What actually happens
-- Notes (possibly including why you think this might be happening, or stuff you tried that didn't work)
+3. **Documentation:**
+   - Update the documentation to reflect any changes in the code.
+   - Ensure new features or changes are documented with examples and usage instructions.
 
-People *love* thorough bug reports. I'm not even kidding.
+4. **Issue Tracking:**
+   - Reference any relevant issues in your commit messages and PR descriptions.
+   - Use keywords like "fixes" or "closes" followed by the issue number to link PRs to issues.
 
-## Use a Consistent Coding Style
+5. **Code Reviews:**
+   - Be responsive to feedback from code reviewers and make necessary changes promptly.
+   - Review others' PRs if you have the expertise and provide constructive feedback.
 
-Use [black](https://github.com/ambv/black) to make sure the code follows the style.
+6. **Style Guidelines:**
+   - Follow the established coding style of the project. Consistency is key.
+   - Use linting tools provided in the project to maintain code style.
 
-## Test your code modification
+7. **Communication:**
+   - Be respectful and considerate in all communications.
+   - Discuss any significant changes or new features with the project maintainers before starting work to ensure alignment with project goals.
 
-This custom component is based on [integration_blueprint template](https://github.com/ludeeus/integration_blueprint).
+## Thank You!
 
-It comes with development environment in a container, easy to launch
-if you use Visual Studio Code. With this container you will have a stand alone
-Home Assistant instance running and already configured with the included
-[`configuration.yaml`](./config/configuration.yaml)
-file.
-
-## License
-
-By contributing, you agree that your contributions will be licensed under its MIT License.
+Thank you for contributing and helping to maintain the quality and consistency of the project!
