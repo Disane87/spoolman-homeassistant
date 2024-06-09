@@ -1,13 +1,12 @@
 """Spoolman home assistant sensor."""
+
 import logging
 import os
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.components.sensor.const import SensorStateClass
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import (
-    UnitOfMass,
-)
+from homeassistant.const import UnitOfMass
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -42,19 +41,58 @@ async def async_setup_entry(
 
     if coordinator.data:
         spool_entities = []
+        image_dir = hass.config.path(PUBLIC_IMAGE_PATH)
         for idx, spool_data in enumerate(coordinator.data):
-            if spool_data['filament'].get('name') is None or spool_data['filament'].get('material') is None:
-                _LOGGER.warning("SpoolManCoordinator: Spool with ID '%s' has no name or material set. Can't create sensor. Skipping.", spool_data['filament'].get('id'))
+            if (
+                spool_data["filament"].get("name") is None
+                or spool_data["filament"].get("material") is None
+            ):
+                _LOGGER.warning(
+                    "SpoolManCoordinator: Spool with ID '%s' has no name or material set. Can't create sensor. Skipping.",
+                    spool_data["filament"].get("id"),
+                )
                 return
-            spool_device = Spool(hass, coordinator, spool_data, idx, config_entry)
+            image_url = await hass.async_add_executor_job(
+                _generate_entity_picture, spool_data, image_dir
+            )
+            spool_device = Spool(
+                hass, coordinator, spool_data, idx, config_entry, image_url
+            )
             spool_entities.append(spool_device)
         async_add_entities(spool_entities)
+
+
+def _generate_entity_picture(spool_data, image_dir):
+    """Generate an entity picture with the specified color and save it to the www directory."""
+    filament = spool_data["filament"]
+
+    if filament.get("color_hex") is None:
+        _LOGGER.warning(
+            "SpoolManCoordinator: Spool with ID '%s' has no color_hex set. Can't create entity picture.",
+            spool_data["id"],
+        )
+        return None
+
+    color_hex = filament.get("color_hex", "FFFFFF")
+    image = Image.new("RGB", (100, 100), f"#{color_hex}")
+    image_name = f"spool_{spool_data['id']}.png"
+
+    # Check if the directory exists, and create it if it doesn't
+    os.makedirs(image_dir, exist_ok=True)
+
+    image_path = os.path.join(image_dir, image_name)
+    image.save(image_path)
+
+    # Get the URL for the saved image
+    return f"{LOCAL_IMAGE_PATH}/{image_name}"
 
 
 class Spool(CoordinatorEntity, SensorEntity):
     """Representation of a Spoolman Sensor."""
 
-    def __init__(self, hass, coordinator, spool_data, idx, config_entry) -> None:
+    def __init__(
+        self, hass, coordinator, spool_data, idx, config_entry, image_url
+    ) -> None:
         """Spoolman home assistant spool sensor init."""
         super().__init__(coordinator)
 
@@ -65,13 +103,15 @@ class Spool(CoordinatorEntity, SensorEntity):
         self._spool = spool_data
         self.handled_threshold_events = []
         self._filament = self._spool["filament"]
+        self._attr_entity_picture = image_url
 
-        vendor_name = self._filament.get('vendor', {}).get('name')
+        vendor_name = self._filament.get("vendor", {}).get("name")
 
         if vendor_name is None:
             spool_name = f"{self._filament['name']} {self._filament.get('material')}"
         else:
-            spool_name = f"{vendor_name} {self._filament['name']} {self._filament.get('material')}"
+            spool_name = f"{vendor_name} {self._filament['name']} {
+                self._filament.get('material')}"
 
         location_name = (
             self._spool.get("location", "Unknown")
@@ -95,7 +135,8 @@ class Spool(CoordinatorEntity, SensorEntity):
             model="Spoolman",
             configuration_url=conf_url,
             suggested_area=location_name,
-            sw_version=f"{spoolman_info.get('version', 'unknown')} ({spoolman_info.get('git_commit', 'unknown')})",
+            sw_version=f"{spoolman_info.get('version', 'unknown')} ({
+                spoolman_info.get('git_commit', 'unknown')})",
         )
         self.idx = idx
 
@@ -109,11 +150,17 @@ class Spool(CoordinatorEntity, SensorEntity):
         _LOGGER.debug("SpoolManCoordinator: Filament %s", self._filament)
 
         if self._filament.get("weight") is None:
-            _LOGGER.warning("SpoolManCoordinator: Spool with ID '%s' has no 'weight' set or property is missing in filament. Can't calculate usage. Skipping.", self._spool['id'])
+            _LOGGER.warning(
+                "SpoolManCoordinator: Spool with ID '%s' has no 'weight' set or property is missing in filament. Can't calculate usage. Skipping.",
+                self._spool["id"],
+            )
             return
 
         if self._spool.get("used_weight") is None:
-            _LOGGER.warning("SpoolManCoordinator: Spool with ID '%s' has no 'used_weight' set or property is missing in filament. Can't calculate usage. Skipping.", self._spool['id'])
+            _LOGGER.warning(
+                "SpoolManCoordinator: Spool with ID '%s' has no 'used_weight' set or property is missing in filament. Can't calculate usage. Skipping.",
+                self._spool["id"],
+            )
             return
 
         self._spool["used_percentage"] = (
@@ -194,41 +241,7 @@ class Spool(CoordinatorEntity, SensorEntity):
     def state(self):
         """Return the state of the sensor."""
 
-        return round(self._spool.get('remaining_weight',0), 3)
-
-    @property
-    def entity_picture(self):
-        """Return the entity picture."""
-        filament = self._spool["filament"]
-
-        if filament.get("color_hex") is None:
-            _LOGGER.warning("SpoolManCoordinator: Spool with ID '%s' has no color_hex set. Can't create entity picture.", self._spool['id'])
-            # color_hex = 'FFFFFF'
-        else:
-            color_hex = filament.get("color_hex", 'FFFFFF')
-            return self.generate_entity_picture(color_hex)
-
-
-
-    def generate_entity_picture(self, color_hex):
-        """Generate an entity picture with the specified color and save it to the www directory."""
-        image = Image.new("RGB", (100, 100), f"#{color_hex}")
-        image_name = f"spool_{self._spool['id']}.png"
-
-        # Define the directory path
-        image_dir = self.hass.config.path(PUBLIC_IMAGE_PATH)
-
-        # Check if the directory exists, and create it if it doesn't
-        if not os.path.exists(image_dir):
-            os.makedirs(image_dir)
-
-        image_path = os.path.join(image_dir, image_name)
-        image.save(image_path)
-
-        # Get the URL for the saved image
-        image_url = f"{LOCAL_IMAGE_PATH}/{image_name}"
-
-        return image_url
+        return round(self._spool.get("remaining_weight", 0), 3)
 
     async def async_update(self):
         """Fetch the latest data from the coordinator."""
