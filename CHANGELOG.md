@@ -1,3 +1,13 @@
+## [0.4.4-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.4.3...v0.4.4-dev.1) (2024-06-09)
+
+### 🛠️ Fixes
+
+* Fix blocking of entity picture generation ([6f54177](https://github.com/Disane87/spoolman-homeassistant/commit/6f541777a3799d3b694753ec5cc3f63e3bac850b)), closes [#121](https://github.com/Disane87/spoolman-homeassistant/issues/121)
+
+### 📔 Docs
+
+* changed CONTRIBUTING.md ([144c4e2](https://github.com/Disane87/spoolman-homeassistant/commit/144c4e2d9f8916a8aa2bafbfffe898b048aa2ea0))
+
 ## [0.4.3](https://github.com/Disane87/spoolman-homeassistant/compare/v0.4.2...v0.4.3) (2024-04-01)
 
 
