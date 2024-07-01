@@ -1,3 +1,9 @@
+## [0.5.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.5.0-dev.1...v0.5.0-dev.2) (2024-07-01)
+
+### 🛠️ Fixes
+
+* removed periods from descriptions and names ([6b821b6](https://github.com/Disane87/spoolman-homeassistant/commit/6b821b6f9b06fc53502a20b4cca2b9c079775cc7)), closes [#119](https://github.com/Disane87/spoolman-homeassistant/issues/119)
+
 ## [0.5.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.4.4-dev.1...v0.5.0-dev.1) (2024-07-01)
 
 ### 🛠️ Fixes
