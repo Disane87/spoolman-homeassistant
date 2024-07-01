@@ -1,47 +1,62 @@
 patch_spool:
+  name: "Patch Spool"
   description: "A custom service to patch spool data."
   fields:
     id:
+      name: "ID"
       description: "The ID of the spool."
       example: "spool_123"
       required: true
     first_used:
+      name: "First Used"
       description: "The first time the spool was used."
       example: "2019-08-24T14:15:22Z"
     last_used:
+      name: "Last Used"
       description: "The last time the spool was used."
       example: "2019-08-24T14:15:22Z"
     filament_id:
+      name: "Filament ID"
       description: "The ID of the filament used in the spool."
       example: 0
     price:
+      name: "Price"
       description: "The price of the spool."
       example: 20.0
     initial_weight:
+      name: "Initial Weight"
       description: "The initial weight of the spool including filament."
       example: 200.0
     spool_weight:
+      name: "Spool Weight"
       description: "The weight of the empty spool."
       example: 200.0
     remaining_weight:
+      name: "Remaining Weight"
       description: "The remaining weight of the filament on the spool."
       example: 800.0
     used_weight:
+      name: "Used Weight"
       description: "The weight of the filament used from the spool."
       example: 200.0
     location:
+      name: "Location"
       description: "The storage location of the spool."
       example: "Shelf A"
     lot_nr:
+      name: "Lot Number"
       description: "The lot number of the filament."
       example: "52342"
     comment:
+      name: "Comment"
       description: "Any comments about the spool."
       example: ""
     archived:
+      name: "Archived"
       description: "Whether the spool is archived."
       example: false
     extra:
+      name: "Extra"
       description: "Any extra properties for the spool."
       example:
         property1: "string"
