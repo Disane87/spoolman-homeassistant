@@ -1,3 +1,13 @@
+## [0.5.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.4.4-dev.1...v0.5.0-dev.1) (2024-07-01)
+
+### 🛠️ Fixes
+
+* added names for service.yaml ([2f9801e](https://github.com/Disane87/spoolman-homeassistant/commit/2f9801e34b8ccda20c469bd45f7baaf2929da567))
+
+### 🚀 Features
+
+* service integration to change a spool in Spoolman via API ([881a76b](https://github.com/Disane87/spoolman-homeassistant/commit/881a76bf5e149a3917b3cfd1041ca01a2d1fafd9)), closes [#119](https://github.com/Disane87/spoolman-homeassistant/issues/119)
+
 ## [0.4.4-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.4.3...v0.4.4-dev.1) (2024-06-09)
 
 ### 🛠️ Fixes
