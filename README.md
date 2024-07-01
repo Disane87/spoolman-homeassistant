@@ -20,6 +20,7 @@ This integration integrates Spoolman (https://github.com/Donkie/Spoolman/) into 
 - Enable/disabled archived spools
 - Archived spools are grouped into one `Archived` device
 - If a Klipper url is configured, the active spool will have an attribute `klipper_active_spool`
+- Creation of a service `spoolman.patch_spool` to enable you to change values of a spool from automations
 
 > [!NOTE]
 > If one of the threshold is exceeded the integration fires an event. The event is named `spoolman_spool_threshold_exceeded`. Currently there are three thresholds defined: `info`, `warning` and `critical`.
@@ -194,6 +195,30 @@ A spool has this structure (according to the [OpenAPI description](https://donki
     "archived": false
 }
 ```
+
+# Home Assistant services
+This integration creates services to be used in automations:
+
+## `spoolman.patch_spool`
+This service is used to change values and properties if a spool. The `data` must match the data for the [Spoolman API](https://donkie.github.io/Spoolman/#tag/spool/operation/Update_spool_spool__spool_id__patch)
+
+> [!IMPORTANT]
+> You can't update `remaining_weight` and `used_weight` in one update. You can only set one of them. Spoolmann calculates the missing field by itself.
+
+```yaml
+service: spoolman.patch_spool
+data:
+  id: 45
+  first_used: "2019-08-24T14:15:22.000Z"
+  last_used: "2019-08-24T14:15:22.000Z"
+  price: 20
+  initial_weight: 200
+  spool_weight: 200
+  location: Shelf B
+  remaining_weight: 200
+  lot_nr: 52342
+```
+
 # Contributing
 If you're developer and want to contribute to the project, please feel free to do a PR!
 But there are some contraints I want to enforce by convention (currently I evaluate the possibility to enforce this by rules. If you have a good hint, please let me know 🎉):

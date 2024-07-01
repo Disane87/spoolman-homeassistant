@@ -110,8 +110,7 @@ class Spool(CoordinatorEntity, SensorEntity):
         if vendor_name is None:
             spool_name = f"{self._filament['name']} {self._filament.get('material')}"
         else:
-            spool_name = f"{vendor_name} {self._filament['name']} {
-                self._filament.get('material')}"
+            spool_name = f"{vendor_name} {self._filament['name']} { self._filament.get('material')}"
 
         location_name = (
             self._spool.get("location", "Unknown")
@@ -135,8 +134,7 @@ class Spool(CoordinatorEntity, SensorEntity):
             model="Spoolman",
             configuration_url=conf_url,
             suggested_area=location_name,
-            sw_version=f"{spoolman_info.get('version', 'unknown')} ({
-                spoolman_info.get('git_commit', 'unknown')})",
+            sw_version=f"{spoolman_info.get('version', 'unknown')} ({ spoolman_info.get('git_commit', 'unknown')})",
         )
         self.idx = idx
 

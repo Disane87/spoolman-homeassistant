@@ -1,25 +1,18 @@
 """Spoolman home assistant integration."""
 import logging
 
-import homeassistant.helpers.config_validation as cv
-import voluptuous as vol
-from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import CONF_NAME, Platform
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 
-from .const import CONF_URL, DEFAULT_NAME, DOMAIN, SPOOLMAN_API_WRAPPER
+from custom_components.spoolman.schema_helper import SchemaHelper
+
+from .const import DOMAIN, SPOOLMAN_API_WRAPPER, SPOOLMAN_PATCH_SPOOL_SERVICENAME
 from .coordinator import SpoolManCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = [Platform.SENSOR]
-
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
-    {
-        vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,  # type: ignore
-        vol.Required(CONF_URL): cv.string,
-    }
-)
 
 
 async def async_setup_platform(
@@ -42,6 +35,21 @@ async def async_setup_entry(hass: HomeAssistant, entry):
     coordinator = SpoolManCoordinator(hass, entry)
     await coordinator.async_refresh()
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    async def handle_spoolman_patch_spool(call):
+        spool_id = call.data.get('id')
+        data = {key: call.data[key] for key in call.data if key != 'id'}
+        _LOGGER.info(f"Patch spool called with id: {spool_id} and data: {data}")
+
+        try:
+            await coordinator.spoolman_api.patch_spool(spool_id, data)
+        except Exception as e:
+            _LOGGER.error(f"Failed to patch spool: {e}")
+            raise HomeAssistantError(f"Failed to patch spool: {e}")
+
+
+    hass.services.async_register(DOMAIN, SPOOLMAN_PATCH_SPOOL_SERVICENAME, handle_spoolman_patch_spool, schema=SchemaHelper.get_spoolman_patch_spool_schema())
+
     return True
 
 
