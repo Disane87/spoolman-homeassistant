@@ -1,6 +1,7 @@
 """Schema helper."""
 from typing import Any
 import voluptuous as vol
+import homeassistant.helpers.config_validation as cv
 from .const import (
     CONF_NOTIFICATION_THRESHOLD_CRITICAL,
     CONF_NOTIFICATION_THRESHOLD_INFO,
@@ -16,6 +17,26 @@ from .const import (
 
 class SchemaHelper:
     """Schema helper contains the config and options schema."""
+
+    @staticmethod
+    def get_spoolman_patch_spool_schema():
+        """Get the schema for the spoolman_patch_spool service."""
+        return vol.Schema({
+            vol.Required('id'): cv.string,
+            vol.Optional('first_used'): cv.string,
+            vol.Optional('last_used'): cv.string,
+            vol.Optional('filament_id'): cv.positive_int,
+            vol.Optional('price'): vol.Coerce(float),
+            vol.Optional('initial_weight'): vol.Coerce(float),
+            vol.Optional('spool_weight'): vol.Coerce(float),
+            vol.Optional('remaining_weight'): vol.Coerce(float),
+            vol.Optional('used_weight'): vol.Coerce(float),
+            vol.Optional('location'): cv.string,
+            vol.Optional('lot_nr'): cv.string,
+            vol.Optional('comment'): cv.string,
+            vol.Optional('archived'): cv.boolean,
+            vol.Optional('extra'): vol.Schema({}, extra=vol.ALLOW_EXTRA),
+        })
 
     @staticmethod
     def get_config_schema(get_values=False, config_data=None):

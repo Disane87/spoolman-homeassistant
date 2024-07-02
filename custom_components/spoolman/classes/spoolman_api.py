@@ -3,7 +3,6 @@ import aiohttp
 import logging
 _LOGGER = logging.getLogger(__name__)
 
-
 class SpoolmanAPI:
     """Class for interacting with the Spoolman API."""
 
@@ -40,22 +39,20 @@ class SpoolmanAPI:
         url = f"{self.base_url}/backup"
         async with aiohttp.ClientSession() as session, session.post(url) as response:
             response.raise_for_status()
-
             response = await response.json()
             _LOGGER.debug("SpoolmanAPI: backup response %s", response)
             return response
 
     async def get_spools(self, params):
         """Return a list of all spools."""
-        _LOGGER.debug("SpoolmanAPI: get_spool")
+        _LOGGER.debug("SpoolmanAPI: get_spools")
         url = f"{self.base_url}/spool"
         if len(params) > 0:
             url = f"{url}?{self.string_from_dictionary(params)}"
         async with aiohttp.ClientSession() as session, session.get(url) as response:
             response.raise_for_status()
-
             response = await response.json()
-            _LOGGER.debug("SpoolmanAPI: get_spool response %s", response)
+            _LOGGER.debug("SpoolmanAPI: get_spools response %s", response)
             return response
 
     async def get_spool_by_id(self, spool_id):
@@ -69,7 +66,7 @@ class SpoolmanAPI:
             return response
 
     def string_from_dictionary(self, params_dict):
-        """Initialize an empty string to hold the result."""
+        """Generate a query string from a dictionary of parameters."""
         _LOGGER.debug("SpoolmanAPI: string_from_dictionary")
         result_string = ""
 
@@ -87,3 +84,31 @@ class SpoolmanAPI:
 
         # Return the result string
         return result_string
+
+    async def patch_spool(self, spool_id, data):
+        """Update the spool with the specified ID."""
+        _LOGGER.info(f"SpoolmanAPI: patch_spool {spool_id} with data {data}")
+
+        if "remaining_weight" in data and "used_weight" in data:
+            if data["remaining_weight"] > 0 and data["used_weight"] > 0:
+                raise ValueError("remaining_weight and used_weight cannot be used together. Please use only one of them.")
+
+        url = f"{self.base_url}/spool/{spool_id}"
+        try:
+            async with aiohttp.ClientSession() as session, session.patch(url, json=data) as response:
+                response.raise_for_status()
+                response_data = await response.json()
+                _LOGGER.debug("SpoolmanAPI: patch_spool response %s", response_data)
+                return response_data
+        except aiohttp.ClientResponseError as e:
+            _LOGGER.error(f"HTTP error occurred: {e.status} {e.message}")
+            raise
+        except aiohttp.ClientConnectionError as e:
+            _LOGGER.error(f"Connection error occurred: {e}")
+            raise
+        except aiohttp.ClientError as e:
+            _LOGGER.error(f"Client error occurred: {e}")
+            raise
+        except Exception as e:
+            _LOGGER.error(f"An unexpected error occurred: {e}")
+            raise

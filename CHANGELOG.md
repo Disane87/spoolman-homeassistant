@@ -1,3 +1,29 @@
+## [0.5.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.5.0-dev.1...v0.5.0-dev.2) (2024-07-01)
+
+### 🛠️ Fixes
+
+* removed periods from descriptions and names ([6b821b6](https://github.com/Disane87/spoolman-homeassistant/commit/6b821b6f9b06fc53502a20b4cca2b9c079775cc7)), closes [#119](https://github.com/Disane87/spoolman-homeassistant/issues/119)
+
+## [0.5.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.4.4-dev.1...v0.5.0-dev.1) (2024-07-01)
+
+### 🛠️ Fixes
+
+* added names for service.yaml ([2f9801e](https://github.com/Disane87/spoolman-homeassistant/commit/2f9801e34b8ccda20c469bd45f7baaf2929da567))
+
+### 🚀 Features
+
+* service integration to change a spool in Spoolman via API ([881a76b](https://github.com/Disane87/spoolman-homeassistant/commit/881a76bf5e149a3917b3cfd1041ca01a2d1fafd9)), closes [#119](https://github.com/Disane87/spoolman-homeassistant/issues/119)
+
+## [0.4.4-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.4.3...v0.4.4-dev.1) (2024-06-09)
+
+### 🛠️ Fixes
+
+* Fix blocking of entity picture generation ([6f54177](https://github.com/Disane87/spoolman-homeassistant/commit/6f541777a3799d3b694753ec5cc3f63e3bac850b)), closes [#121](https://github.com/Disane87/spoolman-homeassistant/issues/121)
+
+### 📔 Docs
+
+* changed CONTRIBUTING.md ([144c4e2](https://github.com/Disane87/spoolman-homeassistant/commit/144c4e2d9f8916a8aa2bafbfffe898b048aa2ea0))
+
 ## [0.4.3](https://github.com/Disane87/spoolman-homeassistant/compare/v0.4.2...v0.4.3) (2024-04-01)
 
 

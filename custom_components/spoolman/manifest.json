@@ -2,7 +2,7 @@
   "domain": "spoolman",
   "name": "Spoolman",
   "codeowners": [
-    "@mfranke87"
+    "@disane87"
   ],
   "config_flow": true,
   "dependencies": [],
