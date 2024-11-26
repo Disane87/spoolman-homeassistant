@@ -5,7 +5,7 @@ patch_spool:
     id:
       name: "ID"
       description: "The ID of the spool"
-      example: "spool_123"
+      example: 123
       required: true
     first_used:
       name: "First Used"
