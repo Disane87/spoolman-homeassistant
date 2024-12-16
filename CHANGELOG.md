@@ -1,3 +1,9 @@
+## [0.7.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.6.0...v0.7.0-dev.1) (2024-12-16)
+
+### 🚀 Features
+
+* added multicolor images for multicolor filaments ([bbd7025](https://github.com/Disane87/spoolman-homeassistant/commit/bbd7025a4f09784d741d0d94cf5604bf911df3d2)), closes [#150](https://github.com/Disane87/spoolman-homeassistant/issues/150)
+
 ## [0.6.0](https://github.com/Disane87/spoolman-homeassistant/compare/v0.5.0...v0.6.0) (2024-12-16)
 
 ### 🚀 Features
