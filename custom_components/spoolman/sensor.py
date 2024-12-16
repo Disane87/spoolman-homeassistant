@@ -98,13 +98,12 @@ def _generate_entity_picture(spool_data, image_dir):
                     (i * step, 0),
                     ((i + 1) * step - 1, image_size[1])
                 ], fill=f"#{color}")
-        else:
-            # Alternate style: radial (circular gradient)
+        elif multi_color_direction == "longitudinal":
+            step = image_size[1] // len(colors)
             for i, color in enumerate(colors):
-                radius = image_size[0] // (2 * len(colors)) * (i + 1)
-                draw.ellipse([
-                    (image_size[0] // 2 - radius, image_size[1] // 2 - radius),
-                    (image_size[0] // 2 + radius, image_size[1] // 2 + radius)
+                draw.rectangle([
+                    (0, i * step),
+                    (image_size[0], (i + 1) * step - 1)
                 ], fill=f"#{color}")
     else:
         # Single color fallback
