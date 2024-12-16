@@ -1,3 +1,13 @@
+## [0.6.0](https://github.com/Disane87/spoolman-homeassistant/compare/v0.5.0...v0.6.0) (2024-12-16)
+
+### 🚀 Features
+
+* add `use_spool_filament` service ([6602e4a](https://github.com/Disane87/spoolman-homeassistant/commit/6602e4a046a723b415c05342c391dbca16491542))
+
+### 📔 Docs
+
+* update example spool ID ([70e6ed8](https://github.com/Disane87/spoolman-homeassistant/commit/70e6ed8e2f7094f130bb645e59bef241a4496e98))
+
 ## [0.5.0](https://github.com/Disane87/spoolman-homeassistant/compare/v0.4.3...v0.5.0) (2024-07-02)
 
 ### 🛠️ Fixes

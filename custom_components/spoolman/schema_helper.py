@@ -39,6 +39,15 @@ class SchemaHelper:
         })
 
     @staticmethod
+    def get_spoolman_use_spool_filament_schema():
+        """Get the schema for the spoolman_use_spool_filament service."""
+        return vol.Schema({
+            vol.Required('id'): cv.string,
+            vol.Optional('use_length'): vol.Coerce(float),
+            vol.Optional('use_weight'): vol.Coerce(float),
+        })
+
+    @staticmethod
     def get_config_schema(get_values=False, config_data=None):
         """Get the form for config and options flows."""
         # Definiere eine Hilfsfunktion, um Standardwerte zu ermitteln

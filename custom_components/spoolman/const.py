@@ -23,3 +23,4 @@ KLIPPER_URL = "klipper_url"
 KLIPPER_URL_DESC = "klipper_url_desc"
 
 SPOOLMAN_PATCH_SPOOL_SERVICENAME = "patch_spool"
+SPOOLMAN_USE_SPOOL_FILAMENT_SERVICENAME = "use_spool_filament"

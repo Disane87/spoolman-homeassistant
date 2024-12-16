@@ -7,7 +7,8 @@ from homeassistant.exceptions import HomeAssistantError
 
 from custom_components.spoolman.schema_helper import SchemaHelper
 
-from .const import DOMAIN, SPOOLMAN_API_WRAPPER, SPOOLMAN_PATCH_SPOOL_SERVICENAME
+from .const import (DOMAIN, SPOOLMAN_API_WRAPPER, SPOOLMAN_PATCH_SPOOL_SERVICENAME,
+    SPOOLMAN_USE_SPOOL_FILAMENT_SERVICENAME)
 from .coordinator import SpoolManCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -47,8 +48,20 @@ async def async_setup_entry(hass: HomeAssistant, entry):
             _LOGGER.error(f"Failed to patch spool: {e}")
             raise HomeAssistantError(f"Failed to patch spool: {e}")
 
+    async def handle_spoolman_use_spool_filament(call):
+        spool_id = call.data.get('id')
+        data = {key: call.data[key] for key in call.data if key != 'id'}
+        _LOGGER.info(f"Use spool filament called with id: {spool_id} and data: {data}")
+
+        try:
+            await coordinator.spoolman_api.use_spool_filament(spool_id, data)
+        except Exception as e:
+            _LOGGER.error(f"Failed to use filament: {e}")
+            raise HomeAssistantError(f"Failed to use filament: {e}")
+
 
     hass.services.async_register(DOMAIN, SPOOLMAN_PATCH_SPOOL_SERVICENAME, handle_spoolman_patch_spool, schema=SchemaHelper.get_spoolman_patch_spool_schema())
+    hass.services.async_register(DOMAIN, SPOOLMAN_USE_SPOOL_FILAMENT_SERVICENAME, handle_spoolman_use_spool_filament, schema=SchemaHelper.get_spoolman_use_spool_filament_schema())
 
     return True
 
