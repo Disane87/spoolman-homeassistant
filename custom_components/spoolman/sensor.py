@@ -11,10 +11,11 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from PIL import Image
+from PIL import Image, ImageDraw
 
 from .const import (
     CONF_URL,
+    DEFAULT_SPOOL_COLOR_HEX,
     DOMAIN,
     EVENT_THRESHOLD_EXCEEDED,
     LOCAL_IMAGE_PATH,
@@ -63,27 +64,59 @@ async def async_setup_entry(
 
 
 def _generate_entity_picture(spool_data, image_dir):
-    """Generate an entity picture with the specified color and save it to the www directory."""
-    filament = spool_data["filament"]
+    """Generate an entity picture with the specified color(s) and save it to the www directory."""
+    filament = spool_data.get("filament", {})
 
-    if filament.get("color_hex") is None:
+    # Retrieve color(s)
+    multi_color_hexes = filament.get("multi_color_hexes", "").split(",")
+    color_hex = filament.get("color_hex", DEFAULT_SPOOL_COLOR_HEX)
+    multi_color_direction = filament.get("multi_color_direction", "coaxial")
+
+    # Determine colors: prioritize multi_color_hexes if available
+    if multi_color_hexes and any(c.strip() for c in multi_color_hexes):
+        colors = [c.strip() for c in multi_color_hexes if len(c.strip()) == 6]
+    elif color_hex:
+        colors = [color_hex]
+    else:
         _LOGGER.warning(
-            "SpoolManCoordinator: Spool with ID '%s' has no color_hex set. Can't create entity picture.",
-            spool_data["id"],
+            "SpoolManCoordinator: Spool with ID '%s' has no valid color information.",
+            spool_data.get("id", "unknown"),
         )
         return None
 
-    color_hex = filament.get("color_hex", "FFFFFF")
-    image = Image.new("RGB", (100, 100), f"#{color_hex}")
-    image_name = f"spool_{spool_data['id']}.png"
+    # Create image
+    image_size = (100, 100)
+    image = Image.new("RGB", image_size, int(DEFAULT_SPOOL_COLOR_HEX, 16))  # Use integer for default white color
+    draw = ImageDraw.Draw(image)
 
-    # Check if the directory exists, and create it if it doesn't
+    # Draw colors
+    if len(colors) > 1:
+        if multi_color_direction == "coaxial":
+            step = image_size[0] // len(colors)
+            for i, color in enumerate(colors):
+                draw.rectangle([
+                    (i * step, 0),
+                    ((i + 1) * step - 1, image_size[1])
+                ], fill=f"#{color}")
+        else:
+            # Alternate style: radial (circular gradient)
+            for i, color in enumerate(colors):
+                radius = image_size[0] // (2 * len(colors)) * (i + 1)
+                draw.ellipse([
+                    (image_size[0] // 2 - radius, image_size[1] // 2 - radius),
+                    (image_size[0] // 2 + radius, image_size[1] // 2 + radius)
+                ], fill=f"#{color}")
+    else:
+        # Single color fallback
+        draw.rectangle([(0, 0), image_size], fill=f"#{colors[0]}")
+
+    # Save the image
+    image_name = f"spool_{spool_data.get('id', 'unknown')}.png"
     os.makedirs(image_dir, exist_ok=True)
-
     image_path = os.path.join(image_dir, image_name)
     image.save(image_path)
 
-    # Get the URL for the saved image
+    # Return the URL for the saved image
     return f"{LOCAL_IMAGE_PATH}/{image_name}"
 
 

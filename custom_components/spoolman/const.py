@@ -13,6 +13,7 @@ CONF_NOTIFICATION_THRESHOLD_CRITICAL = "notification_threshold_critical"
 
 PUBLIC_IMAGE_PATH = "www/spoolman_images"
 LOCAL_IMAGE_PATH = "/local/spoolman_images"
+DEFAULT_SPOOL_COLOR_HEX = "FFFFFF"
 
 EVENT_THRESHOLD_EXCEEDED = "spoolman_spool_threshold_exceeded"
 
