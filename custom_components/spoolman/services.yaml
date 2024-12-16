@@ -61,3 +61,21 @@ patch_spool:
       example:
         property1: "string"
         property2: "string"
+
+use_spool_filament:
+  name: "Use Spool Filament"
+  description: "Use a weight (or length) of filament for a spool."
+  fields:
+    id:
+      name: "ID"
+      description: "The ID of the spool."
+      example: 123
+      required: true
+    use_weight:
+      name: "Used Weight"
+      description: "The weight of the filament to use from the spool (in g)."
+      example: 10
+    use_length:
+      name: "Used Length"
+      description: "The length of the filament to use from the spool (in mm)."
+      example: 100

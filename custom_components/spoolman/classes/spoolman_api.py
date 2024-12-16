@@ -112,3 +112,31 @@ class SpoolmanAPI:
         except Exception as e:
             _LOGGER.error(f"An unexpected error occurred: {e}")
             raise
+
+    async def use_spool_filament(self, spool_id, data):
+        """Update the spool filament usage with the specified ID."""
+        _LOGGER.info(f"SpoolmanAPI: patch_spool {spool_id} with data {data}")
+
+        if "use_length" in data and "use_weight" in data:
+            if data["use_length"] > 0 and data["use_weight"] > 0:
+                raise ValueError("use_length and use_weight cannot be used together. Please use only one of them.")
+
+        url = f"{self.base_url}/spool/{spool_id}/use"
+        try:
+            async with aiohttp.ClientSession() as session, session.put(url, json=data) as response:
+                response.raise_for_status()
+                response_data = await response.json()
+                _LOGGER.debug("SpoolmanAPI: use_spool_filament response %s", response_data)
+                return response_data
+        except aiohttp.ClientResponseError as e:
+            _LOGGER.error(f"HTTP error occurred: {e.status} {e.message}")
+            raise
+        except aiohttp.ClientConnectionError as e:
+            _LOGGER.error(f"Connection error occurred: {e}")
+            raise
+        except aiohttp.ClientError as e:
+            _LOGGER.error(f"Client error occurred: {e}")
+            raise
+        except Exception as e:
+            _LOGGER.error(f"An unexpected error occurred: {e}")
+            raise
