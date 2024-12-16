@@ -1,3 +1,9 @@
+## [0.7.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.7.0-dev.1...v0.7.0-dev.2) (2024-12-16)
+
+### 🚀 Features
+
+* added longitudinal color ([d2f2809](https://github.com/Disane87/spoolman-homeassistant/commit/d2f28098d6ebb169a7c9a0fb1e55685cc7d305a7)), closes [#150](https://github.com/Disane87/spoolman-homeassistant/issues/150)
+
 ## [0.7.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.6.0...v0.7.0-dev.1) (2024-12-16)
 
 ### 🚀 Features
