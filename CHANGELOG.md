@@ -1,3 +1,9 @@
+## [0.7.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v0.7.0-dev.2...v0.7.0-dev.3) (2025-01-13)
+
+### 🛠️ Fixes
+
+* improve error handling in SpoolManCoordinator for API calls ([efeebea](https://github.com/Disane87/spoolman-homeassistant/commit/efeebeaa823046d013ca44b7b5c6f701e38557de)), closes [#177](https://github.com/Disane87/spoolman-homeassistant/issues/177)
+
 ## [0.7.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.7.0-dev.1...v0.7.0-dev.2) (2024-12-16)
 
 ### 🚀 Features
