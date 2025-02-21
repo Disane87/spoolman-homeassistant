@@ -55,7 +55,12 @@ class SpoolManCoordinator(DataUpdateCoordinator):
             spools = await self.spoolman_api.get_spools(
                 {"allow_archived": show_archived}
             )
+        except Exception as exception:
+            raise UpdateFailed(
+                f"Error fetching data from API: {exception}"
+            ) from exception
 
+        try:
             klipper_url = config.get(KLIPPER_URL, "")
             if klipper_url is not None and klipper_url != "":
                 klipper_active_spool: int | None = await KlipperAPI(klipper_url).get_active_spool_id()
@@ -65,10 +70,8 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                             spool["klipper_active_spool"] = True
                         else:
                             spool["klipper_active_spool"] = False
-
-            return spools
-
         except Exception as exception:
-            raise UpdateFailed(
-                f"Error fetching data from API: {exception}"
-            ) from exception
+            _LOGGER.error(f"Error processing Klipper API data: {exception}")
+            # Continue returning spools even if Klipper processing fails
+
+        return spools
