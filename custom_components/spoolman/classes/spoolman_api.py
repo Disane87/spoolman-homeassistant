@@ -1,6 +1,7 @@
 """Class for interacting with the Spoolman API."""
 import aiohttp
 import logging
+import json
 _LOGGER = logging.getLogger(__name__)
 
 class SpoolmanAPI:
@@ -53,6 +54,13 @@ class SpoolmanAPI:
             response.raise_for_status()
             response = await response.json()
             _LOGGER.debug("SpoolmanAPI: get_spools response %s", response)
+
+            """Decode each item in extra from JSON."""
+            for spool in response:
+                if "extra" in spool:
+                    for key, value in spool["extra"].items():
+                        spool["extra"][key] = json.loads(value)
+
             return response
 
     async def get_spool_by_id(self, spool_id):
@@ -63,6 +71,12 @@ class SpoolmanAPI:
             response.raise_for_status()
             response = await response.json()
             _LOGGER.debug("SpoolmanAPI: get_spool_by_id response %s", response)
+
+            """Decode each item in extra from JSON."""
+            if "extra" in response:
+                for key, value in response["extra"].items():
+                    response["extra"][key] = json.loads(value)
+
             return response
 
     def string_from_dictionary(self, params_dict):
@@ -92,6 +106,11 @@ class SpoolmanAPI:
         if "remaining_weight" in data and "used_weight" in data:
             if data["remaining_weight"] > 0 and data["used_weight"] > 0:
                 raise ValueError("remaining_weight and used_weight cannot be used together. Please use only one of them.")
+
+        """Encode each item in extra as JSON."""
+        if "extra" in data:
+            for key, value in data["extra"].items():
+                data["extra"][key] = json.dumps(value)
 
         url = f"{self.base_url}/spool/{spool_id}"
         try:
