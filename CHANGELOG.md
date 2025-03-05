@@ -1,3 +1,13 @@
+## [0.8.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.7.0...v0.8.0-dev.1) (2025-03-05)
+
+### 🚀 Features
+
+* Adds ability to change extra fields in spoolman ([007fda0](https://github.com/Disane87/spoolman-homeassistant/commit/007fda0ab38327ea1c8875cc2bbb63867cff4ae7))
+
+### 🛠️ Fixes
+
+* improve error handling in SpoolManCoordinator for API calls ([efeebea](https://github.com/Disane87/spoolman-homeassistant/commit/efeebeaa823046d013ca44b7b5c6f701e38557de)), closes [#177](https://github.com/Disane87/spoolman-homeassistant/issues/177)
+
 ## [0.7.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v0.7.0-dev.2...v0.7.0-dev.3) (2025-01-13)
 
 ### 🛠️ Fixes
