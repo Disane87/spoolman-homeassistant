@@ -36,6 +36,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(minutes=update_interval),
         )
         self.hass = hass
+        self.config_entry = entry
         self.spoolman_api = SpoolmanAPI(url)
 
         hass.data[DOMAIN] = {
