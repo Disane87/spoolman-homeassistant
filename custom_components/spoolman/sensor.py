@@ -140,6 +140,8 @@ class Spool(CoordinatorEntity, SensorEntity):
         self.idx = idx
 
     def assign_name_and_location(self):
+        """Update sensor name and device (location)"""
+        
         vendor_name = self._filament.get("vendor", {}).get("name")
 
         if (
