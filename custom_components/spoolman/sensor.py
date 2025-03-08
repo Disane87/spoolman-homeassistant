@@ -139,7 +139,7 @@ class Spool(CoordinatorEntity, SensorEntity):
         self._attr_icon = ICON
         self.idx = idx
 
-    def assign_name_and_location(self, hass = None):
+    def assign_name_and_location(self):
         vendor_name = self._filament.get("vendor", {}).get("name")
 
         if (
@@ -152,14 +152,13 @@ class Spool(CoordinatorEntity, SensorEntity):
         else:
             spool_name = f"{vendor_name} {self._filament['name']} { self._filament.get('material')}"
 
-        # Location/Device
         location_name = (
             self._spool.get("location", "Unknown")
             if self._spool["archived"] is False
             else "Archived"
         )
         spoolman_info = self.config[SPOOLMAN_INFO_PROPERTY]
-        device_data = {
+        device_info = DeviceInfo(
             identifiers={(DOMAIN, self.config[CONF_URL], location_name)},  # type: ignore
             name=location_name,
             manufacturer="https://github.com/Donkie/Spoolman",
@@ -167,14 +166,14 @@ class Spool(CoordinatorEntity, SensorEntity):
             configuration_url=self.config[CONF_URL],
             suggested_area=location_name,
             sw_version=f"{spoolman_info.get('version', 'unknown')} ({ spoolman_info.get('git_commit', 'unknown')})",
-        }
+        )
         if self._attr_device_info is None:
-            self._attr_device_info = DeviceInfo(**device_data)
-        elif self._attr_device_info.name != location_name:
+            self._attr_device_info = device_info
+        elif self._attr_device_info["name"] != location_name:
             # Must update entry since async_write_ha_state does not update device
             device = dr.async_get(self.coordinator.hass).async_get_or_create(config_entry_id=self.coordinator.config_entry.entry_id, **device_info)
             self.registry_entry = er.async_get(self.coordinator.hass).async_update_entity(self.entity_id, device_id = device.id)
-        
+
         self._attr_name = spool_name
 
     @callback
