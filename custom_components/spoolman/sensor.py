@@ -131,7 +131,7 @@ class Spool(CoordinatorEntity, SensorEntity):
 
         self._entry = config_entry
         self.entity_id = generate_entity_id("sensor.{}", f"spoolman_spool_{spool_data['id']}", hass=hass)
-        self._attr_unique_id = f"spoolman_spool_{spool_data['id']}" # TODO: Should we add URL here somehow?
+        self._attr_unique_id = f"spoolman_{self.coordinator.url}_spool_{spool_data['id']}"
         self._attr_has_entity_name = False
         self._attr_device_class = SensorDeviceClass.WEIGHT
         self._attr_state_class = SensorStateClass.MEASUREMENT
