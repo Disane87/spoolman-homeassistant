@@ -21,6 +21,9 @@ custom_components/hacs
 # custom_components/mail_and_packages/images/*
 notes.txt
 
+lib*
+bin
+
 # Test files
 ra_0_mailerProvidedImage0
 mailerProvidedImage0
