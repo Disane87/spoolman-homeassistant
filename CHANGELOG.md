@@ -1,3 +1,9 @@
+## [1.0.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v1.0.0-dev.1...v1.0.0-dev.2) (2025-03-09)
+
+### 🛠️ Fixes
+
+* Added paragraph about naming of the entity ids in the README ([0b9fc06](https://github.com/Disane87/spoolman-homeassistant/commit/0b9fc0637f74de9af022350ba7a700c6d46de38a)), closes [#170](https://github.com/Disane87/spoolman-homeassistant/issues/170)
+
 ## [1.0.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.8.0-dev.1...v1.0.0-dev.1) (2025-03-09)
 
 ### ⚠ BREAKING CHANGES
