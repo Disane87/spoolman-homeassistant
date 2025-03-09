@@ -8,7 +8,9 @@ from homeassistant.components.sensor.const import SensorStateClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfMass
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers import device_registry as dr, entity_registry as er
+from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.entity import generate_entity_id
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from PIL import Image, ImageDraw
@@ -44,15 +46,7 @@ async def async_setup_entry(
         spool_entities = []
         image_dir = hass.config.path(PUBLIC_IMAGE_PATH)
         for idx, spool_data in enumerate(coordinator.data):
-            if (
-                spool_data["filament"].get("name") is None
-                or spool_data["filament"].get("material") is None
-            ):
-                _LOGGER.warning(
-                    "SpoolManCoordinator: Spool with ID '%s' has no name or material set. Can't create sensor. Skipping.",
-                    spool_data["filament"].get("id"),
-                )
-                return
+
             image_url = await hass.async_add_executor_job(
                 _generate_entity_picture, spool_data, image_dir
             )
@@ -129,55 +123,87 @@ class Spool(CoordinatorEntity, SensorEntity):
         super().__init__(coordinator)
 
         self.config = hass.data[DOMAIN]
-        conf_url = self.config[CONF_URL]
-        spoolman_info = self.config[SPOOLMAN_INFO_PROPERTY]
 
         self._spool = spool_data
         self.handled_threshold_events = []
         self._filament = self._spool["filament"]
         self._attr_entity_picture = image_url
 
-        vendor_name = self._filament.get("vendor", {}).get("name")
-
-        if vendor_name is None:
-            spool_name = f"{self._filament['name']} {self._filament.get('material')}"
-        else:
-            spool_name = f"{vendor_name} {self._filament['name']} { self._filament.get('material')}"
-
-        location_name = (
-            self._spool.get("location", "Unknown")
-            if spool_data["archived"] is False
-            else "Archived"
-        )
+        self.assign_name_and_location()
 
         self._entry = config_entry
-        self._attr_name = spool_name
-        self._attr_unique_id = f"{self._attr_name}_{spool_data['id']}"
+        self.entity_id = generate_entity_id("sensor.{}", f"spoolman_spool_{spool_data['id']}", hass=hass)
+        self._attr_unique_id = f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}"
         self._attr_has_entity_name = False
         self._attr_device_class = SensorDeviceClass.WEIGHT
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_native_unit_of_measurement = UnitOfMass.GRAMS
         self._attr_icon = ICON
+        self.idx = idx
 
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, conf_url, location_name)},  # type: ignore
+    def assign_name_and_location(self):
+        """Update sensor name and device (location)."""
+
+        vendor_name = self._filament.get("vendor", {}).get("name")
+
+        if (
+            self._filament.get("name") is None
+            or self._filament.get("material") is None
+        ):
+            spool_name = f"Spoolman Spool {self._spool['id']}"
+            _LOGGER.warning(
+                "SpoolManCoordinator: Spool with ID '%s' has no 'name' or 'material' set in filament. Using default name.",
+                self._spool["id"],
+            )
+        elif vendor_name is None:
+            spool_name = f"{self._filament['name']} {self._filament.get('material')}"
+            _LOGGER.warning(
+                "SpoolManCoordinator: Spool with ID '%s' has no 'vendor' set in filament. Using default name.",
+                self._spool["id"],
+            )
+        else:
+            spool_name = f"{vendor_name} {self._filament['name']} { self._filament.get('material')}"
+            _LOGGER.debug(
+                "SpoolManCoordinator: Spool with ID '%s' has 'vendor' set in filament. Using vendor name.",
+                self._spool["id"],
+            )
+
+        location_name = (
+            self._spool.get("location", "Unknown")
+            if self._spool["archived"] is False
+            else "Archived"
+        )
+        spoolman_info = self.config[SPOOLMAN_INFO_PROPERTY]
+        device_info = DeviceInfo(
+            identifiers={(DOMAIN, self.config[CONF_URL], location_name)},  # type: ignore
             name=location_name,
             manufacturer="https://github.com/Donkie/Spoolman",
             model="Spoolman",
-            configuration_url=conf_url,
+            configuration_url=self.config[CONF_URL],
             suggested_area=location_name,
             sw_version=f"{spoolman_info.get('version', 'unknown')} ({ spoolman_info.get('git_commit', 'unknown')})",
         )
-        self.idx = idx
+        if self._attr_device_info is None:
+            self._attr_device_info = device_info
+        elif self._attr_device_info.get("name") != location_name:
+            # Must update entry since async_write_ha_state does not update device
+            if self.coordinator.config_entry is not None:
+                device = dr.async_get(self.coordinator.hass).async_get_or_create(config_entry_id=self.coordinator.config_entry.entry_id, **device_info)
+            self.registry_entry = er.async_get(self.coordinator.hass).async_update_entity(self.entity_id, device_id = device.id)
+
+        self._attr_name = spool_name
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        self._spool = self.coordinator.data[self.idx]
-        self._filament = self._spool["filament"]
+        spool_data = self.coordinator.data[self.idx]
+        self._spool = spool_data
+        self._filament = spool_data["filament"]
 
         _LOGGER.debug("SpoolManCoordinator: Spool %s", self._spool)
         _LOGGER.debug("SpoolManCoordinator: Filament %s", self._filament)
+
+        self.assign_name_and_location()
 
         if self._filament.get("weight") is None:
             _LOGGER.warning(

@@ -1,8 +1,10 @@
 {
     "name": "ludeeus/integration_blueprint",
-    "image": "mcr.microsoft.com/vscode/devcontainers/python:1-3.11",
+    "image": "mcr.microsoft.com/vscode/devcontainers/python:1-3.13",
     "postCreateCommand": "scripts/setup",
-    "containerEnv": { "DEVCONTAINER": "1" },
+    "containerEnv": {
+        "DEVCONTAINER": "1"
+    },
     "forwardPorts": [
         8123
     ],
@@ -18,7 +20,8 @@
                 "ms-python.python",
                 "github.vscode-pull-request-github",
                 "ryanluker.vscode-coverage-gutters",
-                "ms-python.vscode-pylance"
+                "ms-python.vscode-pylance",
+                "vivaxy.vscode-conventional-commits"
             ],
             "settings": {
                 "files.eol": "\n",

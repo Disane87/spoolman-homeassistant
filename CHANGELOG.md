@@ -1,9 +1,34 @@
-## [0.7.0](https://github.com/Disane87/spoolman-homeassistant/compare/v0.6.0...v0.7.0) (2024-12-16)
+## [1.0.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v1.0.0-dev.1...v1.0.0-dev.2) (2025-03-09)
+
+### 🛠️ Fixes
+
+* Added paragraph about naming of the entity ids in the README ([0b9fc06](https://github.com/Disane87/spoolman-homeassistant/commit/0b9fc0637f74de9af022350ba7a700c6d46de38a)), closes [#170](https://github.com/Disane87/spoolman-homeassistant/issues/170)
+
+## [1.0.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.8.0-dev.1...v1.0.0-dev.1) (2025-03-09)
+
+### ⚠ BREAKING CHANGES
+
+* Generation of spoolnames was fixed. It now has a preffix "spoolman_*" to avoid conflicts with other spoolnames and only tthe ID of the spool is used as a suffix. This means that the spoolname is now unique and can be used to identify the spool in the spoolman. This needs a reconfiguration of the integration and adjustsments in automation when spools are used.
+
+### 🛠️ Fixes
+
+* Iimproved logging for missing attributes ([dc05936](https://github.com/Disane87/spoolman-homeassistant/commit/dc0593651606d55081555553faa9b39b99e02d1e)), closes [#192](https://github.com/Disane87/spoolman-homeassistant/issues/192) [#170](https://github.com/Disane87/spoolman-homeassistant/issues/170)
+
+## [0.8.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v0.7.0...v0.8.0-dev.1) (2025-03-05)
 
 ### 🚀 Features
 
-* added longitudinal color ([d2f2809](https://github.com/Disane87/spoolman-homeassistant/commit/d2f28098d6ebb169a7c9a0fb1e55685cc7d305a7)), closes [#150](https://github.com/Disane87/spoolman-homeassistant/issues/150)
-* added multicolor images for multicolor filaments ([bbd7025](https://github.com/Disane87/spoolman-homeassistant/commit/bbd7025a4f09784d741d0d94cf5604bf911df3d2)), closes [#150](https://github.com/Disane87/spoolman-homeassistant/issues/150)
+* Adds ability to change extra fields in spoolman ([007fda0](https://github.com/Disane87/spoolman-homeassistant/commit/007fda0ab38327ea1c8875cc2bbb63867cff4ae7))
+
+### 🛠️ Fixes
+
+* improve error handling in SpoolManCoordinator for API calls ([efeebea](https://github.com/Disane87/spoolman-homeassistant/commit/efeebeaa823046d013ca44b7b5c6f701e38557de)), closes [#177](https://github.com/Disane87/spoolman-homeassistant/issues/177)
+
+## [0.7.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v0.7.0-dev.2...v0.7.0-dev.3) (2025-01-13)
+
+### 🛠️ Fixes
+
+* improve error handling in SpoolManCoordinator for API calls ([efeebea](https://github.com/Disane87/spoolman-homeassistant/commit/efeebeaa823046d013ca44b7b5c6f701e38557de)), closes [#177](https://github.com/Disane87/spoolman-homeassistant/issues/177)
 
 ## [0.7.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.7.0-dev.1...v0.7.0-dev.2) (2024-12-16)
 

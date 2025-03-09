@@ -10,7 +10,7 @@ If you're a developer and want to contribute to the project, please feel free to
 
 ## Commit Messages
 
-- **Please make use of conventional commits.** This ensures the build pipeline works together with semantic release, and your PRs will trigger a new release.
+- **Please make use of [conventional commits](https://www.conventionalcommits.org/).** This ensures the build pipeline works together with semantic release, and your PRs will trigger a new release.
 
 ## Development Environment
 

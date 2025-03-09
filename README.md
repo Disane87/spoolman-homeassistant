@@ -52,6 +52,9 @@ All other information provides by Spoolman are stored in the attributes of the s
 > [!IMPORTANT]
 > Your spool needs at least a name and a material to get added to Home Assistant.
 
+# Naming of entities
+Every spool is created with an entity id like `sensor.spoolman_spool_[id]` to prevent mixing and mangeling when spools having the same name and to have a fixed prefix `spoolman` to get the entitites conveniently and don't have conflicts with other integrations.
+
 # Usage in cards
 You can use the default `entities` card for this:
 
@@ -218,6 +221,43 @@ data:
   remaining_weight: 200
   lot_nr: 52342
 ```
+
+# Extra fields
+
+Spoolman allows the definition of extra fields. You can use these to built your own automations. They are available in the attributes of the spool, with the prefix `extra_`.
+
+You can for example use these to store additional information about the spools, like their humidity measured by a smart home sensor in Home Assistant.
+This is an automation example to update a field `humidity`, based on a sensor in Home Assistant, denoted by a custom field `sensor`, for all spools every 15 minutes.
+
+```yaml
+alias: Update spoolman
+description: ""
+mode: single
+triggers:
+  - trigger: time_pattern
+    minutes: /15
+conditions: []
+actions:
+  - repeat:
+      for_each: "{{ integration_entities('spoolman') }}"
+      sequence:
+        - if:
+            - condition: template
+              value_template: "{{ state_attr(repeat.item, 'extra_sensor') is not none }}"
+          then:
+            - action: spoolman.patch_spool
+              data:
+                id: "{{ state_attr(repeat.item, 'id') }}"
+                extra:
+                  sensor: "{{ state_attr(repeat.item, 'extra_sensor') }}"
+                  humidity: >-
+                    {{ states("sensor."+state_attr(repeat.item, 'extra_sensor')) }}
+```
+
+You can then easily use this information in your cards, for example to show the properties of your spools using the auto-entities card in combination with the multiple-entity-row card:
+
+![List of spools with their attributes](docs/auto-entities-multiple-entity-row.png)
+
 
 # Contributing
 If you're developer and want to contribute to the project, please feel free to do a PR!
