@@ -52,6 +52,9 @@ All other information provides by Spoolman are stored in the attributes of the s
 > [!IMPORTANT]
 > Your spool needs at least a name and a material to get added to Home Assistant.
 
+# Naming of entities
+Every spool is created with an entity id like `sensor.spoolman_spool_[id]` to prevent mixing and mangeling when spools having the same name and to have a fixed prefix `spoolman` to get the entitites conveniently and don't have conflicts with other integrations.
+
 # Usage in cards
 You can use the default `entities` card for this:
 
