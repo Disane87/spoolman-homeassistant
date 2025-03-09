@@ -9,7 +9,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfMass
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import device_registry as dr, entity_registry as er
-from homeassistant.helpers.entity import DeviceInfo, generate_entity_id
+from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.entity import generate_entity_id
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from PIL import Image, ImageDraw
@@ -45,6 +46,7 @@ async def async_setup_entry(
         spool_entities = []
         image_dir = hass.config.path(PUBLIC_IMAGE_PATH)
         for idx, spool_data in enumerate(coordinator.data):
+
             image_url = await hass.async_add_executor_job(
                 _generate_entity_picture, spool_data, image_dir
             )
@@ -131,7 +133,7 @@ class Spool(CoordinatorEntity, SensorEntity):
 
         self._entry = config_entry
         self.entity_id = generate_entity_id("sensor.{}", f"spoolman_spool_{spool_data['id']}", hass=hass)
-        self._attr_unique_id = f"spoolman_{self.coordinator.url}_spool_{spool_data['id']}"
+        self._attr_unique_id = f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}"
         self._attr_has_entity_name = False
         self._attr_device_class = SensorDeviceClass.WEIGHT
         self._attr_state_class = SensorStateClass.MEASUREMENT
@@ -149,10 +151,22 @@ class Spool(CoordinatorEntity, SensorEntity):
             or self._filament.get("material") is None
         ):
             spool_name = f"Spoolman Spool {self._spool['id']}"
+            _LOGGER.warning(
+                "SpoolManCoordinator: Spool with ID '%s' has no 'name' or 'material' set in filament. Using default name.",
+                self._spool["id"],
+            )
         elif vendor_name is None:
             spool_name = f"{self._filament['name']} {self._filament.get('material')}"
+            _LOGGER.warning(
+                "SpoolManCoordinator: Spool with ID '%s' has no 'vendor' set in filament. Using default name.",
+                self._spool["id"],
+            )
         else:
             spool_name = f"{vendor_name} {self._filament['name']} { self._filament.get('material')}"
+            _LOGGER.debug(
+                "SpoolManCoordinator: Spool with ID '%s' has 'vendor' set in filament. Using vendor name.",
+                self._spool["id"],
+            )
 
         location_name = (
             self._spool.get("location", "Unknown")
@@ -171,9 +185,10 @@ class Spool(CoordinatorEntity, SensorEntity):
         )
         if self._attr_device_info is None:
             self._attr_device_info = device_info
-        elif self._attr_device_info["name"] != location_name:
+        elif self._attr_device_info.get("name") != location_name:
             # Must update entry since async_write_ha_state does not update device
-            device = dr.async_get(self.coordinator.hass).async_get_or_create(config_entry_id=self.coordinator.config_entry.entry_id, **device_info)
+            if self.coordinator.config_entry is not None:
+                device = dr.async_get(self.coordinator.hass).async_get_or_create(config_entry_id=self.coordinator.config_entry.entry_id, **device_info)
             self.registry_entry = er.async_get(self.coordinator.hass).async_update_entity(self.entity_id, device_id = device.id)
 
         self._attr_name = spool_name
