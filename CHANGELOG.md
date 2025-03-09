@@ -1,3 +1,19 @@
+## [1.0.0](https://github.com/Disane87/spoolman-homeassistant/compare/v0.7.0...v1.0.0) (2025-03-09)
+
+### ⚠ BREAKING CHANGES
+
+* Generation of spoolnames was fixed. It now has a preffix "spoolman_*" to avoid conflicts with other spoolnames and only tthe ID of the spool is used as a suffix. This means that the spoolname is now unique and can be used to identify the spool in the spoolman. This needs a reconfiguration of the integration and adjustsments in automation when spools are used.
+
+### 🛠️ Fixes
+
+* Added paragraph about naming of the entity ids in the README ([0b9fc06](https://github.com/Disane87/spoolman-homeassistant/commit/0b9fc0637f74de9af022350ba7a700c6d46de38a)), closes [#170](https://github.com/Disane87/spoolman-homeassistant/issues/170)
+* Iimproved logging for missing attributes ([dc05936](https://github.com/Disane87/spoolman-homeassistant/commit/dc0593651606d55081555553faa9b39b99e02d1e)), closes [#192](https://github.com/Disane87/spoolman-homeassistant/issues/192) [#170](https://github.com/Disane87/spoolman-homeassistant/issues/170)
+* improve error handling in SpoolManCoordinator for API calls ([efeebea](https://github.com/Disane87/spoolman-homeassistant/commit/efeebeaa823046d013ca44b7b5c6f701e38557de)), closes [#177](https://github.com/Disane87/spoolman-homeassistant/issues/177)
+
+### 🚀 Features
+
+* Adds ability to change extra fields in spoolman ([007fda0](https://github.com/Disane87/spoolman-homeassistant/commit/007fda0ab38327ea1c8875cc2bbb63867cff4ae7))
+
 ## [1.0.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v1.0.0-dev.1...v1.0.0-dev.2) (2025-03-09)
 
 ### 🛠️ Fixes
