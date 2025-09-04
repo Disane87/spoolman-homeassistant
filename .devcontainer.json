@@ -1,6 +1,6 @@
 {
     "name": "ludeeus/integration_blueprint",
-    "image": "mcr.microsoft.com/vscode/devcontainers/python:1-3.13",
+    "image": "mcr.microsoft.com/vscode/devcontainers/python:2-3.13",
     "postCreateCommand": "scripts/setup",
     "containerEnv": {
         "DEVCONTAINER": "1"
