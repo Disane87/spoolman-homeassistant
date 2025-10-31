@@ -45,7 +45,7 @@ async def async_setup_entry(
     if coordinator.data:
         all_entities = []
         image_dir = hass.config.path(PUBLIC_IMAGE_PATH)
-        
+
         # Create spool entities
         spool_data = coordinator.data.get("spools", [])
         for idx, spool in enumerate(spool_data):
