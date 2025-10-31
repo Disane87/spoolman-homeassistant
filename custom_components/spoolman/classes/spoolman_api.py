@@ -26,9 +26,7 @@ class SpoolmanAPI:
         """Return the health status of the API."""
         _LOGGER.debug("SpoolmanAPI: health")
         url = f"{self.base_url}/health"
-        async with aiohttp.ClientSession() as session, session.get(
-            url, timeout=10
-        ) as response:
+        async with aiohttp.ClientSession() as session, session.get(url) as response:
             response.raise_for_status()
             response = await response.json()
             _LOGGER.debug("SpoolmanAPI: health response %s", response)
