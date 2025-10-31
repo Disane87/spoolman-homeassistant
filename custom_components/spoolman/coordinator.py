@@ -56,10 +56,27 @@ class SpoolManCoordinator(DataUpdateCoordinator):
             spools = await self.spoolman_api.get_spools(
                 {"allow_archived": show_archived}
             )
+            filaments = await self.spoolman_api.get_filaments({})
         except Exception as exception:
             raise UpdateFailed(
                 f"Error fetching data from API: {exception}"
             ) from exception
+
+        # Calculate total remaining weight for each filament from non-archived spools
+        filament_remaining_weights = {}
+        for spool in spools:
+            if not spool.get("archived", False):  # Only count non-archived spools
+                filament_id = spool.get("filament", {}).get("id")
+                remaining_weight = spool.get("remaining_weight", 0)
+                if filament_id is not None and remaining_weight is not None:
+                    if filament_id not in filament_remaining_weights:
+                        filament_remaining_weights[filament_id] = 0
+                    filament_remaining_weights[filament_id] += remaining_weight
+
+        # Add total remaining weight to each filament
+        for filament in filaments:
+            filament_id = filament.get("id")
+            filament["total_remaining_weight"] = filament_remaining_weights.get(filament_id, 0)
 
         try:
             klipper_url = config.get(KLIPPER_URL, "")
@@ -75,4 +92,4 @@ class SpoolManCoordinator(DataUpdateCoordinator):
             _LOGGER.error(f"Error processing Klipper API data: {exception}")
             # Continue returning spools even if Klipper processing fails
 
-        return spools
+        return {"spools": spools, "filaments": filaments}
