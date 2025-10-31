@@ -265,7 +265,7 @@ class Spool(CoordinatorEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        spool_data = self.coordinator.data[self.idx]
+        spool_data = self.coordinator.data["spools"][self.idx]
         self._spool = spool_data
         self._filament = spool_data["filament"]
 
