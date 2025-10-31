@@ -43,18 +43,32 @@ async def async_setup_entry(
     await coordinator.async_config_entry_first_refresh()
 
     if coordinator.data:
-        spool_entities = []
+        all_entities = []
         image_dir = hass.config.path(PUBLIC_IMAGE_PATH)
-        for idx, spool_data in enumerate(coordinator.data):
-
+        
+        # Create spool entities
+        spool_data = coordinator.data.get("spools", [])
+        for idx, spool in enumerate(spool_data):
             image_url = await hass.async_add_executor_job(
-                _generate_entity_picture, spool_data, image_dir
+                _generate_entity_picture, spool, image_dir
             )
             spool_device = Spool(
-                hass, coordinator, spool_data, idx, config_entry, image_url
+                hass, coordinator, spool, idx, config_entry, image_url
             )
-            spool_entities.append(spool_device)
-        async_add_entities(spool_entities)
+            all_entities.append(spool_device)
+
+        # Create filament entities
+        filament_data = coordinator.data.get("filaments", [])
+        for idx, filament in enumerate(filament_data):
+            image_url = await hass.async_add_executor_job(
+                _generate_filament_entity_picture, filament, image_dir
+            )
+            filament_device = Filament(
+                hass, coordinator, filament, idx, config_entry, image_url
+            )
+            all_entities.append(filament_device)
+
+        async_add_entities(all_entities)
 
 
 def _generate_entity_picture(spool_data, image_dir):
