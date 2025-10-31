@@ -63,6 +63,25 @@ class SpoolmanAPI:
 
             return response
 
+    async def get_filaments(self, params):
+        """Return a list of all filaments."""
+        _LOGGER.debug("SpoolmanAPI: get_filaments")
+        url = f"{self.base_url}/filament"
+        if len(params) > 0:
+            url = f"{url}?{self.string_from_dictionary(params)}"
+        async with aiohttp.ClientSession() as session, session.get(url) as response:
+            response.raise_for_status()
+            response = await response.json()
+            _LOGGER.debug("SpoolmanAPI: get_filaments response %s", response)
+
+            """Decode each item in extra from JSON."""
+            for filament in response:
+                if "extra" in filament:
+                    for key, value in filament["extra"].items():
+                        filament["extra"][key] = json.loads(value)
+
+            return response
+
     async def get_spool_by_id(self, spool_id):
         """Return the spool with the specified ID."""
         _LOGGER.debug("SpoolmanAPI: get_spool_by_id")
