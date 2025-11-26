@@ -16,11 +16,14 @@ This integration integrates Spoolman (https://github.com/Donkie/Spoolman/) into 
 - Locations in Spoolman are created as devices
 - Spools are added to the devices
 - Monitoring of filament consumption (used and remaining length/weight)
+- **Flow rate sensor** to track filament consumption rate (g/h) for each spool
+- **Location select entity** for quick location changes directly from Home Assistant
 - Configurable thresholds for info, warning and critical states. This is useful to trigger notifications in HomeAssistant within an automation (see the [automation example](#automation-example))
 - Enable/disabled archived spools
 - Archived spools are grouped into one `Archived` device
 - If a Klipper url is configured, the active spool will have an attribute `klipper_active_spool`
-- Creation of a service `spoolman.patch_spool` to enable you to change values of a spool from automations
+- Creation of services `spoolman.patch_spool` and `spoolman.use_spool_filament` to enable you to change values of a spool from automations
+- Automatic device area assignment without overwriting user-defined areas
 
 > [!NOTE]
 > If one of the threshold is exceeded the integration fires an event. The event is named `spoolman_spool_threshold_exceeded`. Currently there are three thresholds defined: `info`, `warning` and `critical`.
@@ -49,11 +52,28 @@ All other information provides by Spoolman are stored in the attributes of the s
 
 ![image](resources/images/spoolman-integration-sensor.png?raw=true)
 
+## Flow Rate Sensor
+Each spool has an additional flow rate sensor that tracks filament consumption over time. The sensor displays the current consumption rate in grams per hour (g/h). This is useful for:
+- Monitoring printing speed and filament usage
+- Detecting unusually high consumption rates
+- Building automations based on consumption patterns
+- Foundation for estimated run-out time calculations
+
+The flow rate sensor starts at 0 g/h and begins tracking once filament consumption is detected. The rate is calculated by measuring weight changes between coordinator updates.
+
+## Location Select Entity
+Each spool has a select entity that allows you to quickly change the location without using the `spoolman.patch_spool` service. Simply select a new location from the dropdown in Home Assistant, and the spool will be moved to that location in Spoolman.
+
 > [!IMPORTANT]
 > Your spool needs at least a name and a material to get added to Home Assistant.
 
 # Naming of entities
 Every spool is created with an entity id like `sensor.spoolman_spool_[id]` to prevent mixing and mangeling when spools having the same name and to have a fixed prefix `spoolman` to get the entitites conveniently and don't have conflicts with other integrations.
+
+Additionally, for each spool, the following entities are created:
+- `sensor.spoolman_spool_[id]` - Main sensor showing remaining weight
+- `sensor.spoolman_spool_[id]_flow_rate` - Flow rate sensor tracking consumption in g/h
+- `select.spoolman_spool_[id]_location` - Location selector for quick location changes
 
 # Usage in cards
 You can use the default `entities` card for this:
