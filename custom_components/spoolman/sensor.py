@@ -25,7 +25,6 @@ from .const import (
     PUBLIC_IMAGE_PATH,
     SPOOLMAN_INFO_PROPERTY,
 )
-from .coordinator import SpoolManCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,8 +38,8 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ):
     """Spoolman home assistant sensor init."""
-    coordinator = SpoolManCoordinator(hass, config_entry)
-    await coordinator.async_config_entry_first_refresh()
+    # Use the coordinator from hass.data that was created in __init__.py
+    coordinator = hass.data[DOMAIN]["coordinator"]
 
     if coordinator.data:
         all_entities = []
@@ -271,8 +270,30 @@ class Spool(CoordinatorEntity, SensorEntity):
                         current_location,
                         location_name,
                     )
-                    device = dr.async_get(self.coordinator.hass).async_get_or_create(config_entry_id=self.coordinator.config_entry.entry_id, **device_info)
-                    self.registry_entry = er.async_get(self.coordinator.hass).async_update_entity(self.entity_id, device_id = device.id)
+                    # Get the device registry and check if device exists
+                    device_registry = dr.async_get(self.coordinator.hass)
+                    entity_registry = er.async_get(self.coordinator.hass)
+
+                    # Get or create the device
+                    device = device_registry.async_get_or_create(
+                        config_entry_id=self.coordinator.config_entry.entry_id,
+                        **device_info
+                    )
+
+                    # Only update the area if it's not already set by the user
+                    # Check if the device has a user-defined area (different from suggested_area)
+                    if device.area_id is None:
+                        # No area set yet, we can suggest one
+                        self.registry_entry = entity_registry.async_update_entity(
+                            self.entity_id,
+                            device_id=device.id
+                        )
+                    else:
+                        # User has set an area, just update the device association without changing the area
+                        self.registry_entry = entity_registry.async_update_entity(
+                            self.entity_id,
+                            device_id=device.id
+                        )
 
         self._attr_name = spool_name
 
