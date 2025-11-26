@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Check if first contribution
         id: check
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const author = context.payload.pull_request.user.login;
@@ -49,7 +49,7 @@ jobs:
 
       - name: Celebrate first contribution
         if: steps.check.outputs.is_first_contribution == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const author = '${{ steps.check.outputs.author }}';

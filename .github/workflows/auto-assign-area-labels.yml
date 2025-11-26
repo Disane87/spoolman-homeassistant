@@ -20,7 +20,7 @@ jobs:
         if: github.event_name == 'pull_request'
 
       - name: Auto-assign area labels
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const issue_number = context.issue.number;
