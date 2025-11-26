@@ -438,6 +438,24 @@ We'd love to have you on board! Check out our [Contributing Guidelines](CONTRIBU
 
 Don't be shy - we're all learning together! If you have questions, just open an issue and let's chat! 💬
 
+## 🌟 Contributors
+
+A big thank you to everyone who has contributed to this project! Your efforts make this integration better for everyone! 🙌
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<a href="https://github.com/Disane87/spoolman-homeassistant/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Disane87/spoolman-homeassistant" />
+</a>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+_Made with [contrib.rocks](https://contrib.rocks)._
 
 # 🎉 Cheers!
 
