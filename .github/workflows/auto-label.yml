@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Add "needs testing" when "released on @dev" is added
         if: github.event.label.name == 'released on @dev'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const issue_number = context.issue.number;
@@ -47,7 +47,7 @@ jobs:
 
       - name: Remove "needs testing" when "released" is added
         if: github.event.label.name == 'released'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const issue_number = context.issue.number;

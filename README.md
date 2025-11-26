@@ -328,6 +328,96 @@ mode: restart
 
 ```
 
+## Flow Rate Alert Automations
+
+Monitor your printer's flow rate sensor to detect potential issues like clogs, jams, or leaks. These automations help you catch problems early!
+
+### Alert when flow rate is abnormally high (potential leak or over-extrusion)
+
+This automation triggers when the flow rate exceeds a threshold, which might indicate a leak or over-extrusion issue.
+
+```yaml
+alias: Flow Rate Too High Alert
+description: "Alert when flow rate exceeds normal levels - possible leak or over-extrusion"
+trigger:
+  - platform: numeric_state
+    entity_id: sensor.spoolman_spool_1_flow_rate
+    above: 15  # Adjust threshold based on your typical flow rate (mm³/s)
+    for:
+      seconds: 10
+condition: []
+action:
+  - service: notify.notify
+    data:
+      title: "⚠️ High Flow Rate Detected"
+      message: >-
+        Flow rate is {{ states('sensor.spoolman_spool_1_flow_rate') }} mm³/s.
+        This might indicate over-extrusion or a leak. Please check your printer!
+mode: single
+```
+
+### Alert when flow rate is unusually low (potential clog or jam)
+
+This automation detects when flow rate drops significantly during printing, which often indicates a partial clog or jam.
+
+```yaml
+alias: Flow Rate Too Low Alert
+description: "Alert when flow rate drops below expected levels - possible clog or jam"
+trigger:
+  - platform: numeric_state
+    entity_id: sensor.spoolman_spool_1_flow_rate
+    below: 2  # Adjust threshold based on your typical minimum flow rate (mm³/s)
+    for:
+      seconds: 30
+condition:
+  - condition: state
+    entity_id: binary_sensor.printer_printing  # Replace with your printer's printing status sensor
+    state: "on"
+action:
+  - service: notify.notify
+    data:
+      title: "🚨 Low Flow Rate Warning"
+      message: >-
+        Flow rate has dropped to {{ states('sensor.spoolman_spool_1_flow_rate') }} mm³/s.
+        This might indicate a clog or jam. Check your extruder!
+mode: single
+```
+
+### Track average flow rate over time
+
+Use a statistics sensor to track flow rate patterns and detect gradual degradation.
+
+```yaml
+# In your configuration.yaml, add this sensor:
+sensor:
+  - platform: statistics
+    name: "Average Flow Rate (1 hour)"
+    entity_id: sensor.spoolman_spool_1_flow_rate
+    state_characteristic: mean
+    max_age:
+      hours: 1
+```
+
+Then create an automation to alert on unusual averages:
+
+```yaml
+alias: Flow Rate Trending Down
+description: "Alert when average flow rate trends lower than normal"
+trigger:
+  - platform: numeric_state
+    entity_id: sensor.average_flow_rate_1_hour
+    below: 5  # Adjust based on your typical average
+action:
+  - service: notify.notify
+    data:
+      title: "📉 Flow Rate Trending Low"
+      message: >-
+        Average flow rate over the last hour is {{ states('sensor.average_flow_rate_1_hour') }} mm³/s.
+        This might indicate gradual degradation. Consider checking your nozzle or filament path.
+mode: single
+```
+
+
 **What data can you use in your automations?** All of this good stuff:
 ```json
 {
