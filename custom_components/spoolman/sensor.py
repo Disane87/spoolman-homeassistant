@@ -265,7 +265,18 @@ class Spool(CoordinatorEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        spool_data = self.coordinator.data["spools"][self.idx]
+# Find spool by ID instead of index to handle archived spools correctly
+        spool_id = self._spool["id"]
+        spool_data = next(
+            (s for s in self.coordinator.data["spools"] if s["id"] == spool_id),
+            None
+        )
+        if spool_data is None:
+            _LOGGER.debug(
+                "SpoolManCoordinator: Spool with ID '%s' not found in coordinator data (may be archived).",
+                spool_id,
+            )
+            return
         self._spool = spool_data
         self._filament = spool_data["filament"]
 
@@ -450,7 +461,18 @@ class Filament(CoordinatorEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        filament_data = self.coordinator.data["filaments"][self.idx]
+# Find filament by ID instead of index to handle changes correctly
+        filament_id = self._filament["id"]
+        filament_data = next(
+            (f for f in self.coordinator.data["filaments"] if f["id"] == filament_id),
+            None
+        )
+        if filament_data is None:
+            _LOGGER.debug(
+                "SpoolManCoordinator: Filament with ID '%s' not found in coordinator data.",
+                filament_id,
+            )
+            return
         self._filament = filament_data
 
         _LOGGER.debug("SpoolManCoordinator: Filament %s", self._filament)
