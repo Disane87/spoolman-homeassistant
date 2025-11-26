@@ -1,3 +1,10 @@
+## [1.1.0-dev.4](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0-dev.3...v1.1.0-dev.4) (2025-11-26)
+
+### 🚀 Features
+
+* **sensor:** add estimated run out prediction sensor ([5a84fb7](https://github.com/Disane87/spoolman-homeassistant/commit/5a84fb7d25c19eae1e107e227f1dcb94e330d48f)), closes [#36](https://github.com/Disane87/spoolman-homeassistant/issues/36)
+* **sensor:** add flow rate tracking and improve entity management ([7a41302](https://github.com/Disane87/spoolman-homeassistant/commit/7a41302f6978c5e1e0cd7814c722dd56049d643e)), closes [#35](https://github.com/Disane87/spoolman-homeassistant/issues/35) [#141](https://github.com/Disane87/spoolman-homeassistant/issues/141)
+
 ## [1.1.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0-dev.2...v1.1.0-dev.3) (2025-11-26)
 
 ### 🚀 Features
