@@ -54,7 +54,7 @@ class SpoolLowFilament(CoordinatorEntity, BinarySensorEntity):
     """Binary sensor that indicates when a spool is running low on filament."""
 
     def __init__(
-        self, hass, coordinator, spool_data, config_entry
+        self, hass: HomeAssistant, coordinator, spool_data: dict, config_entry: ConfigEntry
     ) -> None:
         """Initialize the low filament binary sensor."""
         super().__init__(coordinator)
