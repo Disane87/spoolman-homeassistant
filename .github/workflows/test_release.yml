@@ -1,0 +1,40 @@
+name: Test Release (Dry Run)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test_semantic_release:
+    name: "Test Semantic Release (Dry Run)"
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: "Checkout the repository"
+        uses: "actions/checkout@v6"
+        with:
+          fetch-depth: 0
+
+      - name: "Setup Node"
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: "Install dependencies"
+        run: |
+          npm init --yes
+          npm install semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/exec conventional-changelog-conventionalcommits --save-dev
+
+      - name: "Validate Release Config"
+        run: |
+          echo "📋 Validating .releaserc.js..."
+          node -e "const config = require('./.releaserc.js'); console.log('✅ Config is valid!'); console.log('📦 Plugins:', config.plugins.length); console.log('🌿 Branches:', config.branches.map(b => typeof b === 'string' ? b : b.name).join(', '))"
+
+      - name: "Run Semantic Release (Dry Run)"
+        run: npx semantic-release --dry-run --no-ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Show what would happen"
+        run: echo "✅ Dry run completed! Check the logs above to see what would be released."
