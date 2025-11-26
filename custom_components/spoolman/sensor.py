@@ -194,9 +194,11 @@ class Spool(CoordinatorEntity, SensorEntity):
         self.config = hass.data[DOMAIN]
 
         self._spool = spool_data
+        self.spool_id = spool_data['id']  # Store ID instead of index
         self.handled_threshold_events = []
         self._filament = self._spool["filament"]
         self._attr_entity_picture = image_url
+        self._attr_available = True
 
         self.assign_name_and_location()
 
@@ -208,7 +210,7 @@ class Spool(CoordinatorEntity, SensorEntity):
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_native_unit_of_measurement = UnitOfMass.GRAMS
         self._attr_icon = ICON
-        self.idx = idx
+        self.idx = idx  # Keep for backwards compatibility, but don't use for lookups
 
     def assign_name_and_location(self):
         """Update sensor name and device (location)."""
@@ -242,30 +244,58 @@ class Spool(CoordinatorEntity, SensorEntity):
             if self._spool["archived"] is False
             else "Archived"
         )
-        spoolman_info = self.config[SPOOLMAN_INFO_PROPERTY]
-        device_info = DeviceInfo(
-            identifiers={(DOMAIN, self.config[CONF_URL], location_name)},  # type: ignore
-            name=location_name,
-            manufacturer="https://github.com/Donkie/Spoolman",
-            model="Spoolman",
-            configuration_url=self.config[CONF_URL],
-            suggested_area=location_name,
-            sw_version=f"{spoolman_info.get('version', 'unknown')} ({ spoolman_info.get('git_commit', 'unknown')})",
-        )
-        if self._attr_device_info is None:
-            self._attr_device_info = device_info
-        elif self._attr_device_info.get("name") != location_name:
-            # Must update entry since async_write_ha_state does not update device
-            if self.coordinator.config_entry is not None:
-                device = dr.async_get(self.coordinator.hass).async_get_or_create(config_entry_id=self.coordinator.config_entry.entry_id, **device_info)
-            self.registry_entry = er.async_get(self.coordinator.hass).async_update_entity(self.entity_id, device_id = device.id)
+
+        # Only update device info if location changed or not set yet
+        current_location = self._attr_device_info.get("name") if self._attr_device_info else None
+
+        if current_location != location_name:
+            spoolman_info = self.config[SPOOLMAN_INFO_PROPERTY]
+            device_info = DeviceInfo(
+                identifiers={(DOMAIN, self.config[CONF_URL], location_name)},  # type: ignore
+                name=location_name,
+                manufacturer="https://github.com/Donkie/Spoolman",
+                model="Spoolman",
+                configuration_url=self.config[CONF_URL],
+                suggested_area=location_name,
+                sw_version=f"{spoolman_info.get('version', 'unknown')} ({ spoolman_info.get('git_commit', 'unknown')})",
+            )
+
+            if self._attr_device_info is None:
+                self._attr_device_info = device_info
+            else:
+                # Must update entry since async_write_ha_state does not update device
+                if self.coordinator.config_entry is not None:
+                    _LOGGER.debug(
+                        "SpoolManCoordinator: Updating device location for spool %s from '%s' to '%s'",
+                        self._spool["id"],
+                        current_location,
+                        location_name,
+                    )
+                    device = dr.async_get(self.coordinator.hass).async_get_or_create(config_entry_id=self.coordinator.config_entry.entry_id, **device_info)
+                    self.registry_entry = er.async_get(self.coordinator.hass).async_update_entity(self.entity_id, device_id = device.id)
 
         self._attr_name = spool_name
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        spool_data = self.coordinator.data["spools"][self.idx]
+        # Use ID-based lookup instead of index to prevent IndexError
+        spool_data = next(
+            (s for s in self.coordinator.data.get("spools", []) if s["id"] == self.spool_id),
+            None
+        )
+
+        if spool_data is None:
+            # Spool was deleted or filtered out (e.g., archived)
+            _LOGGER.warning(
+                "SpoolManCoordinator: Spool with ID '%s' not found in coordinator data. Marking as unavailable.",
+                self.spool_id,
+            )
+            self._attr_available = False
+            self.async_write_ha_state()
+            return
+
+        self._attr_available = True
         self._spool = spool_data
         self._filament = spool_data["filament"]
 
@@ -385,7 +415,9 @@ class Filament(CoordinatorEntity, SensorEntity):
         self.config = hass.data[DOMAIN]
 
         self._filament = filament_data
+        self.filament_id = filament_data['id']  # Store ID instead of index
         self._attr_entity_picture = image_url
+        self._attr_available = True
 
         self.assign_name_and_location()
 
@@ -397,7 +429,7 @@ class Filament(CoordinatorEntity, SensorEntity):
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_native_unit_of_measurement = UnitOfMass.GRAMS
         self._attr_icon = ICON
-        self.idx = idx
+        self.idx = idx  # Keep for backwards compatibility, but don't use for lookups
 
     def assign_name_and_location(self):
         """Update sensor name and device (location)."""
@@ -450,7 +482,23 @@ class Filament(CoordinatorEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        filament_data = self.coordinator.data["filaments"][self.idx]
+        # Use ID-based lookup instead of index to prevent IndexError
+        filament_data = next(
+            (f for f in self.coordinator.data.get("filaments", []) if f["id"] == self.filament_id),
+            None
+        )
+
+        if filament_data is None:
+            # Filament was deleted
+            _LOGGER.warning(
+                "SpoolManCoordinator: Filament with ID '%s' not found in coordinator data. Marking as unavailable.",
+                self.filament_id,
+            )
+            self._attr_available = False
+            self.async_write_ha_state()
+            return
+
+        self._attr_available = True
         self._filament = filament_data
 
         _LOGGER.debug("SpoolManCoordinator: Filament %s", self._filament)

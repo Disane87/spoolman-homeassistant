@@ -44,6 +44,9 @@ async def async_setup_entry(hass: HomeAssistant, entry):
 
         try:
             await coordinator.spoolman_api.patch_spool(spool_id, data)
+            # Immediately refresh coordinator data to reflect changes
+            _LOGGER.debug(f"Requesting coordinator refresh after patching spool {spool_id}")
+            await coordinator.async_request_refresh()
         except Exception as e:
             _LOGGER.error(f"Failed to patch spool: {e}")
             raise HomeAssistantError(f"Failed to patch spool: {e}")
@@ -55,6 +58,9 @@ async def async_setup_entry(hass: HomeAssistant, entry):
 
         try:
             await coordinator.spoolman_api.use_spool_filament(spool_id, data)
+            # Immediately refresh coordinator data to reflect changes
+            _LOGGER.debug(f"Requesting coordinator refresh after using filament from spool {spool_id}")
+            await coordinator.async_request_refresh()
         except Exception as e:
             _LOGGER.error(f"Failed to use filament: {e}")
             raise HomeAssistantError(f"Failed to use filament: {e}")
@@ -71,6 +77,10 @@ async def async_unload_entry(hass: HomeAssistant, entry):
     _LOGGER.debug("__init__.async_unload_entry")
     unload_ok = await hass.config_entries.async_forward_entry_unload(entry, "sensor")
     if unload_ok:
+        # Close API session before removing data
+        if DOMAIN in hass.data and SPOOLMAN_API_WRAPPER in hass.data[DOMAIN]:
+            api = hass.data[DOMAIN][SPOOLMAN_API_WRAPPER]
+            await api.close()
         hass.data.pop(entry.domain)
     return unload_ok
 
