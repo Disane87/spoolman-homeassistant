@@ -1,3 +1,12 @@
+## [2.0.0-dev.9](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.8...v2.0.0-dev.9) (2025-11-26)
+
+### fix
+
+* use committerLogin instead of author name for GitHub usernames ([@Marco Franke](https://github.com/Marco Franke)) ([aa9654c173e2dc95cd1fc3481df0e1666ecc6c58]())
+### style
+
+* add return type annotation to async_setup_entry ([@Marco Franke](https://github.com/Marco Franke)) ([029a731afb198e9e7c00d3be0888bc1d0fdd8323]())
+
 ## [2.0.0-dev.8](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.7...v2.0.0-dev.8) (2025-11-26)
 
 ### docs
