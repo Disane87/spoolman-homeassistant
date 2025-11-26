@@ -1,3 +1,13 @@
+## [2.0.0-dev.7](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.6...v2.0.0-dev.7) (2025-11-26)
+
+### 📔 Docs
+
+* improve binary sensor docstring ([fd2e8ef](https://github.com/Disane87/spoolman-homeassistant/commit/fd2e8efe14d6eddf5b1e1429edae6010839f0c0d))
+
+### 🛠️ Fixes
+
+* remove transform function to fix changelog grouping ([775ef0f](https://github.com/Disane87/spoolman-homeassistant/commit/775ef0fa7c18ab278474e9f459a1bd1381eab336))
+
 ## [2.0.0-dev.6](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.5...v2.0.0-dev.6) (2025-11-26)
 
 ### fix
