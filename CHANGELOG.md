@@ -1,3 +1,15 @@
+## [2.0.0-dev.8](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.7...v2.0.0-dev.8) (2025-11-26)
+
+### docs
+
+* enhance module docstring with more detail ([@Marco Franke](https://github.com/Marco Franke)) ([35dd4b4431eabfc923375d29b74ca7a858ce1bfa]())* improve icon property documentation ([@Marco Franke](https://github.com/Marco Franke)) ([76ad704c4500c2299e2d4cbc96fdaf82a21951a9]())
+### feat
+
+* add commit authors and new contributor highlighting to changelog ([@Marco Franke](https://github.com/Marco Franke)) ([a836b0fe746099f08d8bb8c7753b32d270e5e280]())
+### fix
+
+* clone commit object to avoid immutability error ([@Marco Franke](https://github.com/Marco Franke)) ([99168ff0c4dc83fd724ca234b2e7b86f16e479ea]())
+
 ## [2.0.0-dev.7](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.6...v2.0.0-dev.7) (2025-11-26)
 
 ### 📔 Docs
