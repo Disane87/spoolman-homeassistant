@@ -1,3 +1,23 @@
+## [1.1.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.0.0...v1.1.0-dev.1) (2025-11-26)
+
+### 🛠️ Fixes
+
+* resolve IndexError on auto-update and add immediate refresh after service calls ([de0f831](https://github.com/Disane87/spoolman-homeassistant/commit/de0f831221132473478cdf01e61a58ede2cf2924)), closes [#198](https://github.com/Disane87/spoolman-homeassistant/issues/198) [#125](https://github.com/Disane87/spoolman-homeassistant/issues/125)
+* **api:** remove timeout parameter to match existing API patterns ([b3e0015](https://github.com/Disane87/spoolman-homeassistant/commit/b3e001585b17745da93a9a0f81de82fbf7ccdafb))
+* **sensor:** update spool entity data access for new coordinator structure ([f26a202](https://github.com/Disane87/spoolman-homeassistant/commit/f26a202ddd6a3edd4aa7ff02069d260ed9a1e8a6))
+
+### 📔 Docs
+
+* document the `spoolman.use_spool_filament` service ([e6c4b13](https://github.com/Disane87/spoolman-homeassistant/commit/e6c4b13fe2b4fea8f1e1500f0c380d3534eba18e))
+* document the `spoolman.use_spool_filament` service ([1401cf0](https://github.com/Disane87/spoolman-homeassistant/commit/1401cf0a5986b830a4e92a11d37ae7a7058a4186)), closes [#261](https://github.com/Disane87/spoolman-homeassistant/issues/261)
+* document the `spoolman.use_spool_filament` service ([45821e3](https://github.com/Disane87/spoolman-homeassistant/commit/45821e371d41b152ed3a2fbc4312cf3d81423c51))
+
+### 🚀 Features
+
+* **api:** add get_filaments method to SpoolmanAPI ([e162c1a](https://github.com/Disane87/spoolman-homeassistant/commit/e162c1a340c2a1a29d2ba2f5569c2f05694521e8))
+* **coordinator:** add filament data processing and aggregation ([758c608](https://github.com/Disane87/spoolman-homeassistant/commit/758c60810408341e8dbdd617b52f9d648ae22aa5))
+* **sensor:** add Filament sensor class and image generation ([1b6fd6e](https://github.com/Disane87/spoolman-homeassistant/commit/1b6fd6ec5307a7a35c701ac04f2e3b37a9636f6c))
+* **sensor:** integrate filament entities in async_setup_entry ([d1ad539](https://github.com/Disane87/spoolman-homeassistant/commit/d1ad5394948343eb6d078f303877c5f3c6899d53))
 
 ## [1.0.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v1.0.0-dev.2...v1.0.0-dev.3) (2025-11-26)
 
