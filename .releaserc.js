@@ -47,17 +47,23 @@ module.exports = {
                         // Clone the commit object to avoid immutability issues
                         const modifiedCommit = Object.assign({}, commit);
 
-                        // Add author information
-                        if (commit.author && commit.author.name) {
+                        // Add author information - prefer committerLogin over name
+                        if (commit.committerLogin) {
+                            modifiedCommit.authorName = commit.committerLogin;
+                            modifiedCommit.authorUrl = `https://github.com/${commit.committerLogin}`;
+                        } else if (commit.author && commit.author.name) {
+                            // Fallback to author name if committerLogin not available
                             modifiedCommit.authorName = commit.author.name;
                             modifiedCommit.authorUrl = commit.author.url || `https://github.com/${commit.author.name}`;
                         }
 
                         // Check if this is a first-time contributor
                         if (context && context.commits) {
-                            const authorCommits = context.commits.filter(c =>
-                                c.author && c.author.name === commit.author.name
-                            );
+                            const authorId = commit.committerLogin || (commit.author && commit.author.name);
+                            const authorCommits = context.commits.filter(c => {
+                                const compareId = c.committerLogin || (c.author && c.author.name);
+                                return compareId === authorId;
+                            });
                             modifiedCommit.isFirstContribution = authorCommits.length === 1;
                         }
 
