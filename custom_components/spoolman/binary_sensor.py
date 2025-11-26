@@ -1,4 +1,7 @@
-"""Spoolman home assistant binary sensor platform."""
+"""Spoolman home assistant binary sensor platform.
+
+This module provides a binary sensor that indicates when a spool is running low on filament.
+"""
 
 import logging
 

@@ -88,7 +88,7 @@ Glad you asked! Here's the good stuff:
 - 📏 **All The Measurements**: Weight, length, usage percentage - we got 'em all!
 - ⚡ **Flow Rate Tracking**: See how fast you're burning through filament (g/h)
 - ⏰ **Run-Out Predictions**: Know when you'll run out before it happens
-- 🔴 **Low Filament Binary Sensor**: Simple on/off sensor when spool is running low (configurable threshold)
+- 🔴 **Low Filament Binary Sensor**: Simple on/off sensor when spool is running low (uses warning threshold)
 - 📍 **Location Selector**: Move spools around with a simple dropdown
 - 🚨 **Smart Alerts**: Set thresholds for info, warning, and critical states
 - 📦 **Archive Support**: Old spools? Group them in an "Archived" device
