@@ -1,6 +1,7 @@
 """Spoolman home assistant integration."""
 import logging
 
+import homeassistant.helpers.config_validation as cv
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
@@ -14,6 +15,9 @@ from .coordinator import SpoolManCoordinator
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = [Platform.SENSOR, Platform.SELECT, Platform.BINARY_SENSOR]
+
+# Integration can only be set up from config entries
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
 async def async_setup_platform(
