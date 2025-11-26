@@ -1,3 +1,16 @@
+## [2.0.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.1...v2.0.0-dev.2) (2025-11-26)
+
+* Merge branch 'dev' of https://github.com/Disane87/spoolman-homeassistant into dev ([@]()) ([16748a9c5917850372fdf4d13a378f1df8ed01e7]())* Merge pull request #266 from Disane87/renovate/akhilmhdh-contributors-readme-action-2.x ([@]()) ([c501665a38fb5eb46a35d58e252765b667ec3633]())* Merge pull request #271 from Disane87/renovate/actions-checkout-6.x ([@]()) ([6c37ca2bd8f26684c6e36366b33bbfea92e7a7e6]())* Merge pull request #272 from Disane87/renovate/actions-first-interaction-3.x ([@]()) ([e994a17046251d4a8e5f2e12eb3edc0e72172d2a]())* Merge pull request #275 from saikumarvasa100-hash/add-flow-rate-automation-examples ([@]()) ([821271d8840451da3bb5a1b0d8254261ad639420]())* Merge pull request #276 from Disane87/renovate/actions-github-script-8.x ([@]()) ([4f4973e3a612586f819cb0b67c07466df71f49e4]())* Merge pull request #277 from Disane87/renovate/actions-stale-10.x ([@]()) ([ebca7a8d0f4ed94c8c5713ce7ab6ff050acd9b2f]())
+### feat
+
+* add contributors section to README and implement automated update workflow ([@]()) ([c77b902fe0fcd4c87588de3ddd3abeff06e75a2e]())* add low filament binary sensor and update README with usage examples ([@]()) ([18af4a2d72e558e997cee9d7e7be5fd4baa4a66c]())
+### chore
+
+* add GitHub workflows for PR management and contributor engagement ([@]()) ([38bb1d596a8385bdf378d406d81c8c29c25fd45d]())* **deps:** update actions/checkout action to v6 ([@]()) ([d259b055a3beff94a2643fdd37f7dd6593d7d453]())* **deps:** update actions/first-interaction action to v3 ([@]()) ([6a586d04e0d9f7050d81baac965898e980b6aaf0]())* **deps:** update actions/github-script action to v8 ([@]()) ([5ec4b983412b2a6bbfe0f3386469fffb303f0d4a]())* **deps:** update actions/stale action to v10 ([@]()) ([92f6bc1e65cfe610c92bad01f8b44d1192d25fcb]())* **deps:** update akhilmhdh/contributors-readme-action action to v2.3.11 ([@]()) ([b4f5624fb68590db2da8e4481702d8f77c980cfe]())
+### docs
+
+* add flow rate automation examples ([@]()) ([b9edfda34794b1806c54745d93d38b1561de9d06]())
+
 ## [2.0.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0-dev.4...v2.0.0-dev.1) (2025-11-26)
 
 ### ⚠ BREAKING CHANGES
