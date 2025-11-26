@@ -33,14 +33,14 @@ jobs:
       contents: write
     steps:
       - name: "Checkout the repository"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v6"
         with:
           fetch-depth: 0
 
       - name: "Setup Node"
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
 
       - run: npm init --yes
       - run: npm install semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/exec conventional-changelog-conventionalcommits --save-dev

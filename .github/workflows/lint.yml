@@ -13,12 +13,12 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
         - name: "Checkout the repository"
-          uses: "actions/checkout@v4"
+          uses: "actions/checkout@v6"
 
         - name: "Set up Python"
-          uses: actions/setup-python@v5.4.0
+          uses: actions/setup-python@v6.1.0
           with:
-            python-version: "3.13"
+            python-version: "3.14"
             cache: "pip"
 
         - name: "Install requirements"

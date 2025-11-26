@@ -26,9 +26,7 @@ class SpoolmanAPI:
         """Return the health status of the API."""
         _LOGGER.debug("SpoolmanAPI: health")
         url = f"{self.base_url}/health"
-        async with aiohttp.ClientSession() as session, session.get(
-            url, timeout=10
-        ) as response:
+        async with aiohttp.ClientSession() as session, session.get(url) as response:
             response.raise_for_status()
             response = await response.json()
             _LOGGER.debug("SpoolmanAPI: health response %s", response)
@@ -60,6 +58,25 @@ class SpoolmanAPI:
                 if "extra" in spool:
                     for key, value in spool["extra"].items():
                         spool["extra"][key] = json.loads(value)
+
+            return response
+
+    async def get_filaments(self, params):
+        """Return a list of all filaments."""
+        _LOGGER.debug("SpoolmanAPI: get_filaments")
+        url = f"{self.base_url}/filament"
+        if len(params) > 0:
+            url = f"{url}?{self.string_from_dictionary(params)}"
+        async with aiohttp.ClientSession() as session, session.get(url) as response:
+            response.raise_for_status()
+            response = await response.json()
+            _LOGGER.debug("SpoolmanAPI: get_filaments response %s", response)
+
+            """Decode each item in extra from JSON."""
+            for filament in response:
+                if "extra" in filament:
+                    for key, value in filament["extra"].items():
+                        filament["extra"][key] = json.loads(value)
 
             return response
 
