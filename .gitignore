@@ -88,3 +88,4 @@ virtualization/vagrant/config
 .mypy_cache
 *.pyc
 test_ha_config/
+Include/
