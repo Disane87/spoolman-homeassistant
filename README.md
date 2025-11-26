@@ -206,7 +206,7 @@ This integration creates services to be used in automations:
 This service is used to change values and properties if a spool. The `data` must match the data for the [Spoolman API](https://donkie.github.io/Spoolman/#tag/spool/operation/Update_spool_spool__spool_id__patch)
 
 > [!IMPORTANT]
-> You can't update `remaining_weight` and `used_weight` in one update. You can only set one of them. Spoolman calculates the missing field by itself.
+> You can't update `remaining_weight` and `used_weight` in one update. You can only set one of them. Spoolmann calculates the missing field by itself.
 
 ```yaml
 service: spoolman.patch_spool
@@ -220,18 +220,6 @@ data:
   location: Shelf B
   remaining_weight: 200
   lot_nr: 52342
-```
-
-## `spoolman.use_spool_filament`
-This service is used to automatically use a specified weight (or length) of filament for a spool. The `data` must match the data for the [Spoolman API](https://donkie.github.io/Spoolman/#tag/spool/operation/Use_spool_filament_spool__spool_id__use_put).
-
-Use one of `use_weight` (in grams) or `use_length` (in millimeters) along with the `id` of the spool to update.
-
-```yaml
-service: spoolman.use_spool_filament
-data:
-  id: 123
-  use_weight: 10
 ```
 
 # Extra fields
