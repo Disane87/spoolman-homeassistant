@@ -39,15 +39,8 @@ module.exports = {
                     ]
                 },
                 writerOpts: {
-                    transform: (commit, context) => {
-                        // Filter out merge commits
-                        if (commit.subject && commit.subject.startsWith('Merge')) {
-                            return null;
-                        }
-                        return commit;
-                    },
                     groupBy: "type",
-                    commitGroupsSort: ["feat", "fix", "perf", "docs"],
+                    commitGroupsSort: "title",
                     commitsSort: ["scope", "subject"]
                 }
             }
