@@ -46,8 +46,7 @@ module.exports = {
                     },
                     groupBy: "type",
                     commitGroupsSort: "title",
-                    commitsSort: ["scope", "subject"],
-                    commitPartial: '* {{#if scope}}**{{scope}}:** {{/if}}{{subject}} {{#if @root.linkReferences}}([{{shortHash}}]({{commitUrlFormat}})){{else}}{{shortHash}}{{/if}}{{~!-- only render @ if linkReferences is true --~}}{{#if @root.linkReferences}} ({{#each references}}{{#if @first}}@{{#if ../host}}{{../host}}/{{/if}}{{#if ../owner}}{{../owner}}/{{/if}}{{#if ../repository}}{{../repository}}{{/if}}{{#if issue}}#{{/if}}{{value}}{{/if}}{{/each}}){{/if}}\n'
+                    commitsSort: ["scope", "subject"]
                 }
             }
         ],
