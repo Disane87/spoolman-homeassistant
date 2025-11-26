@@ -1,0 +1,60 @@
+---
+name: "Question"
+description: "Ask a question about the integration"
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 👋 Thanks for your interest!
+
+        Before asking a question, please:
+        - 📖 Check the [README](https://github.com/Disane87/spoolman-homeassistant/blob/main/README.md)
+        - 📚 Review the [documentation](https://github.com/Disane87/spoolman-homeassistant/tree/main/docs)
+        - 🔍 Search [existing issues](https://github.com/Disane87/spoolman-homeassistant/issues?q=is%3Aissue)
+        - 💬 Check [closed questions](https://github.com/Disane87/spoolman-homeassistant/issues?q=is%3Aissue+label%3Aquestion+is%3Aclosed)
+
+  - type: textarea
+    id: question
+    attributes:
+      label: "❓ Your Question"
+      description: "What would you like to know?"
+      placeholder: "Ask your question here..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: "📋 Additional Context"
+      description: "Provide any relevant context, configuration, or information that might help us answer your question"
+      placeholder: |
+        - Home Assistant version:
+        - Integration version:
+        - What you're trying to achieve:
+        - What you've already tried:
+    validations:
+      required: false
+
+  - type: textarea
+    id: config
+    attributes:
+      label: "⚙️ Configuration (if relevant)"
+      description: "Share your relevant configuration (remove sensitive information!)"
+      render: yaml
+      placeholder: |
+        # Your configuration here
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "✅ Checklist"
+      options:
+        - label: "I have searched for similar questions in existing issues"
+          required: true
+        - label: "I have checked the documentation"
+          required: true
+        - label: "This is a question, not a bug report or feature request"
+          required: true

@@ -430,6 +430,12 @@ We'd love to have you on board! Check out our [Contributing Guidelines](CONTRIBU
 - 🧪 Testing and code quality stuff
 - 🚀 How to submit Pull Requests
 
+**🌟 New to Contributing?**
+- Look for issues labeled [`good first issue`](https://github.com/Disane87/spoolman-homeassistant/labels/good%20first%20issue) - perfect for beginners!
+- Check out our [GitHub Labels Guide](docs/GITHUB_LABELS.md) to understand how we organize work
+- Read our [Automations Guide](docs/AUTOMATIONS.md) to see how we use automation to help contributors
+- Read our [Security Policy](SECURITY.md) if you find a security issue
+
 **🏃‍♂️ Quick Start for Developers:**
 - 📦 Use the included Dev Container - everything's ready to go!
 - 🌿 Merge PRs to the `dev` branch (PRs against `main` will be rejected)

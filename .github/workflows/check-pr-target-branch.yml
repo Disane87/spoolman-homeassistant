@@ -1,0 +1,66 @@
+name: "Check PR Target Branch"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+    branches:
+      - main
+
+jobs:
+  check-target-branch:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Check if PR targets main branch
+        if: github.base_ref == 'main'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+
+            // Add warning comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('⚠️ Wrong Target Branch')
+            );
+
+            if (!botComment) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: '⚠️ **Wrong Target Branch Detected!**\n\n' +
+                  'This PR is targeting the `main` branch, but according to our [Contributing Guidelines](https://github.com/Disane87/spoolman-homeassistant/blob/main/CONTRIBUTING.md), all PRs should target the `dev` branch.\n\n' +
+                  '**Why?**\n' +
+                  '- `main` is our production branch (stable releases only)\n' +
+                  '- `dev` is our development branch (all new changes go here first)\n' +
+                  '- This ensures proper testing before production release\n\n' +
+                  '**How to fix:**\n' +
+                  '1. Close this PR\n' +
+                  '2. Create a new PR targeting the `dev` branch\n' +
+                  '3. Or update this PR\'s base branch to `dev`:\n' +
+                  '   - Click "Edit" next to the title\n' +
+                  '   - Change base branch from `main` to `dev`\n\n' +
+                  'Need help? Check our [Contributing Guide](https://github.com/Disane87/spoolman-homeassistant/blob/main/CONTRIBUTING.md#-branching-strategy) or ask questions here!\n\n' +
+                  'Thanks for contributing! 🙏'
+              });
+            }
+
+            // Add label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              labels: ['needs information']
+            });
+
+            core.setFailed('PR targets main branch instead of dev');

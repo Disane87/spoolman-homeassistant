@@ -6,6 +6,37 @@ Whether you're fixing a typo, squashing a bug, or adding a cool new feature - ev
 
 There are just a few things to keep in mind to make sure everything runs smoothly:
 
+## 🌟 New to Contributing? Start Here!
+
+**First time contributing to open source? Welcome! 🎉**
+
+We've got you covered with issues tagged as **"good first issue"** - these are perfect for getting started! They're:
+- 🎯 Well-defined and focused
+- 📚 Have clear acceptance criteria
+- 💡 Include hints or guidance
+- 🚀 Great learning opportunities
+
+**How to find them:**
+1. Go to [Issues](https://github.com/Disane87/spoolman-homeassistant/issues)
+2. Filter by label: `good first issue`
+3. Pick one that interests you
+4. Comment on the issue to let others know you're working on it
+5. Follow the development workflow below
+
+**Need help?** Don't hesitate to ask questions in the issue comments or open a discussion! We're here to help! 💪
+
+### 🏷️ Issue Labels Explained
+
+- **🐛 `bug`** - Something isn't working correctly
+- **✨ `enhancement`** - New feature or request
+- **📝 `documentation`** - Improvements or additions to documentation
+- **🌟 `good first issue`** - Good for newcomers
+- **🆘 `help wanted`** - Extra attention is needed
+- **❓ `question`** - Further information is requested
+- **🔄 `dependencies`** - Pull requests that update a dependency file
+- **🚨 `priority: high`** - High priority issues
+- **💥 `breaking change`** - Changes that break backward compatibility
+
 ## 🌿 Branching Strategy
 
 Let's keep things organized! Here's how we handle branches:
@@ -294,6 +325,39 @@ Prefer to keep things local? That's cool too! Here's how:
    - Be respectful and considerate in all communications.
    - Discuss any significant changes or new features with the project maintainers before starting work to ensure alignment with project goals.
 
+## 🎖️ Recognition
+
+We value all contributions! Contributors will be:
+- 📋 Listed in our `README.md` (via our automated contributor workflow)
+- 🏆 Mentioned in release notes for significant contributions
+- ⭐ Featured in our GitHub contributors page
+
+## 🤖 Automated Workflows
+
+This project uses several GitHub Actions to make contributing easier:
+
+- ✅ **Auto-labeling**: Area labels added automatically based on changes
+- ✅ **PR validation**: Checks for conventional commits, target branch, linked issues
+- ✅ **Size labeling**: PRs automatically tagged by size
+- ✅ **Welcome messages**: First-time contributors get helpful guidance
+- ✅ **Stale issue management**: Old good first issues are cleaned up automatically
+
+See our [Automations Guide](docs/AUTOMATIONS.md) for full details!
+
+## 📚 Additional Resources
+
+- [Home Assistant Developer Documentation](https://developers.home-assistant.io/)
+- [Spoolman API Documentation](https://github.com/Donkie/Spoolman)
+- [Conventional Commits](https://www.conventionalcommits.org/)
+- [Python Type Hints](https://docs.python.org/3/library/typing.html)
+- [GitHub Automations](docs/AUTOMATIONS.md)
+
+## 💬 Community
+
+- **Issues:** Report bugs and request features
+- **Discussions:** Ask questions and share ideas
+- **Pull Requests:** Submit your contributions
+
 ## Thank You!
 
-Thank you for contributing and helping to maintain the quality and consistency of the project!
+Thank you for contributing and helping to maintain the quality and consistency of the project! Every contribution, no matter how small, makes a difference! 🙏✨
