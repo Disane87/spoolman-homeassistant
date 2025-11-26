@@ -1,3 +1,9 @@
+## [1.1.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0-dev.1...v1.1.0-dev.2) (2025-11-26)
+
+### 🛠️ Fixes
+
+* **sensor:** prevent IndexError and improve coordinator refresh behavior ([a079ae0](https://github.com/Disane87/spoolman-homeassistant/commit/a079ae0ff39afd57df557c350bf8bfdf5bce409d)), closes [#198](https://github.com/Disane87/spoolman-homeassistant/issues/198) [#125](https://github.com/Disane87/spoolman-homeassistant/issues/125) [#203](https://github.com/Disane87/spoolman-homeassistant/issues/203) [#141](https://github.com/Disane87/spoolman-homeassistant/issues/141)
+
 ## [1.1.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.0.0...v1.1.0-dev.1) (2025-11-26)
 
 ### 🛠️ Fixes
