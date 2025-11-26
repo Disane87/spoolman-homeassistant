@@ -78,6 +78,6 @@ async def async_unload_entry(hass: HomeAssistant, entry):
 async def async_get_data(hass: HomeAssistant):
     """Get the latest data from the Spoolman API."""
     _LOGGER.debug("__init__.async_get_data")
-    return await hass.data[DOMAIN][SPOOLMAN_API_WRAPPER].get_spool(
+    return await hass.data[DOMAIN][SPOOLMAN_API_WRAPPER].get_spools(
         {"allow_archived": False}
     )
