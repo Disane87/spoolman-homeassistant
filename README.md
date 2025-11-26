@@ -88,6 +88,7 @@ Glad you asked! Here's the good stuff:
 - 📏 **All The Measurements**: Weight, length, usage percentage - we got 'em all!
 - ⚡ **Flow Rate Tracking**: See how fast you're burning through filament (g/h)
 - ⏰ **Run-Out Predictions**: Know when you'll run out before it happens
+- 🔴 **Low Filament Binary Sensor**: Simple on/off sensor when spool is running low (configurable threshold)
 - 📍 **Location Selector**: Move spools around with a simple dropdown
 - 🚨 **Smart Alerts**: Set thresholds for info, warning, and critical states
 - 📦 **Archive Support**: Old spools? Group them in an "Archived" device
@@ -273,7 +274,38 @@ card_param: cards
 
 # 🤖 Automation Ideas
 
-Let's get creative! Here's an example that notifies you when a spool is running low:
+Let's get creative! Here are some examples to get you started:
+
+## 🔴 Simple Low Filament Alert (NEW!)
+
+The easiest way to get notified when a spool is running low - just use the binary sensor:
+
+```yaml
+alias: Low Filament Alert
+description: "Notify when any spool is running low on filament"
+trigger:
+  - platform: state
+    entity_id: binary_sensor.spoolman_spool_*_low_filament
+    to: "on"
+condition: []
+action:
+  - service: notify.notify
+    data:
+      title: "⚠️ Low Filament Warning"
+      message: "{{ trigger.to_state.attributes.friendly_name }} is running low ({{ trigger.to_state.attributes.remaining_percentage }}% remaining)"
+mode: queued
+```
+
+**What's cool about this?**
+- ✅ No templates needed - just a simple state trigger!
+- ✅ Works with any spool using wildcards (`*`)
+- ✅ Uses the "Threshold Warning" setting (default 75%)
+- ✅ Shows exact remaining percentage in the notification
+
+## 🚨 Advanced Threshold Event
+
+For more control, use threshold events with different severity levels:
+
 ```yaml
 alias: Filament almost empty
 description: ""
