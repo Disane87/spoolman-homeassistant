@@ -1,3 +1,9 @@
+## [2.0.0-dev.6](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.5...v2.0.0-dev.6) (2025-11-26)
+
+### fix
+
+* restore linkCompare and linkReferences for proper changelog formatting ([](https://github.com/Disane87/spoolman-homeassistant/commit/3a7997b9687f2868db58efa84c1994002ea78ffe))
+
 ## [2.0.0-dev.5](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.4...v2.0.0-dev.5) (2025-11-26)
 
 ### fix
