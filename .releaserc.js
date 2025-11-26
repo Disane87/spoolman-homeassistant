@@ -44,10 +44,13 @@ module.exports = {
                     commitsSort: ["scope", "subject"],
                     commitPartial: "* {{#if scope}}**{{scope}}:** {{/if}}{{subject}} ([@{{authorName}}]({{authorUrl}})) {{#if hash}}([{{hash}}]({{commitUrlFormat}})){{/if}}\n{{~!-- Check if this is a new contributor --}}\n{{#if isFirstContribution}}  **🎉 New Contributor!**{{/if}}",
                     transform: (commit, context) => {
+                        // Clone the commit object to avoid immutability issues
+                        const modifiedCommit = Object.assign({}, commit);
+
                         // Add author information
                         if (commit.author && commit.author.name) {
-                            commit.authorName = commit.author.name;
-                            commit.authorUrl = commit.author.url || `https://github.com/${commit.author.name}`;
+                            modifiedCommit.authorName = commit.author.name;
+                            modifiedCommit.authorUrl = commit.author.url || `https://github.com/${commit.author.name}`;
                         }
 
                         // Check if this is a first-time contributor
@@ -55,10 +58,10 @@ module.exports = {
                             const authorCommits = context.commits.filter(c =>
                                 c.author && c.author.name === commit.author.name
                             );
-                            commit.isFirstContribution = authorCommits.length === 1;
+                            modifiedCommit.isFirstContribution = authorCommits.length === 1;
                         }
 
-                        return commit;
+                        return modifiedCommit;
                     }
                 }
             }
