@@ -24,10 +24,10 @@ module.exports = {
         preset: "conventionalcommits",
         presetConfig: {
           types: [
-            {type: "feat", section: "🚀 Features"},
-            {type: "fix", section: "🛠️ Fixes"},
-            {type: "perf", section: "⏩ Performance"},
-            {type: "docs", section: "📔 Docs"},
+            {type: "feat", section: "🚀 Features", hidden: false},
+            {type: "fix", section: "🛠️ Fixes", hidden: false},
+            {type: "perf", section: "⏩ Performance", hidden: false},
+            {type: "docs", section: "📔 Docs", hidden: false},
             {type: "refactor", section: "♻️ Refactor", hidden: true},
             {type: "style", section: "💈 Style", hidden: true},
             {type: "test", section: "🧪 Tests", hidden: true},
@@ -42,19 +42,12 @@ module.exports = {
             if (commit.subject && commit.subject.startsWith('Merge')) {
               return null;
             }
-
-            // Clone the commit object to avoid immutability issues
-            const transformedCommit = Object.assign({}, commit);
-
-            // Add contributor info
-            if (transformedCommit.author && transformedCommit.author.name) {
-              transformedCommit.authorName = transformedCommit.author.name;
-              transformedCommit.authorUrl = `https://github.com/${transformedCommit.author.name}`;
-            }
-
-            return transformedCommit;
+            return commit;
           },
-          commitPartial: '* {{#if scope}}**{{scope}}:** {{/if}}{{subject}}{{#if authorName}} ([@{{authorName}}]({{authorUrl}})){{/if}}{{#if hash}} ([{{hash}}]({{commitUrlFormat}})){{/if}}\n'
+          groupBy: "type",
+          commitGroupsSort: "title",
+          commitsSort: ["scope", "subject"],
+          commitPartial: '* {{#if scope}}**{{scope}}:** {{/if}}{{subject}} {{#if @root.linkReferences}}([{{shortHash}}]({{commitUrlFormat}})){{else}}{{shortHash}}{{/if}}{{~!-- only render @ if linkReferences is true --~}}{{#if @root.linkReferences}} ({{#each references}}{{#if @first}}@{{#if ../host}}{{../host}}/{{/if}}{{#if ../owner}}{{../owner}}/{{/if}}{{#if ../repository}}{{../repository}}{{/if}}{{#if issue}}#{{/if}}{{value}}{{/if}}{{/each}}){{/if}}\n'
         }
       }
     ],

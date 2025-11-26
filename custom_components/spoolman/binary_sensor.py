@@ -1,6 +1,7 @@
 """Spoolman home assistant binary sensor platform.
 
-This module provides a binary sensor that indicates when a spool is running low on filament.
+This module provides a binary sensor that indicates when a spool is running low
+on filament based on the configured warning threshold.
 """
 
 import logging
