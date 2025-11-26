@@ -1,0 +1,64 @@
+name: "Welcome New Contributors"
+
+on:
+  pull_request_target:
+    types: [opened]
+  issues:
+    types: [opened]
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Welcome first-time contributors
+        uses: actions/first-interaction@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+          issue-message: |
+            👋 **Welcome to Spoolman Home Assistant Integration!**
+
+            Thanks for opening your first issue! We're excited to have you here! 🎉
+
+            **What happens next?**
+            - A maintainer will review your issue soon
+            - Please make sure you've filled out all the required information
+            - Feel free to ask questions if anything is unclear!
+
+            **New to contributing?**
+            - Check out our [Contributing Guide](https://github.com/Disane87/spoolman-homeassistant/blob/main/CONTRIBUTING.md)
+            - Look for issues labeled [`good first issue`](https://github.com/Disane87/spoolman-homeassistant/labels/good%20first%20issue)
+            - Join the discussion in other issues
+
+            We're here to help! Don't hesitate to ask questions. 💬
+
+          pr-message: |
+            🎉 **Awesome! Your first Pull Request!**
+
+            Thank you so much for contributing to the Spoolman Home Assistant Integration!
+
+            **Before we can merge:**
+            - [ ] Make sure your PR targets the `dev` branch (not `main`)
+            - [ ] All tests pass ✅
+            - [ ] You've followed our commit message format ([Conventional Commits](https://www.conventionalcommits.org/))
+            - [ ] Documentation is updated if needed
+
+            **What happens next?**
+            1. Our CI/CD pipeline will run automatic checks
+            2. A maintainer will review your changes
+            3. We might ask for some changes or improvements
+            4. Once approved, we'll merge it! 🚀
+
+            **Tips for a smooth review:**
+            - Keep PRs focused and small when possible
+            - Add clear descriptions of what changed and why
+            - Link related issues with "Fixes #123" or "Closes #123"
+            - Respond to feedback promptly
+
+            Thanks for making this project better! Every contribution counts! 🙌
+
+            Need help? Check out our [Contributing Guide](https://github.com/Disane87/spoolman-homeassistant/blob/main/CONTRIBUTING.md) or ask questions here!

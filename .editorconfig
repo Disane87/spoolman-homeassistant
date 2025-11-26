@@ -1,0 +1,78 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Python files
+[*.py]
+indent_style = space
+indent_size = 4
+max_line_length = 120
+
+# YAML files
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# JSON files
+[*.json]
+indent_style = space
+indent_size = 2
+
+# JavaScript/TypeScript files
+[*.{js,ts,jsx,tsx}]
+indent_style = space
+indent_size = 2
+
+# Markdown files
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Shell scripts
+[*.sh]
+indent_style = space
+indent_size = 2
+
+# TOML files
+[*.toml]
+indent_style = space
+indent_size = 2
+
+# Makefiles
+[Makefile]
+indent_style = tab
+
+# Git config files
+[.gitconfig]
+indent_style = tab
+
+# Batch files (Windows)
+[*.{bat,cmd}]
+end_of_line = crlf
+
+# Home Assistant specific
+[configuration.yaml]
+indent_style = space
+indent_size = 2
+
+# Docker files
+[Dockerfile*]
+indent_style = space
+indent_size = 2
+
+# GitHub Actions workflows
+[.github/workflows/*.yml]
+indent_style = space
+indent_size = 2
+
+# Ignore generated/vendored files
+[{Lib/**,lib64/**,.venv/**,node_modules/**}]
+ignore = true

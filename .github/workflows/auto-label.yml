@@ -1,0 +1,72 @@
+name: "Auto Label"
+
+on:
+  issues:
+    types: [labeled]
+  pull_request:
+    types: [labeled]
+
+jobs:
+  auto-label:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Add "needs testing" when "released on @dev" is added
+        if: github.event.label.name == 'released on @dev'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue_number = context.issue.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // Check if "needs testing" label already exists
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+              owner,
+              repo,
+              issue_number
+            });
+
+            const hasNeedsTesting = labels.some(label => label.name === 'needs testing');
+
+            if (!hasNeedsTesting) {
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number,
+                labels: ['needs testing']
+              });
+
+              console.log(`Added "needs testing" label to issue #${issue_number}`);
+            } else {
+              console.log(`Issue #${issue_number} already has "needs testing" label`);
+            }
+
+      - name: Remove "needs testing" when "released" is added
+        if: github.event.label.name == 'released'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue_number = context.issue.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            try {
+              await github.rest.issues.removeLabel({
+                owner,
+                repo,
+                issue_number,
+                name: 'needs testing'
+              });
+
+              console.log(`Removed "needs testing" label from issue #${issue_number}`);
+            } catch (error) {
+              if (error.status === 404) {
+                console.log(`Issue #${issue_number} doesn't have "needs testing" label`);
+              } else {
+                throw error;
+              }
+            }
