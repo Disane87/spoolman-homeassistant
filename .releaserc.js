@@ -22,6 +22,8 @@ module.exports = {
             "@semantic-release/release-notes-generator",
             {
                 preset: "conventionalcommits",
+                linkCompare: true,
+                linkReferences: true,
                 presetConfig: {
                     types: [
                         { type: "feat", section: "🚀 Features", hidden: false },
@@ -45,7 +47,7 @@ module.exports = {
                         return commit;
                     },
                     groupBy: "type",
-                    commitGroupsSort: "title",
+                    commitGroupsSort: ["feat", "fix", "perf", "docs"],
                     commitsSort: ["scope", "subject"]
                 }
             }
