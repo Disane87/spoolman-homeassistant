@@ -1,3 +1,9 @@
+## [2.0.0-dev.4](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.3...v2.0.0-dev.4) (2025-11-26)
+
+### fix
+
+* improve changelog format with proper username links and emoji sections ([]()) ()
+
 ## [2.0.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.2...v2.0.0-dev.3) (2025-11-26)
 
 ### fix
