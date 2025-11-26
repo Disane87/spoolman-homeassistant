@@ -1,3 +1,9 @@
+## [1.1.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0-dev.2...v1.1.0-dev.3) (2025-11-26)
+
+### 🚀 Features
+
+* **sensor:** add Spool Flow Rate sensor and integrate into setup ([e6f6636](https://github.com/Disane87/spoolman-homeassistant/commit/e6f66361962b63fbad06f99d14d9015d493ef8a2)), closes [#35](https://github.com/Disane87/spoolman-homeassistant/issues/35)
+
 ## [1.1.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0-dev.1...v1.1.0-dev.2) (2025-11-26)
 
 ### 🛠️ Fixes
