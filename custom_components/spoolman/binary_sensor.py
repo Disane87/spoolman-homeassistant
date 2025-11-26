@@ -149,7 +149,7 @@ class SpoolLowFilament(CoordinatorEntity, BinarySensorEntity):
 
     @property
     def icon(self) -> str:
-        """Return icon based on state."""
+        """Return dynamic icon based on sensor state."""
         if self.is_on:
             return "mdi:alert-circle"
         return "mdi:check-circle"

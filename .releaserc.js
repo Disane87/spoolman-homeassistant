@@ -43,13 +43,16 @@ module.exports = {
                             return null;
                         }
 
+                        // Clone the commit object to avoid immutability issues
+                        const transformedCommit = Object.assign({}, commit);
+
                         // Add contributor info
-                        if (commit.author && commit.author.name) {
-                            commit.authorName = commit.author.name;
-                            commit.authorUrl = `https://github.com/${commit.author.name}`;
+                        if (transformedCommit.author && transformedCommit.author.name) {
+                            transformedCommit.authorName = transformedCommit.author.name;
+                            transformedCommit.authorUrl = `https://github.com/${transformedCommit.author.name}`;
                         }
 
-                        return commit;
+                        return transformedCommit;
                     },
                     commitPartial: '* {{#if scope}}**{{scope}}:** {{/if}}{{subject}}{{#if authorName}} ([@{{authorName}}]({{authorUrl}})){{/if}}{{#if hash}} ([{{hash}}]({{commitUrlFormat}})){{/if}}\n'
                 }
