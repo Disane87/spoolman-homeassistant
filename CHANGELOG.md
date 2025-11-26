@@ -1,3 +1,19 @@
+## [2.0.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.2...v2.0.0-dev.3) (2025-11-26)
+
+### fix
+
+* clone commit object to avoid immutability errors in semantic release ([@Marco Franke](https://github.com/Marco Franke)) ([3b1e6d46df05d1e1ff578e39fad8be819eb60f4e]())
+* update README and binary sensor docstring for clarity ([@Marco Franke](https://github.com/Marco Franke)) ([576a2a8f40572e97a99934e84e1944429b14bde6]())
+
+### ci
+
+* add config schema for integration setup from config entries to prevent Hassfest errors ([@Marco Franke](https://github.com/Marco Franke)) ([c305142295614beaacc35c696c659ee463199b7e]())
+* add dry-run config and fix test workflow ([@Marco Franke](https://github.com/Marco Franke)) ([2422ead9c44479b7bdd085ce1e2c4ced0fa67b75]())
+* add test release workflow for semantic release dry run ([@Marco Franke](https://github.com/Marco Franke)) ([f25e0b2b654d273d43681b1097faf4cf18ef3c7f]())
+* add validation step for release configuration in test release workflow ([@Marco Franke](https://github.com/Marco Franke)) ([4941f9df20fff82217229e60de660223efe09f0b]())
+* migrate configuration from .releaserc to .releaserc.js for semantic release ([@Marco Franke](https://github.com/Marco Franke)) ([5286ccea19473f1891acd126f9d3bb7099d62fe0]())
+* migrate release configuration to .releaserc.js and remove old .releaserc ([@Marco Franke](https://github.com/Marco Franke)) ([bd5e0f9b9b3c91edfccf7d269289a3081a3c404d]())
+
 ## [2.0.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.1...v2.0.0-dev.2) (2025-11-26)
 
 * Merge branch 'dev' of https://github.com/Disane87/spoolman-homeassistant into dev ([@]()) ([16748a9c5917850372fdf4d13a378f1df8ed01e7]())* Merge pull request #266 from Disane87/renovate/akhilmhdh-contributors-readme-action-2.x ([@]()) ([c501665a38fb5eb46a35d58e252765b667ec3633]())* Merge pull request #271 from Disane87/renovate/actions-checkout-6.x ([@]()) ([6c37ca2bd8f26684c6e36366b33bbfea92e7a7e6]())* Merge pull request #272 from Disane87/renovate/actions-first-interaction-3.x ([@]()) ([e994a17046251d4a8e5f2e12eb3edc0e72172d2a]())* Merge pull request #275 from saikumarvasa100-hash/add-flow-rate-automation-examples ([@]()) ([821271d8840451da3bb5a1b0d8254261ad639420]())* Merge pull request #276 from Disane87/renovate/actions-github-script-8.x ([@]()) ([4f4973e3a612586f819cb0b67c07466df71f49e4]())* Merge pull request #277 from Disane87/renovate/actions-stale-10.x ([@]()) ([ebca7a8d0f4ed94c8c5713ce7ab6ff050acd9b2f]())
