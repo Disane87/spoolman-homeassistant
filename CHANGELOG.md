@@ -1,3 +1,17 @@
+## [1.0.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v1.0.0-dev.2...v1.0.0-dev.3) (2025-11-26)
+
+### 🛠️ Fixes
+
+* **api:** remove timeout parameter to match existing API patterns ([b3e0015](https://github.com/Disane87/spoolman-homeassistant/commit/b3e001585b17745da93a9a0f81de82fbf7ccdafb))
+* **sensor:** update spool entity data access for new coordinator structure ([f26a202](https://github.com/Disane87/spoolman-homeassistant/commit/f26a202ddd6a3edd4aa7ff02069d260ed9a1e8a6))
+
+### 🚀 Features
+
+* **api:** add get_filaments method to SpoolmanAPI ([e162c1a](https://github.com/Disane87/spoolman-homeassistant/commit/e162c1a340c2a1a29d2ba2f5569c2f05694521e8))
+* **coordinator:** add filament data processing and aggregation ([758c608](https://github.com/Disane87/spoolman-homeassistant/commit/758c60810408341e8dbdd617b52f9d648ae22aa5))
+* **sensor:** add Filament sensor class and image generation ([1b6fd6e](https://github.com/Disane87/spoolman-homeassistant/commit/1b6fd6ec5307a7a35c701ac04f2e3b37a9636f6c))
+* **sensor:** integrate filament entities in async_setup_entry ([d1ad539](https://github.com/Disane87/spoolman-homeassistant/commit/d1ad5394948343eb6d078f303877c5f3c6899d53))
+
 ## [1.0.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v1.0.0-dev.1...v1.0.0-dev.2) (2025-03-09)
 
 ### 🛠️ Fixes
