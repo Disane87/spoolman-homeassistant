@@ -104,6 +104,14 @@ class SpoolLocationSelect(CoordinatorEntity, SelectEntity):
 
         self._attr_name = f"{spool_name} Location"
 
+        # Set device info to match spool device
+        from homeassistant.helpers.device_registry import DeviceInfo
+        from .const import CONF_URL
+
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")},
+        )
+
     @property
     def options(self) -> list[str]:
         """Return the list of available locations."""
