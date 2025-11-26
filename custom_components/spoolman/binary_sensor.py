@@ -33,7 +33,7 @@ async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
-):
+) -> None:
     """Set up Spoolman binary sensors from a config entry."""
     coordinator = hass.data[DOMAIN]["coordinator"]
 
