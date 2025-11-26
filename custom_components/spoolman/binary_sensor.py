@@ -3,7 +3,8 @@
 This module provides a binary sensor that indicates when a spool is running low
 on filament based on the configured warning threshold.
 
-The binary sensor uses the existing notification threshold configuration.
+The binary sensor uses the existing notification threshold configuration to
+determine when to alert users about low filament levels.
 """
 
 import logging
