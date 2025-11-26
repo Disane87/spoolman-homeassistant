@@ -1,3 +1,9 @@
+## [2.0.0-dev.5](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.4...v2.0.0-dev.5) (2025-11-26)
+
+### fix
+
+* simplify changelog template to use defaults for proper formatting ([](https://github.com/Disane87/spoolman-homeassistant/commit/b941bef9da17b14c0ec8d440b28f6dd36817794b))
+
 ## [2.0.0-dev.4](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.3...v2.0.0-dev.4) (2025-11-26)
 
 ### fix
