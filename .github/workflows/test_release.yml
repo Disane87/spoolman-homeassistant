@@ -26,6 +26,11 @@ jobs:
           npm init --yes
           npm install semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/exec conventional-changelog-conventionalcommits --save-dev
 
+      - name: "Validate Release Config"
+        run: |
+          echo "📋 Validating .releaserc.js..."
+          node -e "const config = require('./.releaserc.js'); console.log('✅ Config is valid!'); console.log('📦 Plugins:', config.plugins.length); console.log('🌿 Branches:', config.branches.map(b => typeof b === 'string' ? b : b.name).join(', '))"
+
       - name: "Run Semantic Release (Dry Run)"
         run: npx semantic-release --dry-run --no-ci
         env:
