@@ -1,3 +1,38 @@
+## [2.0.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0-dev.4...v2.0.0-dev.1) (2025-11-26)
+
+### ⚠ BREAKING CHANGES
+
+* Device structure improved - each spool is now its own device
+
+See README for more information about this.
+
+- Split all 27 sensor classes into individual files for better maintainability
+- Fixed device identifier from 2-tuple to 3-tuple format (DOMAIN, URL, ID)
+  to ensure all sensors belong to the same device
+- Added color visualization to FilamentColorHex sensor with entity_picture
+- Improved code organization following Python best practices
+- All sensors now properly grouped under their parent spool device
+
+Technical changes:
+- Refactored sensors/__init__.py to import from individual files
+- Created dedicated files for each sensor class (27 files total)
+- Updated DeviceInfo identifiers across all sensors:
+  * Before: (DOMAIN, f"spool_{id}")
+  * After: (DOMAIN, self.config[CONF_URL], f"spool_{id}")
+- Enhanced FilamentColorHex with PIL image generation support
+- Added base sensor class for shared functionality
+
+This ensures proper device grouping in Home Assistant UI and resolves
+issues where sensors created separate devices instead of grouping together.
+
+### 🛠️ Fixes
+
+* correct formatting and alignment in .ruff.toml configuration ([97f58db](https://github.com/Disane87/spoolman-homeassistant/commit/97f58db6f03b4ce2f92ace1269ecdcbfffed47d5))
+
+### :scissors: Refactor
+
+* split sensors into individual files and fix device registration ([#71](https://github.com/Disane87/spoolman-homeassistant/issues/71)) ([03015b2](https://github.com/Disane87/spoolman-homeassistant/commit/03015b227cd1e39c609be8ec54fb7d376db03ae2))
+
 ## [1.1.0-dev.4](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0-dev.3...v1.1.0-dev.4) (2025-11-26)
 
 ### 🚀 Features
