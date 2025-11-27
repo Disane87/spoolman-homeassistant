@@ -1,91 +1,3 @@
-## [2.0.0-dev.10](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.9...v2.0.0-dev.10) (2025-11-27)
-
-### 📔 Docs
-
-* update README and add filament-auto-entities image ([6f5d492](https://github.com/Disane87/spoolman-homeassistant/commit/6f5d49247878f7584618a623b662a46de6f52e0e))
-
-### 🚀 Features
-
-* auto-cleanup old location devices on upgrade ([566692b](https://github.com/Disane87/spoolman-homeassistant/commit/566692beaacfd9a704682d4d7ff94cc471cfdb7b))
-
-## [2.0.0-dev.9](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.8...v2.0.0-dev.9) (2025-11-26)
-
-### fix
-
-* use committerLogin instead of author name for GitHub usernames ([@Marco Franke](https://github.com/Marco Franke)) ([aa9654c173e2dc95cd1fc3481df0e1666ecc6c58]())
-### style
-
-* add return type annotation to async_setup_entry ([@Marco Franke](https://github.com/Marco Franke)) ([029a731afb198e9e7c00d3be0888bc1d0fdd8323]())
-
-## [2.0.0-dev.8](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.7...v2.0.0-dev.8) (2025-11-26)
-
-### docs
-
-* enhance module docstring with more detail ([@Marco Franke](https://github.com/Marco Franke)) ([35dd4b4431eabfc923375d29b74ca7a858ce1bfa]())* improve icon property documentation ([@Marco Franke](https://github.com/Marco Franke)) ([76ad704c4500c2299e2d4cbc96fdaf82a21951a9]())
-### feat
-
-* add commit authors and new contributor highlighting to changelog ([@Marco Franke](https://github.com/Marco Franke)) ([a836b0fe746099f08d8bb8c7753b32d270e5e280]())
-### fix
-
-* clone commit object to avoid immutability error ([@Marco Franke](https://github.com/Marco Franke)) ([99168ff0c4dc83fd724ca234b2e7b86f16e479ea]())
-
-## [2.0.0-dev.7](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.6...v2.0.0-dev.7) (2025-11-26)
-
-### 📔 Docs
-
-* improve binary sensor docstring ([fd2e8ef](https://github.com/Disane87/spoolman-homeassistant/commit/fd2e8efe14d6eddf5b1e1429edae6010839f0c0d))
-
-### 🛠️ Fixes
-
-* remove transform function to fix changelog grouping ([775ef0f](https://github.com/Disane87/spoolman-homeassistant/commit/775ef0fa7c18ab278474e9f459a1bd1381eab336))
-
-## [2.0.0-dev.6](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.5...v2.0.0-dev.6) (2025-11-26)
-
-### fix
-
-* restore linkCompare and linkReferences for proper changelog formatting ([](https://github.com/Disane87/spoolman-homeassistant/commit/3a7997b9687f2868db58efa84c1994002ea78ffe))
-
-## [2.0.0-dev.5](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.4...v2.0.0-dev.5) (2025-11-26)
-
-### fix
-
-* simplify changelog template to use defaults for proper formatting ([](https://github.com/Disane87/spoolman-homeassistant/commit/b941bef9da17b14c0ec8d440b28f6dd36817794b))
-
-## [2.0.0-dev.4](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.3...v2.0.0-dev.4) (2025-11-26)
-
-### fix
-
-* improve changelog format with proper username links and emoji sections ([]()) ()
-
-## [2.0.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.2...v2.0.0-dev.3) (2025-11-26)
-
-### fix
-
-* clone commit object to avoid immutability errors in semantic release ([@Marco Franke](https://github.com/Marco Franke)) ([3b1e6d46df05d1e1ff578e39fad8be819eb60f4e]())
-* update README and binary sensor docstring for clarity ([@Marco Franke](https://github.com/Marco Franke)) ([576a2a8f40572e97a99934e84e1944429b14bde6]())
-
-### ci
-
-* add config schema for integration setup from config entries to prevent Hassfest errors ([@Marco Franke](https://github.com/Marco Franke)) ([c305142295614beaacc35c696c659ee463199b7e]())
-* add dry-run config and fix test workflow ([@Marco Franke](https://github.com/Marco Franke)) ([2422ead9c44479b7bdd085ce1e2c4ced0fa67b75]())
-* add test release workflow for semantic release dry run ([@Marco Franke](https://github.com/Marco Franke)) ([f25e0b2b654d273d43681b1097faf4cf18ef3c7f]())
-* add validation step for release configuration in test release workflow ([@Marco Franke](https://github.com/Marco Franke)) ([4941f9df20fff82217229e60de660223efe09f0b]())
-* migrate configuration from .releaserc to .releaserc.js for semantic release ([@Marco Franke](https://github.com/Marco Franke)) ([5286ccea19473f1891acd126f9d3bb7099d62fe0]())
-* migrate release configuration to .releaserc.js and remove old .releaserc ([@Marco Franke](https://github.com/Marco Franke)) ([bd5e0f9b9b3c91edfccf7d269289a3081a3c404d]())
-
-## [2.0.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.1...v2.0.0-dev.2) (2025-11-26)
-
-* Merge branch 'dev' of https://github.com/Disane87/spoolman-homeassistant into dev ([@]()) ([16748a9c5917850372fdf4d13a378f1df8ed01e7]())* Merge pull request #266 from Disane87/renovate/akhilmhdh-contributors-readme-action-2.x ([@]()) ([c501665a38fb5eb46a35d58e252765b667ec3633]())* Merge pull request #271 from Disane87/renovate/actions-checkout-6.x ([@]()) ([6c37ca2bd8f26684c6e36366b33bbfea92e7a7e6]())* Merge pull request #272 from Disane87/renovate/actions-first-interaction-3.x ([@]()) ([e994a17046251d4a8e5f2e12eb3edc0e72172d2a]())* Merge pull request #275 from saikumarvasa100-hash/add-flow-rate-automation-examples ([@]()) ([821271d8840451da3bb5a1b0d8254261ad639420]())* Merge pull request #276 from Disane87/renovate/actions-github-script-8.x ([@]()) ([4f4973e3a612586f819cb0b67c07466df71f49e4]())* Merge pull request #277 from Disane87/renovate/actions-stale-10.x ([@]()) ([ebca7a8d0f4ed94c8c5713ce7ab6ff050acd9b2f]())
-### feat
-
-* add contributors section to README and implement automated update workflow ([@]()) ([c77b902fe0fcd4c87588de3ddd3abeff06e75a2e]())* add low filament binary sensor and update README with usage examples ([@]()) ([18af4a2d72e558e997cee9d7e7be5fd4baa4a66c]())
-### chore
-
-* add GitHub workflows for PR management and contributor engagement ([@]()) ([38bb1d596a8385bdf378d406d81c8c29c25fd45d]())* **deps:** update actions/checkout action to v6 ([@]()) ([d259b055a3beff94a2643fdd37f7dd6593d7d453]())* **deps:** update actions/first-interaction action to v3 ([@]()) ([6a586d04e0d9f7050d81baac965898e980b6aaf0]())* **deps:** update actions/github-script action to v8 ([@]()) ([5ec4b983412b2a6bbfe0f3386469fffb303f0d4a]())* **deps:** update actions/stale action to v10 ([@]()) ([92f6bc1e65cfe610c92bad01f8b44d1192d25fcb]())* **deps:** update akhilmhdh/contributors-readme-action action to v2.3.11 ([@]()) ([b4f5624fb68590db2da8e4481702d8f77c980cfe]())
-### docs
-
-* add flow rate automation examples ([@]()) ([b9edfda34794b1806c54745d93d38b1561de9d06]())
-
 ## [2.0.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0-dev.4...v2.0.0-dev.1) (2025-11-26)
 
 ### ⚠ BREAKING CHANGES
@@ -153,6 +65,20 @@ issues where sensors created separate devices instead of grouping together.
 * document the `spoolman.use_spool_filament` service ([e6c4b13](https://github.com/Disane87/spoolman-homeassistant/commit/e6c4b13fe2b4fea8f1e1500f0c380d3534eba18e))
 * document the `spoolman.use_spool_filament` service ([1401cf0](https://github.com/Disane87/spoolman-homeassistant/commit/1401cf0a5986b830a4e92a11d37ae7a7058a4186)), closes [#261](https://github.com/Disane87/spoolman-homeassistant/issues/261)
 * document the `spoolman.use_spool_filament` service ([45821e3](https://github.com/Disane87/spoolman-homeassistant/commit/45821e371d41b152ed3a2fbc4312cf3d81423c51))
+
+
+## [1.1.0](https://github.com/Disane87/spoolman-homeassistant/compare/v1.0.0...v1.1.0) (2025-11-26)
+
+### 📔 Docs
+
+* document the `spoolman.use_spool_filament` service ([1401cf0](https://github.com/Disane87/spoolman-homeassistant/commit/1401cf0a5986b830a4e92a11d37ae7a7058a4186)), closes [#261](https://github.com/Disane87/spoolman-homeassistant/issues/261)
+* document the `spoolman.use_spool_filament` service ([45821e3](https://github.com/Disane87/spoolman-homeassistant/commit/45821e371d41b152ed3a2fbc4312cf3d81423c51))
+
+### 🛠️ Fixes
+
+* **api:** remove timeout parameter to match existing API patterns ([b3e0015](https://github.com/Disane87/spoolman-homeassistant/commit/b3e001585b17745da93a9a0f81de82fbf7ccdafb))
+* **sensor:** update spool entity data access for new coordinator structure ([f26a202](https://github.com/Disane87/spoolman-homeassistant/commit/f26a202ddd6a3edd4aa7ff02069d260ed9a1e8a6))
+
 
 ### 🚀 Features
 
