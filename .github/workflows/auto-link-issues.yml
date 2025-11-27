@@ -1,14 +1,20 @@
 name: "Auto Link Issues in PR"
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, edited]
 
 jobs:
   link-issues:
     runs-on: ubuntu-latest
+    # Skip for bot accounts (renovate, dependabot, etc.)
+    if: |
+      github.actor != 'renovate[bot]' &&
+      github.actor != 'dependabot[bot]' &&
+      !contains(github.actor, '[bot]')
     permissions:
       pull-requests: write
+      issues: write
 
     steps:
       - name: Check for linked issues

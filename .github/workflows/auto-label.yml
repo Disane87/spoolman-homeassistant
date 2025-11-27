@@ -3,12 +3,17 @@ name: "Auto Label"
 on:
   issues:
     types: [labeled]
-  pull_request:
+  pull_request_target:
     types: [labeled]
 
 jobs:
   auto-label:
     runs-on: ubuntu-latest
+    # Skip for bot accounts (renovate, dependabot, etc.)
+    if: |
+      github.actor != 'renovate[bot]' &&
+      github.actor != 'dependabot[bot]' &&
+      !contains(github.actor, '[bot]')
     permissions:
       issues: write
       pull-requests: write

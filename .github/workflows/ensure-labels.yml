@@ -1,0 +1,78 @@
+name: "Ensure Labels Exist"
+
+on:
+  workflow_dispatch: # Manual trigger
+  schedule:
+    - cron: '0 0 * * 0' # Weekly on Sunday
+
+jobs:
+  ensure-labels:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Ensure required labels exist
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const requiredLabels = [
+              {
+                name: 'wrong target branch',
+                description: 'PR targets wrong branch (should be dev, not main)',
+                color: 'd73a4a'
+              },
+              {
+                name: 'needs information',
+                description: 'More information is needed from the author',
+                color: 'd876e3'
+              },
+              {
+                name: 'good first issue',
+                description: 'Good for newcomers',
+                color: '7057ff'
+              },
+              {
+                name: 'documentation',
+                description: 'Improvements or additions to documentation',
+                color: '0075ca'
+              },
+              {
+                name: 'bug',
+                description: 'Something isn\'t working',
+                color: 'd73a4a'
+              },
+              {
+                name: 'enhancement',
+                description: 'New feature or request',
+                color: 'a2eeef'
+              }
+            ];
+
+            const { data: existingLabels } = await github.rest.issues.listLabelsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+
+            const existingLabelNames = existingLabels.map(l => l.name);
+
+            for (const label of requiredLabels) {
+              if (!existingLabelNames.includes(label.name)) {
+                try {
+                  await github.rest.issues.createLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label.name,
+                    description: label.description,
+                    color: label.color
+                  });
+                  console.log(`✅ Created label: ${label.name}`);
+                } catch (error) {
+                  console.log(`❌ Failed to create label ${label.name}: ${error.message}`);
+                }
+              } else {
+                console.log(`ℹ️ Label already exists: ${label.name}`);
+              }
+            }
+
+            console.log('🎉 Label check complete!');

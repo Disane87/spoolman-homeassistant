@@ -3,22 +3,23 @@ name: "Auto Assign Area Labels"
 on:
   issues:
     types: [opened, edited]
-  pull_request:
+  pull_request_target:
     types: [opened, edited, synchronize]
 
 jobs:
   auto-assign-labels:
     runs-on: ubuntu-latest
+    # Skip for bot accounts (renovate, dependabot, etc.)
+    if: |
+      github.actor != 'renovate[bot]' &&
+      github.actor != 'dependabot[bot]' &&
+      !contains(github.actor, '[bot]')
     permissions:
       issues: write
       pull-requests: write
       contents: read
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        if: github.event_name == 'pull_request'
-
       - name: Auto-assign area labels
         uses: actions/github-script@v8
         with:
@@ -26,7 +27,7 @@ jobs:
             const issue_number = context.issue.number;
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const isPR = context.eventName === 'pull_request';
+            const isPR = context.eventName === 'pull_request_target';
 
             let labelsToAdd = [];
 

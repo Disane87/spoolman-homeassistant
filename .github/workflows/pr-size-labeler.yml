@@ -1,19 +1,22 @@
 name: "PR Size Labeler"
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, reopened]
 
 jobs:
   label-pr-size:
     runs-on: ubuntu-latest
+    # Skip for bot accounts (renovate, dependabot, etc.)
+    if: |
+      github.actor != 'renovate[bot]' &&
+      github.actor != 'dependabot[bot]' &&
+      !contains(github.actor, '[bot]')
     permissions:
       pull-requests: write
+      issues: write
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
       - name: Label PR based on size
         uses: actions/github-script@v8
         with:
