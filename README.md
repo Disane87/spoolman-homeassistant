@@ -212,6 +212,8 @@ Want something more powerful? Try combining:
 - [auto-entities-card](https://github.com/thomasloven/lovelace-auto-entities) - Dynamically shows all your spools
 - [mushroom-template-card](https://github.com/piitaya/lovelace-mushroom/blob/main/docs/cards/template.md) - Beautiful, customizable cards
 
+### Spool Display Example
+
 Here's a sweet example that shows all your spools with colors, locations, and badges:
 ```yaml
 type: custom:auto-entities
@@ -272,6 +274,79 @@ card_param: cards
 
 ![image](./docs/auto-entities.png)
 
+# Filament Display Example
+
+Want to see spools grouped by filament type and see their respective total stock ? Here's how:
+
+```yaml
+type: grid
+cards:
+  - type: heading
+    heading: Filaments
+    heading_style: title
+  - type: custom:auto-entities
+    filter:
+      include:
+        - entity_id: sensor.spoolman_filament_*
+          sort:
+            method: attribute
+            attribute: name
+            reverse: false
+          options:
+            type: custom:mushroom-template-card
+            vertical: false
+            icon_color: "#{{ state_attr(entity, 'color_hex') }}"
+            icon: mdi:printer-3d-nozzle
+            badge_icon: |
+              {% if state_attr(entity, 'spool_count') > 1 %}
+                mdi:layers
+              {% endif %}
+            badge_color: |
+              {% if state_attr(entity, 'spool_count') > 1 %}
+                blue
+              {% else %}
+                default_color
+              {% endif %}
+            primary: >
+              {% set vendor = state_attr(entity, 'vendor_name') %} {% set name =
+              state_attr(entity, 'name') %} {% set material = state_attr(entity,
+              'material') %} {% if vendor and name and material %}
+                {{ vendor }} {{ name }} ({{ material }})
+              {% elif name and material %}
+                {{ name }} ({{ material }})
+              {% elif name %}
+                {{ name }}
+              {% else %}
+                Unknown Filament
+              {% endif %}
+            secondary: >-
+              {{ (state_attr(entity, 'total_remaining_weight') | float) |
+              round(2) }} g
+            tap_action:
+              action: more-info
+    sort:
+      method: attribute
+      attribute: name
+      reverse: false
+    card:
+      type: grid
+      columns: 4
+      square: false
+    card_param: cards
+    grid_options:
+      columns: full
+      rows: auto
+column_span: 4
+```
+
+**What this card does:**
+- 📦 Shows all filaments dynamically
+- 🎨 Colors the icon based on filament color
+- 📊 Shows total remaining weight across all spools of that filament
+- 📚 Displays vendor, name, and material in the title
+
+![image](./docs/filament-auto-entities.png)
+
 # 🤖 Automation Ideas
 
 Let's get creative! Here are some examples to get you started:
@@ -294,6 +369,32 @@ action:
       title: "⚠️ Low Filament Warning"
       message: "{{ trigger.to_state.attributes.friendly_name }} is running low ({{ trigger.to_state.attributes.remaining_percentage }}% remaining)"
 mode: queued
+```
+
+## 🔴 Simple Low Filament Stock Alert (NEW!)
+Need to keep your filament stock topped up? This automation example alerts you by adding a _restock_ item in your todo list when a specific spool's weight drops below a set threshold (e.g., 1000g). Perfect for restocking reminders!
+
+```yaml
+alias: <Filament Name> restock
+description: ""
+triggers:
+  - type: weight
+    device_id: <device_id>
+    entity_id: <entity_id>
+    domain: sensor
+    trigger: device
+    below: 1000
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+conditions: []
+actions:
+  - action: todo.add_item
+    metadata: {}
+    data:
+      item: <Filament Name>
+mode: single
 ```
 
 **What's cool about this?**
