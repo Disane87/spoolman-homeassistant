@@ -5,6 +5,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import device_registry as dr
 
 from custom_components.spoolman.schema_helper import SchemaHelper
 
@@ -39,6 +40,9 @@ async def async_setup_entry(hass: HomeAssistant, entry):
 
     coordinator = SpoolManCoordinator(hass, entry)
     await coordinator.async_refresh()
+
+    # Clean up old location devices from previous versions
+    await _async_remove_old_location_devices(hass, entry)
 
     # Register shutdown event to close aiohttp session
     async def _async_close_session(event):
@@ -108,3 +112,29 @@ async def async_get_data(hass: HomeAssistant):
     return await hass.data[DOMAIN][SPOOLMAN_API_WRAPPER].get_spools(
         {"allow_archived": False}
     )
+
+
+async def _async_remove_old_location_devices(hass: HomeAssistant, entry):
+    """Remove old location devices from previous integration versions.
+
+    In earlier versions, this integration created devices for locations.
+    These are now replaced with spool-based devices. This migration
+    removes any orphaned location devices.
+    """
+    device_reg = dr.async_get(hass)
+    devices = dr.async_entries_for_config_entry(device_reg, entry.entry_id)
+
+    removed_count = 0
+    for device in devices:
+        # Location devices had identifiers like: (DOMAIN, url, "location_X")
+        # Spool devices have identifiers like: (DOMAIN, url, "spool_X")
+        for identifier in device.identifiers:
+            if len(identifier) >= 3 and isinstance(identifier[2], str):
+                if identifier[2].startswith("location_"):
+                    _LOGGER.info(f"Removing old location device: {device.name} ({identifier[2]})")
+                    device_reg.async_remove_device(device.id)
+                    removed_count += 1
+                    break
+
+    if removed_count > 0:
+        _LOGGER.info(f"Migration complete: Removed {removed_count} old location device(s)")
