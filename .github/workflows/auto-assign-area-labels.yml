@@ -1,0 +1,115 @@
+name: "Auto Assign Area Labels"
+
+on:
+  issues:
+    types: [opened, edited]
+  pull_request_target:
+    types: [opened, edited, synchronize]
+
+jobs:
+  auto-assign-labels:
+    runs-on: ubuntu-latest
+    # Skip for bot accounts (renovate, dependabot, etc.)
+    if: |
+      github.actor != 'renovate[bot]' &&
+      github.actor != 'dependabot[bot]' &&
+      !contains(github.actor, '[bot]')
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Auto-assign area labels
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issue_number = context.issue.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const isPR = context.eventName === 'pull_request_target';
+
+            let labelsToAdd = [];
+
+            if (isPR) {
+              // For PRs: analyze changed files
+              const { data: files } = await github.rest.pulls.listFiles({
+                owner,
+                repo,
+                pull_number: issue_number
+              });
+
+              const changedFiles = files.map(f => f.filename);
+
+              // Analyze file paths
+              if (changedFiles.some(f => f.includes('sensor') || f.includes('sensors/'))) {
+                labelsToAdd.push('area: sensors');
+              }
+              if (changedFiles.some(f => f.includes('coordinator'))) {
+                labelsToAdd.push('area: coordinator');
+              }
+              if (changedFiles.some(f => f.includes('config_flow') || f.includes('options_flow'))) {
+                labelsToAdd.push('area: config flow');
+              }
+              if (changedFiles.some(f => f.includes('services'))) {
+                labelsToAdd.push('area: services');
+              }
+              if (changedFiles.some(f => f.includes('translations/'))) {
+                labelsToAdd.push('documentation');
+              }
+              if (changedFiles.some(f => f.match(/\.(md|txt)$/i))) {
+                labelsToAdd.push('documentation');
+              }
+              if (changedFiles.some(f => f.includes('test'))) {
+                labelsToAdd.push('Test needed');
+              }
+
+            } else {
+              // For issues: analyze title and body
+              const issue = context.payload.issue;
+              const text = (issue.title + ' ' + (issue.body || '')).toLowerCase();
+
+              if (text.match(/sensor|entity|attribute/i)) {
+                labelsToAdd.push('area: sensors');
+              }
+              if (text.match(/update|refresh|coordinator|sync/i)) {
+                labelsToAdd.push('area: coordinator');
+              }
+              if (text.match(/config|setup|integration|option|setting/i)) {
+                labelsToAdd.push('area: config flow');
+              }
+              if (text.match(/service|action|call/i)) {
+                labelsToAdd.push('area: services');
+              }
+              if (text.match(/translation|language|german|english/i)) {
+                labelsToAdd.push('documentation');
+              }
+              if (text.match(/documentation|readme|guide|example/i)) {
+                labelsToAdd.push('documentation');
+              }
+            }
+
+            // Get existing labels
+            const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
+              owner,
+              repo,
+              issue_number
+            });
+
+            const currentLabelNames = currentLabels.map(l => l.name);
+
+            // Only add new labels
+            labelsToAdd = labelsToAdd.filter(label => !currentLabelNames.includes(label));
+
+            if (labelsToAdd.length > 0) {
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number,
+                labels: labelsToAdd
+              });
+
+              console.log(`Added labels: ${labelsToAdd.join(', ')}`);
+            } else {
+              console.log('No new labels to add');
+            }

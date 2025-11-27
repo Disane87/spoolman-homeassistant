@@ -1,0 +1,92 @@
+name: "Comment on First Contribution"
+
+on:
+  pull_request_target:
+    types: [closed]
+
+jobs:
+  celebrate-first-contribution:
+    # Only run when PR is merged
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Check if first contribution
+        id: check
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const author = context.payload.pull_request.user.login;
+            const authorType = context.payload.pull_request.user.type;
+
+            // Exclude bots
+            if (authorType === 'Bot' || author.endsWith('[bot]')) {
+              console.log(`Skipping bot account: ${author}`);
+              core.setOutput('is_first_contribution', false);
+              return false;
+            }
+
+            // Search for previous merged PRs from this author
+            const { data: prs } = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${context.repo.owner}/${context.repo.repo} is:pr is:merged author:${author}`,
+              per_page: 5
+            });
+
+            // Filter out the current PR
+            const previousPRs = prs.items.filter(
+              pr => pr.number !== context.payload.pull_request.number
+            );
+
+            const isFirstContribution = previousPRs.length === 0;
+
+            core.setOutput('is_first_contribution', isFirstContribution);
+            core.setOutput('author', author);
+
+            return isFirstContribution;
+
+      - name: Celebrate first contribution
+        if: steps.check.outputs.is_first_contribution == 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const author = '${{ steps.check.outputs.author }}';
+            const prNumber = context.payload.pull_request.number;
+
+            // Add celebratory comment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: '🎉🎊 **CONGRATULATIONS @' + author + '!** 🎊🎉\n\n' +
+                'This is your **FIRST MERGED CONTRIBUTION** to the Spoolman Home Assistant Integration!\n\n' +
+                'You\'re now officially part of our contributor community! 🌟\n\n' +
+                '**What this means:**\n' +
+                '- ✅ You\'ll be featured in our README\'s contributor list\n' +
+                '- ✅ Your name will appear in the next release notes with a special badge\n' +
+                '- ✅ You\'ve made the project better for everyone!\n\n' +
+                '**Want to do more?**\n' +
+                '- 🔍 Look for more [good first issues](https://github.com/Disane87/spoolman-homeassistant/labels/good%20first%20issue)\n' +
+                '- 💬 Join discussions in other issues\n' +
+                '- 🌟 Star the repository to show your support\n' +
+                '- 📢 Share your contribution with others!\n\n' +
+                'Thank you for being awesome! We can\'t wait to see what you do next! 🚀\n\n' +
+                '---\n' +
+                '_This project is made better by contributors like you. Thank you! 💙_'
+            });
+
+            // Add a special label to the PR
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                labels: ['first contribution 🎉']
+              });
+            } catch (error) {
+              console.log('Label might not exist yet, skipping...');
+            }
+
+            console.log(`🎉 Celebrated first contribution from @${author}!`);

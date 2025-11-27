@@ -1,0 +1,167 @@
+name: "Enhance Changelog with First Contributors"
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag to enhance (e.g., v1.2.3)'
+        required: true
+
+jobs:
+  enhance-changelog:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Get release info
+        id: release
+        uses: actions/github-script@v8
+        with:
+          script: |
+            let releaseTag;
+
+            if (context.eventName === 'workflow_dispatch') {
+              releaseTag = context.payload.inputs.release_tag;
+            } else {
+              releaseTag = context.payload.release.tag_name;
+            }
+
+            // Get the release
+            const { data: release } = await github.rest.repos.getReleaseByTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag: releaseTag
+            });
+
+            core.setOutput('release_id', release.id);
+            core.setOutput('release_body', release.body);
+            core.setOutput('release_tag', releaseTag);
+
+            return release;
+
+      - name: Identify first-time contributors
+        id: contributors
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const releaseBody = `${{ steps.release.outputs.release_body }}`;
+            const releaseTag = `${{ steps.release.outputs.release_tag }}`;
+
+            // Extract all GitHub usernames from the changelog
+            const usernamePattern = /@([a-zA-Z0-9-]+)/g;
+            const matches = [...releaseBody.matchAll(usernamePattern)];
+            const allUsernames = [...new Set(matches.map(m => m[1]))];
+
+            // Filter out common bot patterns
+            const contributors = allUsernames.filter(username => {
+              const lowerUsername = username.toLowerCase();
+              return !username.endsWith('[bot]') &&
+                     !username.endsWith('-bot') &&
+                     lowerUsername !== 'dependabot' &&
+                     lowerUsername !== 'renovate' &&
+                     lowerUsername !== 'github-actions' &&
+                     lowerUsername !== 'pre-commit-ci';
+            });
+
+            console.log(`Found ${contributors.length} human contributors in this release (filtered from ${allUsernames.length} total)`);
+
+            // Get all previous releases
+            const { data: releases } = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+
+            // Find first-time contributors
+            const firstTimeContributors = [];
+
+            for (const contributor of contributors) {
+              // Double-check if this is a bot via GitHub API
+              try {
+                const { data: user } = await github.rest.users.getByUsername({
+                  username: contributor
+                });
+                if (user.type === 'Bot') {
+                  console.log(`Skipping bot account (API check): @${contributor}`);
+                  continue;
+                }
+              } catch (error) {
+                console.log(`Could not verify user type for @${contributor}, proceeding...`);
+              }
+
+              let isFirstTime = true;
+
+              // Check if contributor appears in any previous release
+              for (const prevRelease of releases) {
+                if (prevRelease.tag_name === releaseTag) continue;
+
+                const prevBody = prevRelease.body || '';
+                if (prevBody.includes(`@${contributor}`)) {
+                  isFirstTime = false;
+                  break;
+                }
+              }
+
+              if (isFirstTime) {
+                firstTimeContributors.push(contributor);
+                console.log(`🎉 First-time contributor: @${contributor}`);
+              }
+            }
+
+            return { firstTimeContributors, allContributors: contributors };
+
+      - name: Update release notes
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const releaseId = ${{ steps.release.outputs.release_id }};
+            let releaseBody = `${{ steps.release.outputs.release_body }}`;
+            const result = ${{ steps.contributors.outputs.result }};
+            const firstTimeContributors = result.firstTimeContributors;
+
+            if (firstTimeContributors.length === 0) {
+              console.log('No first-time contributors in this release');
+              return;
+            }
+
+            // Add first-contributor badge emoji to their entries
+            for (const contributor of firstTimeContributors) {
+              const regex = new RegExp(`\\(@${contributor}\\)`, 'g');
+              releaseBody = releaseBody.replace(
+                regex,
+                `(@${contributor}) 🎉✨ _First contribution!_`
+              );
+            }
+
+            // Add a special section at the end
+            const contributorLinks = firstTimeContributors
+              .map(c => `[@${c}](https://github.com/${c})`)
+              .join(', ');
+
+            const firstContributorSection = '\n\n## 🎉 New Contributors\n\n' +
+              'Welcome to our amazing new contributors! Thank you for making your first contribution to this project! 🙌\n\n' +
+              contributorLinks + '\n\n' +
+              'We\'re thrilled to have you as part of the community! Every contribution, no matter how small, makes a difference. ✨\n\n' +
+              '---\n\n' +
+              '_Want to contribute? Check out our [Contributing Guide](https://github.com/Disane87/spoolman-homeassistant/blob/main/CONTRIBUTING.md) and look for [good first issues](https://github.com/Disane87/spoolman-homeassistant/labels/good%20first%20issue)!_';
+
+            // Append the section
+            const enhancedBody = releaseBody + firstContributorSection;
+
+            // Update the release
+            await github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: releaseId,
+              body: enhancedBody
+            });
+
+            console.log(`✅ Release notes updated with ${firstTimeContributors.length} first-time contributors!`);

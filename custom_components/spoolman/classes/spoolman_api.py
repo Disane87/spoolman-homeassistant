@@ -11,12 +11,27 @@ class SpoolmanAPI:
         """Initialize the Spoolman API."""
         _LOGGER.debug("SpoolmanAPI: __init__")
         self.base_url = f"{base_url}api/{api_version}"
+        self._session = None
+
+    async def _get_session(self):
+        """Get or create aiohttp ClientSession."""
+        if self._session is None or self._session.closed:
+            _LOGGER.debug("SpoolmanAPI: Creating new aiohttp ClientSession")
+            self._session = aiohttp.ClientSession()
+        return self._session
+
+    async def close(self):
+        """Close the aiohttp ClientSession."""
+        if self._session and not self._session.closed:
+            _LOGGER.debug("SpoolmanAPI: Closing aiohttp ClientSession")
+            await self._session.close()
 
     async def info(self):
         """Return information about the API."""
         _LOGGER.debug("SpoolmanAPI: info")
         url = f"{self.base_url}/info"
-        async with aiohttp.ClientSession() as session, session.get(url) as response:
+        session = await self._get_session()
+        async with session.get(url) as response:
             response.raise_for_status()
             response = await response.json()
             _LOGGER.debug("SpoolmanAPI: info response %s", response)
@@ -26,7 +41,8 @@ class SpoolmanAPI:
         """Return the health status of the API."""
         _LOGGER.debug("SpoolmanAPI: health")
         url = f"{self.base_url}/health"
-        async with aiohttp.ClientSession() as session, session.get(url) as response:
+        session = await self._get_session()
+        async with session.get(url) as response:
             response.raise_for_status()
             response = await response.json()
             _LOGGER.debug("SpoolmanAPI: health response %s", response)
@@ -36,7 +52,8 @@ class SpoolmanAPI:
         """Initiate a backup of the API."""
         _LOGGER.debug("SpoolmanAPI: backup")
         url = f"{self.base_url}/backup"
-        async with aiohttp.ClientSession() as session, session.post(url) as response:
+        session = await self._get_session()
+        async with session.post(url) as response:
             response.raise_for_status()
             response = await response.json()
             _LOGGER.debug("SpoolmanAPI: backup response %s", response)
@@ -48,7 +65,8 @@ class SpoolmanAPI:
         url = f"{self.base_url}/spool"
         if len(params) > 0:
             url = f"{url}?{self.string_from_dictionary(params)}"
-        async with aiohttp.ClientSession() as session, session.get(url) as response:
+        session = await self._get_session()
+        async with session.get(url) as response:
             response.raise_for_status()
             response = await response.json()
             _LOGGER.debug("SpoolmanAPI: get_spools response %s", response)
@@ -67,7 +85,8 @@ class SpoolmanAPI:
         url = f"{self.base_url}/filament"
         if len(params) > 0:
             url = f"{url}?{self.string_from_dictionary(params)}"
-        async with aiohttp.ClientSession() as session, session.get(url) as response:
+        session = await self._get_session()
+        async with session.get(url) as response:
             response.raise_for_status()
             response = await response.json()
             _LOGGER.debug("SpoolmanAPI: get_filaments response %s", response)
@@ -84,7 +103,8 @@ class SpoolmanAPI:
         """Return the spool with the specified ID."""
         _LOGGER.debug("SpoolmanAPI: get_spool_by_id")
         url = f"{self.base_url}/spool/{spool_id}"
-        async with aiohttp.ClientSession() as session, session.get(url) as response:
+        session = await self._get_session()
+        async with session.get(url) as response:
             response.raise_for_status()
             response = await response.json()
             _LOGGER.debug("SpoolmanAPI: get_spool_by_id response %s", response)
@@ -131,7 +151,8 @@ class SpoolmanAPI:
 
         url = f"{self.base_url}/spool/{spool_id}"
         try:
-            async with aiohttp.ClientSession() as session, session.patch(url, json=data) as response:
+            session = await self._get_session()
+            async with session.patch(url, json=data) as response:
                 response.raise_for_status()
                 response_data = await response.json()
                 _LOGGER.debug("SpoolmanAPI: patch_spool response %s", response_data)
@@ -159,7 +180,8 @@ class SpoolmanAPI:
 
         url = f"{self.base_url}/spool/{spool_id}/use"
         try:
-            async with aiohttp.ClientSession() as session, session.put(url, json=data) as response:
+            session = await self._get_session()
+            async with session.put(url, json=data) as response:
                 response.raise_for_status()
                 response_data = await response.json()
                 _LOGGER.debug("SpoolmanAPI: use_spool_filament response %s", response_data)

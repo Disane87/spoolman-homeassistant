@@ -1,0 +1,61 @@
+name: "Auto Close Stale Good First Issues"
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Close stale good first issues
+        uses: actions/stale@v10
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+          # Only target good first issues
+          only-labels: 'good first issue'
+
+          # Days before marking as stale
+          days-before-stale: 60
+
+          # Days before closing after stale
+          days-before-close: 7
+
+          # Labels
+          stale-issue-label: 'stale'
+
+          # Messages
+          stale-issue-message: |
+            👋 Hey there! This "good first issue" has been open for a while without activity.
+
+            We're marking it as stale to keep our issue list fresh and relevant for new contributors.
+
+            **What happens next?**
+            - If you're still interested in working on this, just comment and we'll remove the stale label! 💪
+            - If there's no activity in 7 days, we'll close this issue to make room for other tasks
+            - Don't worry - closed issues can always be reopened if someone wants to tackle them later!
+
+            Thanks for your interest in contributing! 🙏
+
+          close-issue-message: |
+            🔒 This "good first issue" has been closed due to inactivity.
+
+            **Want to work on this?** No problem! Just:
+            1. Comment on this issue saying you'd like to take it on
+            2. We'll reopen it for you
+            3. Check out our [Contributing Guide](https://github.com/Disane87/spoolman-homeassistant/blob/main/CONTRIBUTING.md) to get started!
+
+            Thanks for being part of our community! ✨
+
+          # Don't mark as stale if these labels are present
+          exempt-issue-labels: 'In Progress,priority: high,priority: critical'
+
+          # Operations per run
+          operations-per-run: 30

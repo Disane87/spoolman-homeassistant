@@ -1,0 +1,98 @@
+name: "Check PR Target Branch"
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited]
+    branches:
+      - main
+
+jobs:
+  check-target-branch:
+    runs-on: ubuntu-latest
+    # Skip for bot accounts (renovate, dependabot, etc.)
+    if: |
+      github.actor != 'renovate[bot]' &&
+      github.actor != 'dependabot[bot]' &&
+      !contains(github.actor, '[bot]')
+    permissions:
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Check if PR targets main branch
+        if: github.base_ref == 'main'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+
+            // Check if user is a maintainer/collaborator
+            let isMaintainer = false;
+            try {
+              const { data: permission } = await github.rest.repos.getCollaboratorPermissionLevel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                username: pr.user.login
+              });
+
+              // admin, maintain, or write permissions = maintainer
+              isMaintainer = ['admin', 'maintain', 'write'].includes(permission.permission);
+
+              console.log(`User ${pr.user.login} permission: ${permission.permission}`);
+            } catch (error) {
+              console.log(`Could not check permissions for ${pr.user.login}: ${error.message}`);
+            }
+
+            // Skip check for maintainers
+            if (isMaintainer) {
+              console.log('User is a maintainer - allowing PR to main branch');
+              return;
+            }
+
+            // Add warning comment for non-maintainers
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('⚠️ Wrong Target Branch')
+            );
+
+            if (!botComment) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: '⚠️ **Wrong Target Branch Detected!**\n\n' +
+                  'This PR is targeting the `main` branch, but according to our [Contributing Guidelines](https://github.com/Disane87/spoolman-homeassistant/blob/main/CONTRIBUTING.md), **all community PRs must target the `dev` branch**.\n\n' +
+                  '**Why?**\n' +
+                  '- `main` is our production branch → only for stable releases\n' +
+                  '- `dev` is our development branch → all new changes go here first\n' +
+                  '- This ensures proper testing and quality control\n' +
+                  '- Community contributions need review in `dev` before reaching `main`\n\n' +
+                  '**How to fix:**\n' +
+                  '1. **Easiest:** Update the base branch of this PR:\n' +
+                  '   - Click "Edit" button next to the PR title\n' +
+                  '   - Change base branch from `main` to `dev`\n' +
+                  '   - Click "Change base"\n' +
+                  '2. **Alternative:** Close this PR and create a new one targeting `dev`\n\n' +
+                  '**Need Help?**\n' +
+                  '- 📖 [Contributing Guide](https://github.com/Disane87/spoolman-homeassistant/blob/main/CONTRIBUTING.md#-branching-strategy)\n' +
+                  '- 🌿 [Branching Strategy](https://github.com/Disane87/spoolman-homeassistant/blob/main/CONTRIBUTING.md#-branching-strategy)\n' +
+                  '- 💬 Ask questions in the comments\n\n' +
+                  'Thanks for contributing! Once you update the target branch, we\'ll review your changes! 🙏'
+              });
+            }
+
+            // Add label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              labels: ['needs information', 'wrong target branch']
+            });
+
+            core.setFailed('❌ PR from non-maintainer targets main branch instead of dev');

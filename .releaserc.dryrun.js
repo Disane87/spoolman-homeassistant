@@ -22,12 +22,14 @@ module.exports = {
       "@semantic-release/release-notes-generator",
       {
         preset: "conventionalcommits",
+        linkCompare: true,
+        linkReferences: true,
         presetConfig: {
           types: [
-            {type: "feat", section: "🚀 Features"},
-            {type: "fix", section: "🛠️ Fixes"},
-            {type: "perf", section: "⏩ Performance"},
-            {type: "docs", section: "📔 Docs"},
+            {type: "feat", section: "🚀 Features", hidden: false},
+            {type: "fix", section: "🛠️ Fixes", hidden: false},
+            {type: "perf", section: "⏩ Performance", hidden: false},
+            {type: "docs", section: "📔 Docs", hidden: false},
             {type: "refactor", section: "♻️ Refactor", hidden: true},
             {type: "style", section: "💈 Style", hidden: true},
             {type: "test", section: "🧪 Tests", hidden: true},
@@ -42,6 +44,11 @@ module.exports = {
             if (commit.subject && commit.subject.startsWith('Merge')) {
               return null;
             }
+            return commit;
+          },
+          groupBy: "type",
+          commitGroupsSort: ["feat", "fix", "perf", "docs"],
+          commitsSort: ["scope", "subject"]
 
             // Add contributor info
             if (commit.author && commit.author.name) {

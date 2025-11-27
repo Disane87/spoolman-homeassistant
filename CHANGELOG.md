@@ -1,3 +1,72 @@
+## [2.0.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0-dev.4...v2.0.0-dev.1) (2025-11-26)
+
+### ⚠ BREAKING CHANGES
+
+* Device structure improved - each spool is now its own device
+
+See README for more information about this.
+
+- Split all 27 sensor classes into individual files for better maintainability
+- Fixed device identifier from 2-tuple to 3-tuple format (DOMAIN, URL, ID)
+  to ensure all sensors belong to the same device
+- Added color visualization to FilamentColorHex sensor with entity_picture
+- Improved code organization following Python best practices
+- All sensors now properly grouped under their parent spool device
+
+Technical changes:
+- Refactored sensors/__init__.py to import from individual files
+- Created dedicated files for each sensor class (27 files total)
+- Updated DeviceInfo identifiers across all sensors:
+  * Before: (DOMAIN, f"spool_{id}")
+  * After: (DOMAIN, self.config[CONF_URL], f"spool_{id}")
+- Enhanced FilamentColorHex with PIL image generation support
+- Added base sensor class for shared functionality
+
+This ensures proper device grouping in Home Assistant UI and resolves
+issues where sensors created separate devices instead of grouping together.
+
+### 🛠️ Fixes
+
+* correct formatting and alignment in .ruff.toml configuration ([97f58db](https://github.com/Disane87/spoolman-homeassistant/commit/97f58db6f03b4ce2f92ace1269ecdcbfffed47d5))
+
+### :scissors: Refactor
+
+* split sensors into individual files and fix device registration ([#71](https://github.com/Disane87/spoolman-homeassistant/issues/71)) ([03015b2](https://github.com/Disane87/spoolman-homeassistant/commit/03015b227cd1e39c609be8ec54fb7d376db03ae2))
+
+## [1.1.0-dev.4](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0-dev.3...v1.1.0-dev.4) (2025-11-26)
+
+### 🚀 Features
+
+* **sensor:** add estimated run out prediction sensor ([5a84fb7](https://github.com/Disane87/spoolman-homeassistant/commit/5a84fb7d25c19eae1e107e227f1dcb94e330d48f)), closes [#36](https://github.com/Disane87/spoolman-homeassistant/issues/36)
+* **sensor:** add flow rate tracking and improve entity management ([7a41302](https://github.com/Disane87/spoolman-homeassistant/commit/7a41302f6978c5e1e0cd7814c722dd56049d643e)), closes [#35](https://github.com/Disane87/spoolman-homeassistant/issues/35) [#141](https://github.com/Disane87/spoolman-homeassistant/issues/141)
+
+## [1.1.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0-dev.2...v1.1.0-dev.3) (2025-11-26)
+
+### 🚀 Features
+
+* **sensor:** add Spool Flow Rate sensor and integrate into setup ([e6f6636](https://github.com/Disane87/spoolman-homeassistant/commit/e6f66361962b63fbad06f99d14d9015d493ef8a2)), closes [#35](https://github.com/Disane87/spoolman-homeassistant/issues/35)
+
+## [1.1.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0-dev.1...v1.1.0-dev.2) (2025-11-26)
+
+### 🛠️ Fixes
+
+* **sensor:** prevent IndexError and improve coordinator refresh behavior ([a079ae0](https://github.com/Disane87/spoolman-homeassistant/commit/a079ae0ff39afd57df557c350bf8bfdf5bce409d)), closes [#198](https://github.com/Disane87/spoolman-homeassistant/issues/198) [#125](https://github.com/Disane87/spoolman-homeassistant/issues/125) [#203](https://github.com/Disane87/spoolman-homeassistant/issues/203) [#141](https://github.com/Disane87/spoolman-homeassistant/issues/141)
+
+## [1.1.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.0.0...v1.1.0-dev.1) (2025-11-26)
+
+### 🛠️ Fixes
+
+* resolve IndexError on auto-update and add immediate refresh after service calls ([de0f831](https://github.com/Disane87/spoolman-homeassistant/commit/de0f831221132473478cdf01e61a58ede2cf2924)), closes [#198](https://github.com/Disane87/spoolman-homeassistant/issues/198) [#125](https://github.com/Disane87/spoolman-homeassistant/issues/125)
+* **api:** remove timeout parameter to match existing API patterns ([b3e0015](https://github.com/Disane87/spoolman-homeassistant/commit/b3e001585b17745da93a9a0f81de82fbf7ccdafb))
+* **sensor:** update spool entity data access for new coordinator structure ([f26a202](https://github.com/Disane87/spoolman-homeassistant/commit/f26a202ddd6a3edd4aa7ff02069d260ed9a1e8a6))
+
+### 📔 Docs
+
+* document the `spoolman.use_spool_filament` service ([e6c4b13](https://github.com/Disane87/spoolman-homeassistant/commit/e6c4b13fe2b4fea8f1e1500f0c380d3534eba18e))
+* document the `spoolman.use_spool_filament` service ([1401cf0](https://github.com/Disane87/spoolman-homeassistant/commit/1401cf0a5986b830a4e92a11d37ae7a7058a4186)), closes [#261](https://github.com/Disane87/spoolman-homeassistant/issues/261)
+* document the `spoolman.use_spool_filament` service ([45821e3](https://github.com/Disane87/spoolman-homeassistant/commit/45821e371d41b152ed3a2fbc4312cf3d81423c51))
+
+
 ## [1.1.0](https://github.com/Disane87/spoolman-homeassistant/compare/v1.0.0...v1.1.0) (2025-11-26)
 
 ### 📔 Docs
@@ -9,6 +78,7 @@
 
 * **api:** remove timeout parameter to match existing API patterns ([b3e0015](https://github.com/Disane87/spoolman-homeassistant/commit/b3e001585b17745da93a9a0f81de82fbf7ccdafb))
 * **sensor:** update spool entity data access for new coordinator structure ([f26a202](https://github.com/Disane87/spoolman-homeassistant/commit/f26a202ddd6a3edd4aa7ff02069d260ed9a1e8a6))
+
 
 ### 🚀 Features
 
