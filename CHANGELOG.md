@@ -1,3 +1,13 @@
+## [2.0.0-dev.10](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.9...v2.0.0-dev.10) (2025-11-27)
+
+### 📔 Docs
+
+* update README and add filament-auto-entities image ([6f5d492](https://github.com/Disane87/spoolman-homeassistant/commit/6f5d49247878f7584618a623b662a46de6f52e0e))
+
+### 🚀 Features
+
+* auto-cleanup old location devices on upgrade ([566692b](https://github.com/Disane87/spoolman-homeassistant/commit/566692beaacfd9a704682d4d7ff94cc471cfdb7b))
+
 ## [2.0.0-dev.9](https://github.com/Disane87/spoolman-homeassistant/compare/v2.0.0-dev.8...v2.0.0-dev.9) (2025-11-26)
 
 ### fix
