@@ -49,6 +49,16 @@ module.exports = {
           groupBy: "type",
           commitGroupsSort: ["feat", "fix", "perf", "docs"],
           commitsSort: ["scope", "subject"]
+
+            // Add contributor info
+            if (commit.author && commit.author.name) {
+              commit.authorName = commit.author.name;
+              commit.authorUrl = `https://github.com/${commit.author.name}`;
+            }
+
+            return commit;
+          },
+          commitPartial: '* {{#if scope}}**{{scope}}:** {{/if}}{{subject}}{{#if authorName}} ([@{{authorName}}]({{authorUrl}})){{/if}}{{#if hash}} ([{{hash}}]({{commitUrlFormat}})){{/if}}\n'
         }
       }
     ],
