@@ -1,4 +1,5 @@
-## [1.2.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0...v1.2.0-dev.1) (2025-12-04)
+
+## [1.2.0](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0...v1.2.0) (2025-11-27)
 
 ### ⚠ BREAKING CHANGES
 
