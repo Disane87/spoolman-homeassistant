@@ -1,3 +1,4 @@
+
 ## [1.2.0](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0...v1.2.0) (2025-11-27)
 
 ### ⚠ BREAKING CHANGES
@@ -53,6 +54,7 @@ issues where sensors created separate devices instead of grouping together.
 * clone commit object to avoid immutability error ([99168ff](https://github.com/Disane87/spoolman-homeassistant/commit/99168ff0c4dc83fd724ca234b2e7b86f16e479ea))
 * clone commit object to avoid immutability errors in semantic release ([3b1e6d4](https://github.com/Disane87/spoolman-homeassistant/commit/3b1e6d46df05d1e1ff578e39fad8be819eb60f4e))
 * correct formatting and alignment in .ruff.toml configuration ([97f58db](https://github.com/Disane87/spoolman-homeassistant/commit/97f58db6f03b4ce2f92ace1269ecdcbfffed47d5))
+* fix config entry with HA 2025.12 ([9cd0073](https://github.com/Disane87/spoolman-homeassistant/commit/9cd007339fc0356f809c29ddb2a65bd77a589c06))
 * improve changelog format with proper username links and emoji sections ([a8933ca](https://github.com/Disane87/spoolman-homeassistant/commit/a8933ca22a5eca692314ba0f17fcb6fccdcedd62))
 * remove transform function to fix changelog grouping ([775ef0f](https://github.com/Disane87/spoolman-homeassistant/commit/775ef0fa7c18ab278474e9f459a1bd1381eab336))
 * resolve IndexError on auto-update and add immediate refresh after service calls ([de0f831](https://github.com/Disane87/spoolman-homeassistant/commit/de0f831221132473478cdf01e61a58ede2cf2924)), closes [#198](https://github.com/Disane87/spoolman-homeassistant/issues/198) [#125](https://github.com/Disane87/spoolman-homeassistant/issues/125)
