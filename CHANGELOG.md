@@ -1,3 +1,8 @@
+## [1.2.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.2.0...v1.2.1) (2025-12-08)
+
+### 🛠️ Fixes
+
+* fix config entry with HA 2025.12 ([9cd0073](https://github.com/Disane87/spoolman-homeassistant/commit/9cd007339fc0356f809c29ddb2a65bd77a589c06))
 
 ## [1.2.0](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0...v1.2.0) (2025-11-27)
 
