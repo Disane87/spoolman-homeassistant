@@ -76,7 +76,6 @@ jobs:
         run: |
           gh pr create --base main --head dev --draft \
             --title "🚀 Release: Merge dev into main" \
-            --label "release,automated" \
             --body "$(cat <<'EOF'
           ## 📦 Automated Release PR
 
