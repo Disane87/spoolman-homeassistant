@@ -1,3 +1,15 @@
+## [1.3.0](https://github.com/Disane87/spoolman-homeassistant/compare/v1.2.1...v1.3.0) (2025-12-29)
+
+### 🚀 Features
+
+* add automated draft PR workflow for dev to main merges ([7bcbf2f](https://github.com/Disane87/spoolman-homeassistant/commit/7bcbf2fc66b2c69a3555109c957d8845812d8e55))
+* add dynamic extra field sensors ([fec33fd](https://github.com/Disane87/spoolman-homeassistant/commit/fec33fda8f16a4a5fa4e267b234cc3d7fe3e62bb)), closes [#297](https://github.com/Disane87/spoolman-homeassistant/issues/297)
+
+### 🛠️ Fixes
+
+* correct parameter names in welcome workflow ([bef9b09](https://github.com/Disane87/spoolman-homeassistant/commit/bef9b0971b8d937a974f548c76255a1f9823ed0d))
+* remove orphaned spool devices when deleted from Spoolman ([444f2cf](https://github.com/Disane87/spoolman-homeassistant/commit/444f2cf45ba9fb9864b7ef8dbac852ac51e58e57)), closes [#292](https://github.com/Disane87/spoolman-homeassistant/issues/292)
+* update ruff configuration to new lint.* syntax ([505ec46](https://github.com/Disane87/spoolman-homeassistant/commit/505ec469f32e1797c6cdce0ec97abf108713981d))
 
 ## [1.3.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.2.0...v1.3.0-dev.1) (2025-12-29)
 
