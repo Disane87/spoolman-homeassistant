@@ -1,3 +1,4 @@
+
 ## [1.3.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.2.0...v1.3.0-dev.1) (2025-12-29)
 
 ### 🚀 Features
@@ -11,6 +12,13 @@
 * fix config entry with HA 2025.12 ([9cd0073](https://github.com/Disane87/spoolman-homeassistant/commit/9cd007339fc0356f809c29ddb2a65bd77a589c06))
 * remove orphaned spool devices when deleted from Spoolman ([444f2cf](https://github.com/Disane87/spoolman-homeassistant/commit/444f2cf45ba9fb9864b7ef8dbac852ac51e58e57)), closes [#292](https://github.com/Disane87/spoolman-homeassistant/issues/292)
 * update ruff configuration to new lint.* syntax ([505ec46](https://github.com/Disane87/spoolman-homeassistant/commit/505ec469f32e1797c6cdce0ec97abf108713981d))
+
+## [1.2.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.2.0...v1.2.1) (2025-12-08)
+
+### 🛠️ Fixes
+
+* fix config entry with HA 2025.12 ([9cd0073](https://github.com/Disane87/spoolman-homeassistant/commit/9cd007339fc0356f809c29ddb2a65bd77a589c06))
+
 
 ## [1.2.0](https://github.com/Disane87/spoolman-homeassistant/compare/v1.1.0...v1.2.0) (2025-11-27)
 
