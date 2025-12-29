@@ -71,40 +71,40 @@ jobs:
 
       - name: Create new PR
         if: steps.check-pr.outputs.exists == 'false'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr create --base main --head dev --draft \
-            --title "🚀 Release: Merge dev into main" \
-            --body "$(cat <<'EOF'
-          ## 📦 Automated Release PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: dev
+          base: main
+          draft: true
+          title: "🚀 Release: Merge dev into main"
+          body: |
+            ## 📦 Automated Release PR
 
-          This PR merges the latest changes from \`dev\` into \`main\`.
+            This PR merges the latest changes from `dev` into `main`.
 
-          **Created:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+            **Created:** ${{ github.event.head_commit.timestamp }}
 
-          ### 🔍 What's Changed
+            ### 🔍 What's Changed
 
-          Review the commits below to see what will be included in this release.
+            Review the commits below to see what will be included in this release.
 
-          ### ✅ Checklist before merging
+            ### ✅ Checklist before merging
 
-          - [ ] All tests pass
-          - [ ] CHANGELOG.md is updated
-          - [ ] Version number is bumped if needed
-          - [ ] All features are documented
-          - [ ] No breaking changes (or documented in release notes)
+            - [ ] All tests pass
+            - [ ] CHANGELOG.md is updated
+            - [ ] Version number is bumped if needed
+            - [ ] All features are documented
+            - [ ] No breaking changes (or documented in release notes)
 
-          ### 🚦 Merge Instructions
+            ### 🚦 Merge Instructions
 
-          1. Review all changes carefully
-          2. Ensure CI/CD passes
-          3. Update the title with the actual version if releasing
-          4. Convert from draft to ready when prepared
-          5. Merge using **merge commit** (not squash)
+            1. Review all changes carefully
+            2. Ensure CI/CD passes
+            3. Update the title with the actual version if releasing
+            4. Convert from draft to ready when prepared
+            5. Merge using **merge commit** (not squash)
 
-          ---
+            ---
 
-          *This PR was automatically created by the Auto PR workflow*
-          EOF
-          )"
+            *This PR was automatically created by the Auto PR workflow*
