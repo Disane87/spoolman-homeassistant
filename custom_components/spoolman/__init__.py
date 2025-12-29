@@ -44,18 +44,23 @@ async def async_setup_entry(hass: HomeAssistant, entry):
     # Clean up old location devices from previous versions
     await _async_remove_old_location_devices(hass, entry)
 
+    # Clean up orphaned spool devices (deleted in Spoolman)
+    if coordinator.data:
+        await _async_cleanup_orphaned_spool_devices(hass, entry, coordinator)
+
     # Clean up orphaned extra field entities (after initial data load)
     if coordinator.data:
         await _async_cleanup_extra_field_entities(hass, entry, coordinator)
 
-    # Register a one-time listener to cleanup extra fields after coordinator updates
-    async def _async_cleanup_on_update():
-        """Cleanup extra fields on coordinator update."""
-        await coordinator.async_cleanup_extra_fields()
+    # Register listener to cleanup extra fields and orphaned devices after coordinator updates
+    def _cleanup_on_update():
+        """Cleanup extra fields and orphaned devices on coordinator update."""
+        hass.async_create_task(coordinator.async_cleanup_extra_fields())
+        hass.async_create_task(_async_cleanup_orphaned_spool_devices(hass, entry, coordinator))
 
     # Add listener that runs cleanup on every update
     entry.async_on_unload(
-        coordinator.async_add_listener(_async_cleanup_on_update)
+        coordinator.async_add_listener(_cleanup_on_update)
     )
 
     # Register shutdown event to close aiohttp session
@@ -152,6 +157,45 @@ async def _async_remove_old_location_devices(hass: HomeAssistant, entry):
 
     if removed_count > 0:
         _LOGGER.info(f"Migration complete: Removed {removed_count} old location device(s)")
+
+
+async def _async_cleanup_orphaned_spool_devices(hass: HomeAssistant, entry, coordinator):
+    """Remove orphaned spool devices when spools are deleted from Spoolman.
+
+    When a spool is deleted in Spoolman, the corresponding device in Home Assistant
+    should be automatically removed to avoid cluttering the device registry.
+    """
+    if not coordinator.data:
+        return
+
+    device_reg = dr.async_get(hass)
+    devices = dr.async_entries_for_config_entry(device_reg, entry.entry_id)
+
+    spools = coordinator.data.get("spools", [])
+
+    # Build a set of currently existing spool IDs
+    current_spool_ids = {str(spool.get("id")) for spool in spools}
+
+    removed_count = 0
+    for device in devices:
+        # Check if this is a spool device (identifiers contain "spool_")
+        for identifier in device.identifiers:
+            if len(identifier) >= 3 and isinstance(identifier[2], str):
+                if identifier[2].startswith("spool_"):
+                    # Extract spool ID from identifier (e.g., "spool_123" -> "123")
+                    spool_id_str = identifier[2].replace("spool_", "")
+
+                    # If this spool ID doesn't exist in Spoolman anymore, remove the device
+                    if spool_id_str not in current_spool_ids:
+                        _LOGGER.info(
+                            f"Removing orphaned spool device: {device.name} (ID: {spool_id_str})"
+                        )
+                        device_reg.async_remove_device(device.id)
+                        removed_count += 1
+                        break
+
+    if removed_count > 0:
+        _LOGGER.info(f"Cleanup complete: Removed {removed_count} orphaned spool device(s)")
 
 
 async def _async_cleanup_extra_field_entities(hass: HomeAssistant, entry, coordinator):
