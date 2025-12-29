@@ -28,6 +28,7 @@ from .sensors import (
     Spool,
     SpoolComment,
     SpoolEstimatedRunOut,
+    SpoolExtraField,
     SpoolFirstUsed,
     SpoolFlowRate,
     SpoolId,
@@ -55,6 +56,41 @@ async def async_setup_entry(
     """Set up Spoolman sensors from a config entry."""
     # Use the coordinator from hass.data that was created in __init__.py
     coordinator = hass.data[DOMAIN]["coordinator"]
+
+    # Track existing extra field entities to detect new ones
+    existing_extra_fields = {}  # key: (spool_id, field_key), value: entity
+
+    async def async_add_extra_field_entities():
+        """Add new extra field entities when they appear in coordinator data."""
+        if not coordinator.data:
+            return
+
+        new_entities = []
+        spools = coordinator.data.get("spools", [])
+
+        for spool in spools:
+            spool_id = spool.get("id")
+            extra_data = spool.get("extra", {})
+
+            for field_key in extra_data:
+                entity_key = (spool_id, field_key)
+
+                # Only create if it doesn't exist yet
+                if entity_key not in existing_extra_fields:
+                    extra_field_sensor = SpoolExtraField(
+                        hass, coordinator, spool, config_entry, field_key
+                    )
+                    new_entities.append(extra_field_sensor)
+                    existing_extra_fields[entity_key] = extra_field_sensor
+                    _LOGGER.info(
+                        f"Dynamically adding new extra field sensor for spool {spool_id}: {field_key}"
+                    )
+
+        if new_entities:
+            async_add_entities(new_entities)
+
+    # Register listener for coordinator updates to add new extra fields
+    coordinator.async_add_listener(async_add_extra_field_entities)
 
     if coordinator.data:
         all_entities = []
@@ -248,6 +284,22 @@ async def async_setup_entry(
                     hass, coordinator, spool, config_entry
                 )
                 all_entities.append(filament_weight_sensor)
+
+            # Extra fields - create a sensor for each extra field
+            extra_data = spool.get("extra", {})
+            if extra_data:
+                for field_key in extra_data:
+                    extra_field_sensor = SpoolExtraField(
+                        hass, coordinator, spool, config_entry, field_key
+                    )
+                    all_entities.append(extra_field_sensor)
+                    # Track this extra field entity
+                    existing_extra_fields[(spool.get("id"), field_key)] = extra_field_sensor
+                    _LOGGER.debug(
+                        "Created extra field sensor for spool %s: %s",
+                        spool.get("id"),
+                        field_key
+                    )
 
         # Create filament entities
         filament_data = coordinator.data.get("filaments", [])

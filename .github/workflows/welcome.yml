@@ -22,8 +22,8 @@ jobs:
       - name: Welcome first-time contributors
         uses: actions/first-interaction@v3
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-message: |
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          issue_message: |
             👋 **Welcome to Spoolman Home Assistant Integration!**
 
             Thanks for opening your first issue! We're excited to have you here! 🎉
@@ -40,7 +40,7 @@ jobs:
 
             We're here to help! Don't hesitate to ask questions. 💬
 
-          pr-message: |
+          pr_message: |
             🎉 **Awesome! Your first Pull Request!**
 
             Thank you so much for contributing to the Spoolman Home Assistant Integration!

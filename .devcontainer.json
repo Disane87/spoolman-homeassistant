@@ -21,7 +21,8 @@
                 "github.vscode-pull-request-github",
                 "ryanluker.vscode-coverage-gutters",
                 "ms-python.vscode-pylance",
-                "vivaxy.vscode-conventional-commits"
+                "vivaxy.vscode-conventional-commits",
+                "t-myk.github-issues-in-sidebar"
             ],
             "settings": {
                 "files.eol": "\n",

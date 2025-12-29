@@ -12,10 +12,13 @@
 
 Hey there! 👋 This integration brings [Spoolman](https://github.com/Donkie/Spoolman/) into your Home Assistant setup. Keep an eye on your filament spools and get notified before you run out of material mid-print! 🖨️✨
 
+<details open>
+<summary><h2>⚠️ IMPORTANT - Please Read! Upgrading to Version 1.2 🛤️</h2></summary>
+
 > [!CAUTION]
-> ## ⚠️ HEADS UP - Smooth Migration Path Available! 🛤️
+> ## Smooth Migration Path Available! 🎉
 >
-> **We've made some awesome improvements! Don't worry - your existing setup will keep working! 🎉**
+> **We've made some awesome improvements! Don't worry - your existing setup will keep working!**
 >
 > ### 🆕 What's New?
 > - 🏠 **Better Device Structure**: Each spool is now its own device (much cleaner!)
@@ -78,6 +81,8 @@ Hey there! 👋 This integration brings [Spoolman](https://github.com/Donkie/Spo
 >
 > Questions? Run into issues? [Open an issue](https://github.com/Disane87/spoolman-homeassistant/issues) - we're here to help! 💬
 
+</details>
+
 # ✨ What Can This Thing Do?
 
 Glad you asked! Here's the good stuff:
@@ -88,6 +93,7 @@ Glad you asked! Here's the good stuff:
 - 📏 **All The Measurements**: Weight, length, usage percentage - we got 'em all!
 - ⚡ **Flow Rate Tracking**: See how fast you're burning through filament (g/h)
 - ⏰ **Run-Out Predictions**: Know when you'll run out before it happens
+- 🏷️ **Extra Fields Support**: Custom fields from Spoolman automatically become sensors (auto-created & auto-removed!)
 - 🔴 **Low Filament Binary Sensor**: Simple on/off sensor when spool is running low (uses warning threshold)
 - 📍 **Location Selector**: Move spools around with a simple dropdown
 - 🚨 **Smart Alerts**: Set thresholds for info, warning, and critical states
@@ -608,7 +614,23 @@ data:
 
 # 🎯 Extra Fields - Get Creative!
 
-Spoolman supports custom fields, and so do we! They show up in your spool attributes with the `extra_` prefix.
+Spoolman supports custom fields, and so do we! As of the latest version, each extra field automatically becomes its own sensor entity!
+
+**What you get:**
+- 🎯 Each extra field = separate sensor entity
+- 🔄 Auto-created when you add fields in Spoolman
+- 🗑️ Auto-removed when you delete fields
+- 📊 Easy to use in automations and dashboards
+- 🏷️ Entity ID format: `sensor.spoolman_spool_[id]_extra_[fieldname]`
+- 📛 Naming: All extra field sensors are named **"Extra [FieldName]"**
+
+**Example:** If you add a custom field `humidity` to Spool #1 in Spoolman, you'll automatically get:
+- Entity: `sensor.spoolman_spool_1_extra_humidity`
+- Name: "Spoolman Spool 1 **Extra Humidity**" (easy to identify!)
+- Icon: `mdi:tag-outline`
+
+> [!NOTE]
+> Extra fields are also still available as attributes on the main spool sensor with the `extra_` prefix for backward compatibility.
 
 **Cool idea:** Store humidity data from your Home Assistant sensors! Here's an automation that updates humidity for all spools every 15 minutes:
 
@@ -637,9 +659,7 @@ actions:
                     {{ states("sensor."+state_attr(repeat.item, 'extra_sensor')) }}
 ```
 
-**Show it off!** Display your custom fields in cards using auto-entities + multiple-entity-row:
-
-![List of spools with their attributes](docs/auto-entities-multiple-entity-row.png)
+**Show it off!** Your extra field sensors work just like any other sensor - use them in cards, automations, or anywhere else!
 
 
 # 🤝 Contributing

@@ -16,6 +16,7 @@ from .filament_weight import FilamentWeight
 from .spool import Spool
 from .spool_comment import SpoolComment
 from .spool_estimated_run_out import SpoolEstimatedRunOut
+from .spool_extra_field import SpoolExtraField
 from .spool_first_used import SpoolFirstUsed
 from .spool_flow_rate import SpoolFlowRate
 from .spool_id import SpoolId
@@ -45,6 +46,7 @@ __all__ = [
     "Spool",
     "SpoolComment",
     "SpoolEstimatedRunOut",
+    "SpoolExtraField",
     "SpoolFirstUsed",
     "SpoolFlowRate",
     "SpoolId",
