@@ -5,7 +5,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import device_registry as dr, entity_registry as er
 
 from custom_components.spoolman.schema_helper import SchemaHelper
 
@@ -43,6 +43,20 @@ async def async_setup_entry(hass: HomeAssistant, entry):
 
     # Clean up old location devices from previous versions
     await _async_remove_old_location_devices(hass, entry)
+
+    # Clean up orphaned extra field entities (after initial data load)
+    if coordinator.data:
+        await _async_cleanup_extra_field_entities(hass, entry, coordinator)
+
+    # Register a one-time listener to cleanup extra fields after coordinator updates
+    async def _async_cleanup_on_update():
+        """Cleanup extra fields on coordinator update."""
+        await coordinator.async_cleanup_extra_fields()
+
+    # Add listener that runs cleanup on every update
+    entry.async_on_unload(
+        coordinator.async_add_listener(_async_cleanup_on_update)
+    )
 
     # Register shutdown event to close aiohttp session
     async def _async_close_session(event):
@@ -138,3 +152,43 @@ async def _async_remove_old_location_devices(hass: HomeAssistant, entry):
 
     if removed_count > 0:
         _LOGGER.info(f"Migration complete: Removed {removed_count} old location device(s)")
+
+
+async def _async_cleanup_extra_field_entities(hass: HomeAssistant, entry, coordinator):
+    """Remove orphaned extra field entities when fields are deleted from Spoolman.
+
+    When extra fields are removed from a spool in Spoolman, the corresponding
+    sensor entities should be automatically removed from Home Assistant.
+    """
+    entity_reg = er.async_get(hass)
+    entities = er.async_entries_for_config_entry(entity_reg, entry.entry_id)
+
+    if not coordinator.data:
+        return
+
+    spools = coordinator.data.get("spools", [])
+
+    # Build a set of currently existing extra field unique_ids
+    current_extra_field_unique_ids = set()
+    for spool in spools:
+        spool_id = spool.get("id")
+        extra_data = spool.get("extra", {})
+        for field_key in extra_data:
+            safe_field_key = field_key.lower().replace(" ", "_").replace("-", "_")
+            unique_id = f"spoolman_{entry.entry_id}_spool_{spool_id}_extra_{safe_field_key}"
+            current_extra_field_unique_ids.add(unique_id)
+
+    removed_count = 0
+    for entity in entities:
+        # Check if this is an extra field entity (contains "_extra_" in unique_id)
+        if entity.unique_id and "_extra_" in entity.unique_id:
+            # If it's not in the current set, it should be removed
+            if entity.unique_id not in current_extra_field_unique_ids:
+                _LOGGER.info(
+                    f"Removing orphaned extra field entity: {entity.entity_id} (unique_id: {entity.unique_id})"
+                )
+                entity_reg.async_remove(entity.entity_id)
+                removed_count += 1
+
+    if removed_count > 0:
+        _LOGGER.info(f"Cleanup complete: Removed {removed_count} orphaned extra field entity/entities")

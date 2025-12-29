@@ -1,4 +1,5 @@
 """Spoolman home assistant data coordinator."""
+import asyncio
 import logging
 from datetime import timedelta
 
@@ -57,6 +58,10 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 {"allow_archived": show_archived}
             )
             filaments = await self.spoolman_api.get_filaments({})
+        except asyncio.CancelledError:
+            # Task was cancelled (e.g., during shutdown), re-raise to let coordinator handle it
+            _LOGGER.debug("Data update was cancelled")
+            raise
         except Exception as exception:
             raise UpdateFailed(
                 f"Error fetching data from API: {exception}"
@@ -93,3 +98,52 @@ class SpoolManCoordinator(DataUpdateCoordinator):
             # Continue returning spools even if Klipper processing fails
 
         return {"spools": spools, "filaments": filaments}
+
+    async def async_cleanup_extra_fields(self):
+        """Cleanup orphaned extra field entities - can be called externally."""
+        await self._async_cleanup_extra_fields_on_update()
+
+    async def _async_cleanup_extra_fields_on_update(self):
+        """Cleanup orphaned extra field entities after data update."""
+        try:
+            from homeassistant.helpers import entity_registry as er
+
+            # Don't run cleanup if we don't have data yet
+            if not self.data:
+                _LOGGER.debug("Skipping extra field cleanup - no data available yet")
+                return
+
+            entity_reg = er.async_get(self.hass)
+            entities = er.async_entries_for_config_entry(entity_reg, self.config_entry.entry_id)
+
+            spools = self.data.get("spools", [])
+
+            # Build a set of currently existing extra field unique_ids
+            current_extra_field_unique_ids = set()
+            for spool in spools:
+                spool_id = spool.get("id")
+                extra_data = spool.get("extra", {})
+                for field_key in extra_data:
+                    safe_field_key = field_key.lower().replace(" ", "_").replace("-", "_")
+                    unique_id = f"spoolman_{self.config_entry.entry_id}_spool_{spool_id}_extra_{safe_field_key}"
+                    current_extra_field_unique_ids.add(unique_id)
+
+            removed_count = 0
+            for entity in entities:
+                # Check if this is an extra field entity (contains "_extra_" in unique_id)
+                if entity.unique_id and "_extra_" in entity.unique_id:
+                    # If it's not in the current set, it should be removed
+                    if entity.unique_id not in current_extra_field_unique_ids:
+                        _LOGGER.info(
+                            f"Removing orphaned extra field entity during update: {entity.entity_id}"
+                        )
+                        entity_reg.async_remove(entity.entity_id)
+                        removed_count += 1
+
+            if removed_count > 0:
+                _LOGGER.info(f"Update cleanup: Removed {removed_count} orphaned extra field entity/entities")
+        except asyncio.CancelledError:
+            # Task was cancelled, just return silently
+            _LOGGER.debug("Extra field cleanup was cancelled")
+        except Exception as e:
+            _LOGGER.error(f"Error during extra field cleanup: {e}", exc_info=True)
