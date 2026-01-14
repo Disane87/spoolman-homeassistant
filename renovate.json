@@ -1,11 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "automerge": true,
   "automergeType": "pr",
-  "baseBranches": [
+  "baseBranchPatterns": [
     "dev"
   ],
   "labels": [
