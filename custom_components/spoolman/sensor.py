@@ -4,7 +4,7 @@ import logging
 import os
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from PIL import Image, ImageDraw
 
@@ -60,7 +60,8 @@ async def async_setup_entry(  # noqa: C901
     # Track existing extra field entities to detect new ones
     existing_extra_fields = {}  # key: (spool_id, field_key), value: entity
 
-    async def async_add_extra_field_entities():
+    @callback
+    def add_extra_field_entities():
         """Add new extra field entities when they appear in coordinator data."""
         if not coordinator.data:
             return
@@ -88,9 +89,6 @@ async def async_setup_entry(  # noqa: C901
 
         if new_entities:
             async_add_entities(new_entities)
-
-    # Register listener for coordinator updates to add new extra fields
-    coordinator.async_add_listener(async_add_extra_field_entities)
 
     if coordinator.data:
         all_entities = []
@@ -313,6 +311,9 @@ async def async_setup_entry(  # noqa: C901
             all_entities.append(filament_device)
 
         async_add_entities(all_entities)
+
+    # Register listener for coordinator updates to add new extra fields
+    coordinator.async_add_listener(add_extra_field_entities)
 
 
 def _generate_entity_picture(spool_data, image_dir):
