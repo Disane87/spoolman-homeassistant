@@ -1,3 +1,9 @@
+## [1.3.1-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.3.0...v1.3.1-dev.1) (2026-02-18)
+
+### 🛠️ Fixes
+
+* **sensor:** resolve unawaited coroutine and duplicate entity ID errors ([ab3f582](https://github.com/Disane87/spoolman-homeassistant/commit/ab3f582ac9e1f8ec98613a2735432ceb5e593855))
+
 ## [1.3.0](https://github.com/Disane87/spoolman-homeassistant/compare/v1.2.1...v1.3.0) (2025-12-29)
 
 ### 🚀 Features
