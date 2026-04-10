@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Auto-assign area labels
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const issue_number = context.issue.number;
