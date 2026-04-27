@@ -1,6 +1,6 @@
 colorlog==6.10.1
 homeassistant>=2023.9.3
-pip>=26,<27
+pip>=26.1,<27
 ruff==0.15.12
 pre-commit
 black
