@@ -5,7 +5,8 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
+from homeassistant.components.sensor.const import SensorStateClass, SensorStateClass
 from homeassistant.core import callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import generate_entity_id
@@ -50,10 +51,32 @@ class SpoolExtraField(CoordinatorEntity, SensorEntity):
             f"spoolman_spool_{spool_data['id']}_extra_{safe_field_key}",
             hass=hass,
         )
+        extra_field_data = spool_data.get("extra", {}).get(self._field_key, {})
         self._attr_unique_id = f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_extra_{safe_field_key}"
         self._attr_has_entity_name = False
-        self._attr_name = f"{spool_name} Extra {field_key.replace('_', ' ').title()}"
-        self._attr_icon = "mdi:tag-outline"
+        self._attr_name = f"{spool_name} Extra {extra_field_data["name"]}"
+        field_type = extra_field_data.get("field_type", "")
+
+        # set state class for numeric types
+        if field_type == "integer" or field_type == "float":
+            self._attr_state_class = SensorStateClass.MEASUREMENT
+
+        if "unit" in extra_field_data:
+            self._attr_native_unit_of_measurement = extra_field_data["unit"]
+
+        # set device class for common extra fields:
+        if extra_field_data["name"] == "Humidity":
+            self._attr_device_class = SensorDeviceClass.HUMIDITY
+            self._attr_icon = "mdi:water-percent"
+        elif extra_field_data["name"] == "Temperature":
+            self._attr_device_class = SensorDeviceClass.TEMPERATURE
+            self._attr_icon = "mdi:thermometer"
+        elif field_type == "datetime":
+            self._attr_device_class = SensorDeviceClass.TIMESTAMP
+            self._attr_icon = "mdi:calendar"
+        else:
+            self._attr_icon = "mdi:tag-outline"
+
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")}  # type: ignore[arg-type]
         )
@@ -86,11 +109,12 @@ class SpoolExtraField(CoordinatorEntity, SensorEntity):
     def state(self) -> Any:
         """Return the state of the extra field."""
         extra_data = self._spool.get("extra", {})
-        value = extra_data.get(self._field_key)
+        value = extra_data.get(self._field_key, {}).get("value")
 
         # Convert value to string if it's a complex type
         if isinstance(value, dict | list):
             import json
+
             return json.dumps(value)
 
         return value
