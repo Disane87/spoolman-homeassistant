@@ -1,8 +1,11 @@
 """Class for interacting with the Spoolman API."""
+
 import aiohttp
 import logging
 import json
+
 _LOGGER = logging.getLogger(__name__)
+
 
 class SpoolmanAPI:
     """Class for interacting with the Spoolman API."""
@@ -19,6 +22,28 @@ class SpoolmanAPI:
             _LOGGER.debug("SpoolmanAPI: Creating new aiohttp ClientSession")
             self._session = aiohttp.ClientSession()
         return self._session
+
+    async def _get_extra_fields(self, entity_type):
+        """Return extra fields types/units"""
+        _LOGGER.debug("SpoolmanAPI: get_extra_fields")
+
+        data = {}
+        url = f"{self.base_url}/field/{entity_type}"
+        session = await self._get_session()
+        async with session.get(url) as response:
+            response.raise_for_status()
+            response = await response.json()
+            _LOGGER.debug("SpoolmanAPI: get_extra_fields response %s", response)
+
+            """Decode each extra type from JSON."""
+            for extra in response:
+                data[extra["key"]] = {
+                    "name": extra["name"],
+                    "field_type": extra["field_type"],
+                    "unit": extra.get("unit"),
+                }
+
+            return data
 
     async def close(self):
         """Close the aiohttp ClientSession."""
@@ -62,6 +87,7 @@ class SpoolmanAPI:
     async def get_spools(self, params):
         """Return a list of all spools."""
         _LOGGER.debug("SpoolmanAPI: get_spools")
+        extra_data = None
         url = f"{self.base_url}/spool"
         if len(params) > 0:
             url = f"{url}?{self.string_from_dictionary(params)}"
@@ -74,8 +100,12 @@ class SpoolmanAPI:
             """Decode each item in extra from JSON."""
             for spool in response:
                 if "extra" in spool:
+                    if not extra_data:
+                        extra_data = await self._get_extra_fields("spool")
                     for key, value in spool["extra"].items():
-                        spool["extra"][key] = json.loads(value)
+                        spool["extra"][key] = {
+                            "value": json.loads(value)
+                        } | extra_data.get(key, {})
 
             return response
 
@@ -102,6 +132,7 @@ class SpoolmanAPI:
     async def get_spool_by_id(self, spool_id):
         """Return the spool with the specified ID."""
         _LOGGER.debug("SpoolmanAPI: get_spool_by_id")
+        extra_data = None
         url = f"{self.base_url}/spool/{spool_id}"
         session = await self._get_session()
         async with session.get(url) as response:
@@ -111,8 +142,12 @@ class SpoolmanAPI:
 
             """Decode each item in extra from JSON."""
             if "extra" in response:
+                if not extra_data:
+                    extra_data = await self._get_extra_fields("spool")
                 for key, value in response["extra"].items():
-                    response["extra"][key] = json.loads(value)
+                    response["extra"][key] = {
+                        "value": json.loads(value)
+                    } | extra_data.get(key, {})
 
             return response
 
@@ -142,7 +177,9 @@ class SpoolmanAPI:
 
         if "remaining_weight" in data and "used_weight" in data:
             if data["remaining_weight"] > 0 and data["used_weight"] > 0:
-                raise ValueError("remaining_weight and used_weight cannot be used together. Please use only one of them.")
+                raise ValueError(
+                    "remaining_weight and used_weight cannot be used together. Please use only one of them."
+                )
 
         """Encode each item in extra as JSON."""
         if "extra" in data:
@@ -176,7 +213,9 @@ class SpoolmanAPI:
 
         if "use_length" in data and "use_weight" in data:
             if data["use_length"] > 0 and data["use_weight"] > 0:
-                raise ValueError("use_length and use_weight cannot be used together. Please use only one of them.")
+                raise ValueError(
+                    "use_length and use_weight cannot be used together. Please use only one of them."
+                )
 
         url = f"{self.base_url}/spool/{spool_id}/use"
         try:
@@ -184,7 +223,9 @@ class SpoolmanAPI:
             async with session.put(url, json=data) as response:
                 response.raise_for_status()
                 response_data = await response.json()
-                _LOGGER.debug("SpoolmanAPI: use_spool_filament response %s", response_data)
+                _LOGGER.debug(
+                    "SpoolmanAPI: use_spool_filament response %s", response_data
+                )
                 return response_data
         except aiohttp.ClientResponseError as e:
             _LOGGER.error(f"HTTP error occurred: {e.status} {e.message}")
