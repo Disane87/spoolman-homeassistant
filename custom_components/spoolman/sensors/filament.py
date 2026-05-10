@@ -3,32 +3,36 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.components.sensor.const import SensorStateClass
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfMass
-from homeassistant.core import callback
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import generate_entity_id
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from ..const import (
-    CONF_URL,
-    DOMAIN,
-    SPOOLMAN_INFO_PROPERTY,
-)
+from ..const import CONF_URL, DOMAIN, SPOOLMAN_INFO_PROPERTY
 
 _LOGGER = logging.getLogger(__name__)
 
 ICON = "mdi:printer-3d-nozzle"
 
 
-class Filament(CoordinatorEntity, SensorEntity):
+class Filament(CoordinatorEntity[Any], SensorEntity):
     """Representation of a Spoolman Filament Sensor."""
 
     def __init__(
-        self, hass, coordinator, filament_data, idx, config_entry, image_url
+        self,
+        hass: HomeAssistant,
+        coordinator: Any,
+        filament_data: dict[str, Any],
+        idx: int,
+        config_entry: ConfigEntry,
+        image_url: str | None,
     ) -> None:
         """Spoolman home assistant filament sensor init."""
         super().__init__(coordinator)
@@ -56,7 +60,7 @@ class Filament(CoordinatorEntity, SensorEntity):
         self._attr_icon = ICON
         self.idx = idx  # Keep for backwards compatibility, but don't use for lookups
 
-    def assign_name_and_location(self):
+    def assign_name_and_location(self) -> None:
         """Update sensor name and device (location)."""
 
         vendor_name = self._filament.get("vendor", {}).get("name")
@@ -138,36 +142,33 @@ class Filament(CoordinatorEntity, SensorEntity):
         self.async_write_ha_state()
 
     @property
-    def extra_state_attributes(self):
+    def extra_state_attributes(self) -> dict[str, Any]:
         """Return the attributes of the sensor."""
-        filament = self._filament
+        return self.flatten_dict(self._filament)
 
-        return self.flatten_dict(filament)
-
-    def flatten_dict(self, d, parent_key="", sep="_"):
-        """Flattens a dictionary."""
-        flat_dict = {}
+    def flatten_dict(
+        self, d: Any, parent_key: str = "", sep: str = "_"
+    ) -> dict[str, Any]:
+        """Flatten a nested dictionary into single-level keys."""
+        flat_dict: dict[str, Any] = {}
         if isinstance(d, dict):
             for key, value in d.items():
                 new_key = f"{parent_key}{sep}{key}" if parent_key else key
                 if isinstance(value, dict):
-                    # Wenn der Wert ein Dictionary ist, rufen Sie die Funktion rekursiv auf
                     flat_dict.update(self.flatten_dict(value, new_key, sep=sep))
                 elif isinstance(value, str):
-                    # Wenn der Wert ein String ist, trimmen Sie ihn
                     flat_dict[new_key] = value.strip()
                 else:
                     flat_dict[new_key] = value
             return flat_dict
+        return {}
 
-        else:
-            return {}
+    @property  # type: ignore[misc]
+    def state(self) -> float | int:
+        """Return the total remaining weight across all spools (g)."""
+        value = round(self._filament.get("total_remaining_weight", 0), 3)
+        return value if isinstance(value, int | float) else 0
 
-    @property
-    def state(self):
-        """Return the state of the sensor (total remaining weight)."""
-        return round(self._filament.get("total_remaining_weight", 0), 3)
-
-    async def async_update(self):
+    async def async_update(self) -> None:
         """Fetch the latest data from the coordinator."""
         await self.coordinator.async_request_refresh()

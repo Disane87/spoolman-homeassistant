@@ -8,6 +8,7 @@ determine when to alert users about low filament levels.
 """
 
 import logging
+from typing import Any
 
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
@@ -57,8 +58,8 @@ class SpoolLowFilament(CoordinatorEntity, BinarySensorEntity):
     def __init__(
         self,
         hass: HomeAssistant,
-        coordinator,
-        spool_data: dict,
+        coordinator: Any,
+        spool_data: dict[str, Any],
         config_entry: ConfigEntry,
     ) -> None:
         """Initialize the low filament binary sensor."""
@@ -105,7 +106,9 @@ class SpoolLowFilament(CoordinatorEntity, BinarySensorEntity):
 
         # Set device info to match spool device
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")},
+            identifiers={
+                (DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")  # type: ignore[arg-type]
+            },
         )
 
         # Initial state calculation
@@ -137,7 +140,7 @@ class SpoolLowFilament(CoordinatorEntity, BinarySensorEntity):
         self._calculate_state(spool_data)
         self.async_write_ha_state()
 
-    def _calculate_state(self, spool_data) -> None:
+    def _calculate_state(self, spool_data: dict[str, Any]) -> None:
         """Calculate the binary sensor state based on remaining filament."""
         # Calculate remaining percentage
         used_weight = spool_data.get("used_weight", 0)

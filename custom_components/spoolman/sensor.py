@@ -2,7 +2,7 @@
 
 import logging
 import os
-from typing import Any
+from typing import Any, cast
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
@@ -17,6 +17,7 @@ from .const import (
     PUBLIC_IMAGE_PATH,
 )
 from .entity import SpoolmanEntity
+from .models import SpoolData
 from .sensor_descriptions import (
     SENSOR_DESCRIPTIONS,
     SpoolmanSensorEntityDescription,
@@ -52,20 +53,20 @@ class SpoolmanSensor(SpoolmanEntity, SensorEntity):
         self,
         hass: HomeAssistant,
         coordinator: Any,
-        spool: dict,
+        spool: dict[str, Any],
         config_entry: ConfigEntry,
         description: SpoolmanSensorEntityDescription,
     ) -> None:
         """Initialize a description-driven Spoolman sensor."""
-        super().__init__(hass, coordinator, spool, config_entry)
+        super().__init__(hass, coordinator, cast("SpoolData", spool), config_entry)
         self.entity_description = description
         self._attr_name = f"{self._spool_name} {description.name_suffix}"
         self._attr_unique_id = self._make_unique_id(description.entity_id_suffix)
         self.entity_id = self._make_entity_id("sensor", description.entity_id_suffix)
         self._attr_device_info = self._make_device_info()
 
-    @property
-    def state(self) -> Any:  # noqa: ANN401 — return shape varies by description
+    @property  # type: ignore[misc]
+    def state(self) -> Any:
         """Return the value extracted from the spool dict by ``value_fn``.
 
         Overrides ``state`` rather than ``native_value`` so timestamp-class
@@ -83,7 +84,7 @@ async def async_setup_entry(  # noqa: C901
     hass: HomeAssistant,
     config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
-):
+) -> None:
     """Set up Spoolman sensors from a config entry."""
     # Use the coordinator from hass.data that was created in __init__.py
     coordinator = hass.data[DOMAIN]["coordinator"]
@@ -92,12 +93,12 @@ async def async_setup_entry(  # noqa: C901
     # add brand-new spools and extras when the coordinator notices them
     # (#327: previously only extra fields were added dynamically; new spools
     # required a full integration reload).
-    existing_spool_ids: set = set()
-    existing_extra_fields: dict = {}  # key: (spool_id, field_key), value: entity
+    existing_spool_ids: set[int] = set()
+    existing_extra_fields: dict[tuple[int, str], Any] = {}
 
     image_dir = hass.config.path(PUBLIC_IMAGE_PATH)
 
-    async def _build_entities_for_spool(spool, idx):
+    async def _build_entities_for_spool(spool: dict[str, Any], idx: int) -> list[Any]:
         """Build the full sensor stack for a single spool.
 
         Complex sensors (Spool main entity, FlowRate, EstimatedRunOut,
@@ -105,7 +106,7 @@ async def async_setup_entry(  # noqa: C901
         their own classes in ``sensors/``. Trivial property sensors are
         instantiated from :data:`SENSOR_DESCRIPTIONS`.
         """
-        entities: list = []
+        entities: list[Any] = []
         image_url = await hass.async_add_executor_job(
             _generate_entity_picture, spool, image_dir
         )
@@ -122,8 +123,9 @@ async def async_setup_entry(  # noqa: C901
         # Description-driven sensors. Each row's ``exists_fn`` mirrors the
         # legacy if-checks and the resulting entity_id/unique_id/name/icon/
         # device_class/unit values mirror the legacy classes byte-for-byte.
+        spool_typed = cast("SpoolData", spool)
         for desc in SENSOR_DESCRIPTIONS:
-            if desc.exists_fn(spool):
+            if desc.exists_fn(spool_typed):
                 entities.append(
                     SpoolmanSensor(hass, coordinator, spool, config_entry, desc)
                 )
@@ -152,9 +154,9 @@ async def async_setup_entry(  # noqa: C901
         existing_spool_ids.add(spool["id"])
         return entities
 
-    async def _async_add_new_spools(new_spools):
+    async def _async_add_new_spools(new_spools: list[dict[str, Any]]) -> None:
         """Build & register sensors for spools the coordinator just discovered."""
-        new_entities: list = []
+        new_entities: list[Any] = []
         # Use a stable index continuation for the picture filename.
         base_idx = len(existing_spool_ids)
         for offset, spool in enumerate(new_spools):
@@ -166,7 +168,7 @@ async def async_setup_entry(  # noqa: C901
             async_add_entities(new_entities)
 
     @callback
-    def add_dynamic_entities():
+    def add_dynamic_entities() -> None:
         """Add new spools and new extra-field sensors as they appear."""
         if not coordinator.data:
             return
@@ -203,7 +205,7 @@ async def async_setup_entry(  # noqa: C901
             async_add_entities(new_entities)
 
     if coordinator.data:
-        all_entities: list = []
+        all_entities: list[Any] = []
 
         # Per-spool sensors via _build_entities_for_spool (single source of
         # truth — same path used for dynamically-added spools later).
@@ -230,7 +232,7 @@ async def async_setup_entry(  # noqa: C901
     coordinator.async_add_listener(add_dynamic_entities)
 
 
-def _generate_entity_picture(spool_data, image_dir):
+def _generate_entity_picture(spool_data: dict[str, Any], image_dir: str) -> str | None:
     """Generate an entity picture with the specified color(s) and save it to the www directory."""
     filament = spool_data.get("filament", {})
 
@@ -286,7 +288,9 @@ def _generate_entity_picture(spool_data, image_dir):
     return f"{LOCAL_IMAGE_PATH}/{image_name}"
 
 
-def _generate_filament_entity_picture(filament_data, image_dir):
+def _generate_filament_entity_picture(
+    filament_data: dict[str, Any], image_dir: str
+) -> str | None:
     """Generate a filament entity picture with the specified color(s) and save it to the www directory."""
 
     # Retrieve color(s)

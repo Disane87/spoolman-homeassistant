@@ -5,9 +5,10 @@ from __future__ import annotations
 from typing import Any
 
 from homeassistant import config_entries
-from homeassistant.data_entry_flow import FlowResult
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.core import callback
+from homeassistant.exceptions import HomeAssistantError
+
 from .base_flow import BaseFlow
 
 from .options_flow import OptionsFlowHandler
@@ -35,7 +36,7 @@ class ConfigFlow(BaseFlow, config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Handle the initial step."""
         spoolman_errors: dict[str, str] = {}
         klipper_errors: dict[str, str] = {}
@@ -53,7 +54,7 @@ class ConfigFlow(BaseFlow, config_entries.ConfigFlow, domain=DOMAIN):
                     klipper_info,
                     klipper_errors,
                     klipper_url,
-                ) = await self.get_klipper_api_info(user_input.get(KLIPPER_URL, None))
+                ) = await self.get_klipper_api_info(klipper_url)
 
             if not spoolman_errors and not klipper_errors:
                 return self.async_create_entry(

@@ -206,7 +206,7 @@ SENSOR_DESCRIPTIONS: tuple[SpoolmanSensorEntityDescription, ...] = (
         state_class=SensorStateClass.TOTAL_INCREASING,
         native_unit_of_measurement=UnitOfMass.GRAMS,
         icon="mdi:weight",
-        value_fn=lambda s: round(s.get("used_weight", 0), 3),
+        value_fn=lambda s: round(s.get("used_weight") or 0, 3),
     ),
     SpoolmanSensorEntityDescription(
         key="used_length",
@@ -216,7 +216,7 @@ SENSOR_DESCRIPTIONS: tuple[SpoolmanSensorEntityDescription, ...] = (
         state_class=SensorStateClass.TOTAL_INCREASING,
         native_unit_of_measurement="mm",
         icon="mdi:tape-measure",
-        value_fn=lambda s: round(s.get("used_length", 0), 2),
+        value_fn=lambda s: round(s.get("used_length") or 0, 2),
     ),
     SpoolmanSensorEntityDescription(
         key="remaining_length",
@@ -226,7 +226,7 @@ SENSOR_DESCRIPTIONS: tuple[SpoolmanSensorEntityDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement="mm",
         icon="mdi:tape-measure",
-        value_fn=lambda s: round(s.get("remaining_length", 0), 2),
+        value_fn=lambda s: round(s.get("remaining_length") or 0, 2),
     ),
     # ---- Timestamps ----
     SpoolmanSensorEntityDescription(

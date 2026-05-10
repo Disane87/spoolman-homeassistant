@@ -188,8 +188,10 @@ rules:
       SpoolmanAPI and KlipperAPI both accept a session in __init__;
       coordinator and config flow pass async_get_clientsession(hass).
   strict-typing:
-    status: todo
+    status: done
     comment: |
-      Public surface is type-hinted; mypy --strict still reports errors
-      in the legacy complex sensors. Phase 4.4 of the refactor plan
-      drives this to zero.
+      ``mypy --strict`` reports zero errors across all 28 source files.
+      The few ``# type: ignore[arg-type]`` suppressions cover the legacy
+      3-tuple device identifier (changing it would orphan existing
+      users' devices); ``[misc]`` suppressions cover ``state`` property
+      overrides on legacy complex sensors retained for snapshot stability.

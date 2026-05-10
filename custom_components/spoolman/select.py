@@ -1,6 +1,9 @@
 """Spoolman home assistant select entity."""
 
+from __future__ import annotations
+
 import logging
+from typing import Any
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
@@ -19,7 +22,9 @@ _LOGGER = logging.getLogger(__name__)
 ICON = "mdi:map-marker"
 
 
-def _resolve_locations(coordinator_data, spools):
+def _resolve_locations(
+    coordinator_data: dict[str, Any] | None, spools: list[dict[str, Any]]
+) -> list[str]:
     """Pick the canonical location list, preferring Spoolman's /location feed.
 
     Falls back to the set of locations actually used by spools so older
@@ -36,7 +41,7 @@ async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
-):
+) -> None:
     """Set up Spoolman select entities."""
     _LOGGER.info("Setting up Spoolman select platform")
 
@@ -62,7 +67,7 @@ async def async_setup_entry(
     locations = _resolve_locations(coordinator.data, spool_data)
     _LOGGER.info("Found locations: %s", locations)
 
-    existing_spool_ids: set = set()
+    existing_spool_ids: set[int] = set()
 
     # Create a select entity for each spool
     for spool in spool_data:
@@ -77,7 +82,7 @@ async def async_setup_entry(
     async_add_entities(all_entities)
 
     @callback
-    def add_dynamic_selects():
+    def add_dynamic_selects() -> None:
         """Add a location select for spools that appeared after setup (#327)."""
         if not coordinator.data:
             return
@@ -102,10 +107,17 @@ async def async_setup_entry(
     coordinator.async_add_listener(add_dynamic_selects)
 
 
-class SpoolLocationSelect(CoordinatorEntity, SelectEntity):
+class SpoolLocationSelect(CoordinatorEntity[Any], SelectEntity):
     """Representation of a Spoolman Spool Location Select."""
 
-    def __init__(self, hass, coordinator, spool_data, locations, config_entry) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        coordinator: Any,
+        spool_data: dict[str, Any],
+        locations: list[str],
+        config_entry: ConfigEntry,
+    ) -> None:
         """Initialize the select entity."""
         super().__init__(coordinator)
 
@@ -146,7 +158,9 @@ class SpoolLocationSelect(CoordinatorEntity, SelectEntity):
         from .const import CONF_URL
 
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")},
+            identifiers={
+                (DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")  # type: ignore[arg-type]
+            },
         )
 
     @property

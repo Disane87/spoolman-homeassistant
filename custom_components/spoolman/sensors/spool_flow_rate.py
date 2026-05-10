@@ -3,28 +3,34 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime
+from typing import Any
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.components.sensor.const import SensorStateClass
-from homeassistant.core import callback
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import generate_entity_id
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from ..const import (
-    CONF_URL,
-    DOMAIN,
-)
+from ..const import CONF_URL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
 ICON = "mdi:printer-3d-nozzle"
 
 
-class SpoolFlowRate(CoordinatorEntity, SensorEntity):
+class SpoolFlowRate(CoordinatorEntity[Any], SensorEntity):
     """Representation of a Spoolman Spool Flow Rate Sensor."""
 
-    def __init__(self, hass, coordinator, spool_data, config_entry) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        coordinator: Any,
+        spool_data: dict[str, Any],
+        config_entry: ConfigEntry,
+    ) -> None:
         """Initialize the flow rate sensor."""
         super().__init__(coordinator)
 
@@ -33,8 +39,8 @@ class SpoolFlowRate(CoordinatorEntity, SensorEntity):
         self.spool_id = spool_data["id"]
         self._entry = config_entry
         self._attr_available = True
-        self._previous_weight = None
-        self._previous_timestamp = None
+        self._previous_weight: float | None = None
+        self._previous_timestamp: datetime | None = None
         self._flow_rate = 0.0
 
         # Set initial name
@@ -66,13 +72,12 @@ class SpoolFlowRate(CoordinatorEntity, SensorEntity):
 
         # Set device info to match spool device
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")},
+            identifiers={
+                (DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")  # type: ignore[arg-type]
+            },
         )
 
-        # Initialize with current weight and timestamp
         self._previous_weight = self._spool.get("remaining_weight", 0)
-        from datetime import datetime
-
         self._previous_timestamp = datetime.now()
 
     @callback
@@ -142,7 +147,7 @@ class SpoolFlowRate(CoordinatorEntity, SensorEntity):
         self.async_write_ha_state()
 
     @property
-    def extra_state_attributes(self):
+    def extra_state_attributes(self) -> dict[str, Any]:
         """Return extra state attributes."""
         return {
             "spool_id": self.spool_id,
@@ -153,12 +158,16 @@ class SpoolFlowRate(CoordinatorEntity, SensorEntity):
             else None,
         }
 
-    @property
-    def state(self):
-        """Return the flow rate."""
-        # Return 0 if flow rate is negative (weight increased - shouldn't happen normally)
+    @property  # type: ignore[misc]
+    def state(self) -> float | int:
+        """Return the flow rate clamped to ``>= 0`` (g/h).
+
+        Return type kept as ``float | int`` to preserve byte-stable
+        snapshot output: integer 0 when there has been no flow,
+        rounded float once flow_rate becomes non-zero.
+        """
         return round(max(0, self._flow_rate), 2)
 
-    async def async_update(self):
+    async def async_update(self) -> None:
         """Fetch the latest data from the coordinator."""
         await self.coordinator.async_request_refresh()

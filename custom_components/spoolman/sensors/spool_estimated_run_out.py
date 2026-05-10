@@ -3,27 +3,32 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
-from homeassistant.core import callback
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import generate_entity_id
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from ..const import (
-    CONF_URL,
-    DOMAIN,
-)
+from ..const import CONF_URL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
 ICON = "mdi:printer-3d-nozzle"
 
 
-class SpoolEstimatedRunOut(CoordinatorEntity, SensorEntity):
+class SpoolEstimatedRunOut(CoordinatorEntity[Any], SensorEntity):
     """Representation of a Spoolman Spool Estimated Run Out Sensor."""
 
-    def __init__(self, hass, coordinator, spool_data, config_entry) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        coordinator: Any,
+        spool_data: dict[str, Any],
+        config_entry: ConfigEntry,
+    ) -> None:
         """Initialize the estimated run out sensor."""
         super().__init__(coordinator)
 
@@ -65,7 +70,9 @@ class SpoolEstimatedRunOut(CoordinatorEntity, SensorEntity):
 
         # Set device info to match spool device
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")},
+            identifiers={
+                (DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")  # type: ignore[arg-type]
+            },
         )
 
     @callback
@@ -97,7 +104,7 @@ class SpoolEstimatedRunOut(CoordinatorEntity, SensorEntity):
         self.async_write_ha_state()
 
     @property
-    def extra_state_attributes(self):
+    def extra_state_attributes(self) -> dict[str, Any]:
         """Return extra state attributes."""
 
         remaining_weight = self._spool.get("remaining_weight", 0)
@@ -135,9 +142,9 @@ class SpoolEstimatedRunOut(CoordinatorEntity, SensorEntity):
             else None,
         }
 
-    @property
-    def state(self):
-        """Return the estimated run out timestamp."""
+    @property  # type: ignore[misc]
+    def state(self) -> str | None:
+        """Return the estimated run out timestamp as ISO string, or None."""
         from datetime import datetime, timedelta
 
         remaining_weight = self._spool.get("remaining_weight", 0)
@@ -165,6 +172,6 @@ class SpoolEstimatedRunOut(CoordinatorEntity, SensorEntity):
         # Return None if we can't calculate (no flow rate or no material left)
         return None
 
-    async def async_update(self):
+    async def async_update(self) -> None:
         """Fetch the latest data from the coordinator."""
         await self.coordinator.async_request_refresh()
