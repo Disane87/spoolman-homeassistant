@@ -1,0 +1,5 @@
+[
+  {"id": 10, "name": "PLA Basic", "material": "PLA", "color_hex": "FF6600", "vendor": {"id": 1, "name": "Bambu Lab"}},
+  {"id": 11, "name": null, "material": "PETG", "color_hex": "00AA00", "vendor": {}},
+  {"id": 12, "name": "Old PLA", "material": "PLA", "vendor": {"name": "Generic"}}
+]

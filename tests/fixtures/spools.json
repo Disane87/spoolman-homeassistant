@@ -1,0 +1,59 @@
+[
+  {
+    "id": 1,
+    "registered": "2024-01-15T10:00:00Z",
+    "first_used": "2024-02-01T12:00:00Z",
+    "last_used": "2024-05-01T14:30:00Z",
+    "filament": {
+      "id": 10,
+      "name": "PLA Basic",
+      "material": "PLA",
+      "density": 1.24,
+      "diameter": 1.75,
+      "weight": 1000,
+      "color_hex": "FF6600",
+      "settings_extruder_temp": 210,
+      "settings_bed_temp": 60,
+      "article_number": "BL-PLA-001",
+      "vendor": {"id": 1, "name": "Bambu Lab"}
+    },
+    "remaining_weight": 750,
+    "used_weight": 250,
+    "remaining_length": 248.5,
+    "used_length": 82.8,
+    "price": 24.99,
+    "spool_weight": 200,
+    "lot_nr": "LOT-A-2024",
+    "comment": "Used for benchies",
+    "location": "Shelf A",
+    "archived": false,
+    "extra": {"sticker_color": "\"red\"", "internal_id": "42"}
+  },
+  {
+    "id": 2,
+    "registered": "2024-03-01T09:00:00Z",
+    "filament": {
+      "id": 11,
+      "name": null,
+      "material": "PETG",
+      "color_hex": "00AA00",
+      "vendor": {}
+    },
+    "remaining_weight": 1000,
+    "used_weight": 0,
+    "remaining_length": 330,
+    "used_length": 0,
+    "location": "Shelf B",
+    "archived": false,
+    "extra": {}
+  },
+  {
+    "id": 3,
+    "registered": "2023-06-01T08:00:00Z",
+    "filament": {"id": 12, "name": "Old PLA", "material": "PLA", "vendor": {"name": "Generic"}},
+    "remaining_weight": 0,
+    "used_weight": 1000,
+    "archived": true,
+    "extra": {}
+  }
+]

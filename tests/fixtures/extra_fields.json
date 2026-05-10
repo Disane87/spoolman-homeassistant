@@ -1,0 +1,4 @@
+[
+  {"key": "sticker_color", "name": "Sticker color", "field_type": "text"},
+  {"key": "internal_id", "name": "Internal ID", "field_type": "integer"}
+]
