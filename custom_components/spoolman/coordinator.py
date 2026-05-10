@@ -6,7 +6,7 @@ import asyncio
 import logging
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -26,7 +26,12 @@ from .const import (
 )
 
 if TYPE_CHECKING:
-    pass
+    from .models import (
+        CoordinatorData,
+        ExtraFieldMetadata,
+        FilamentData,
+        SpoolData,
+    )
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -51,11 +56,13 @@ class SpoolmanRuntimeData:
 SpoolmanConfigEntry = ConfigEntry[SpoolmanRuntimeData]
 
 
-class SpoolManCoordinator(DataUpdateCoordinator):
-    """My custom coordinator."""
+class SpoolManCoordinator(DataUpdateCoordinator["CoordinatorData"]):
+    """Coordinator that polls the Spoolman API."""
 
-    def __init__(self, hass: HomeAssistant, entry) -> None:
-        """Initialize my coordinator."""
+    spoolman_api: SpoolmanAPI
+
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
+        """Initialize the coordinator."""
         _LOGGER.debug("SpoolManCoordinator.__init__")
 
         url = entry.data[CONF_URL]
@@ -78,7 +85,8 @@ class SpoolManCoordinator(DataUpdateCoordinator):
             "klipper_active_spool": None,
         }
 
-    async def _async_update_data(self):
+    async def _async_update_data(self) -> CoordinatorData:
+        """Fetch the latest spool / filament data from Spoolman."""
         _LOGGER.debug("SpoolManCoordinator._async_update_data")
         config = self.hass.data[DOMAIN]
 
@@ -155,18 +163,24 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 {spool["location"] for spool in spools if spool.get("location")}
             )
 
+        # Cast at the API → typed boundary. Spoolman returns plain dicts;
+        # the TypedDict shape is documented by ``models.py`` and used by
+        # downstream consumers.
         return {
-            "spools": spools,
-            "filaments": filaments,
-            "extra_fields": {"spool": spool_extra_fields},
+            "spools": cast("list[SpoolData]", spools),
+            "filaments": cast("list[FilamentData]", filaments),
+            "extra_fields": cast(
+                "dict[str, dict[str, ExtraFieldMetadata]]",
+                {"spool": spool_extra_fields},
+            ),
             "locations": locations,
         }
 
-    async def async_cleanup_extra_fields(self):
+    async def async_cleanup_extra_fields(self) -> None:
         """Cleanup orphaned extra field entities - can be called externally."""
         await self._async_cleanup_extra_fields_on_update()
 
-    async def _async_cleanup_extra_fields_on_update(self):
+    async def _async_cleanup_extra_fields_on_update(self) -> None:
         """Cleanup orphaned extra field entities after data update."""
         try:
             from homeassistant.helpers import entity_registry as er
@@ -176,6 +190,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 _LOGGER.debug("Skipping extra field cleanup - no data available yet")
                 return
 
+            assert self.config_entry is not None  # set in __init__
             entity_reg = er.async_get(self.hass)
             entities = er.async_entries_for_config_entry(
                 entity_reg, self.config_entry.entry_id

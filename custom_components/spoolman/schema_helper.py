@@ -20,7 +20,7 @@ class SchemaHelper:
     """Schema helper contains the config and options schema."""
 
     @staticmethod
-    def get_spoolman_patch_spool_schema():
+    def get_spoolman_patch_spool_schema() -> vol.Schema:
         """Get the schema for the spoolman_patch_spool service."""
         return vol.Schema(
             {
@@ -42,7 +42,7 @@ class SchemaHelper:
         )
 
     @staticmethod
-    def get_spoolman_use_spool_filament_schema():
+    def get_spoolman_use_spool_filament_schema() -> vol.Schema:
         """Get the schema for the spoolman_use_spool_filament service."""
         return vol.Schema(
             {
@@ -53,12 +53,14 @@ class SchemaHelper:
         )
 
     @staticmethod
-    def get_config_schema(get_values=False, config_data=None):
+    def get_config_schema(
+        get_values: bool = False,
+        config_data: dict[str, Any] | None = None,
+    ) -> vol.Schema:
         """Get the form for config and options flows."""
 
-        # Definiere eine Hilfsfunktion, um Standardwerte zu ermitteln
-        def get_default_value(key: str, default: Any):
-            """Get saved or default values."""
+        def get_default_value(key: str, default: Any) -> Any:
+            """Return the saved value if any, else the supplied default."""
             if get_values and config_data:
                 return config_data.get(key, default)
             return default
