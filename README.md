@@ -12,6 +12,20 @@
 
 Hey there! 👋 This integration brings [Spoolman](https://github.com/Donkie/Spoolman/) into your Home Assistant setup. Keep an eye on your filament spools and get notified before you run out of material mid-print! 🖨️✨
 
+> [!WARNING]
+> ## 🪦 Klipper Integration is Deprecated
+>
+> The built-in **Klipper Integration** of this component (`klipper_url` setting, `klipper_active_spool` attribute, Moonraker active-spool tracking) is **deprecated** and will be **removed in an upcoming release**.
+>
+> **Why?** This integration is meant to be a clean **bridge between Spoolman and Home Assistant** — Klipper/Moonraker integration is out of scope. Spoolman has had native Moonraker integration since 2023 ([Donkie/Spoolman#52](https://github.com/Donkie/Spoolman/issues/52), [docs](https://github.com/Donkie/Spoolman/blob/master/docs/integrations.md)) and Moonraker exposes the active spool through the [`spoolman` component](https://moonraker.readthedocs.io/en/latest/configuration/#spoolman) directly. There is no reason for this HA integration to ship its own Klipper client.
+>
+> **What you should do:**
+> 1. **Stop using** the `klipper_url` config option and the `klipper_active_spool` attribute in your dashboards/automations.
+> 2. **Configure Spoolman directly in Moonraker** (`[spoolman]` section). Moonraker will then sync the active spool with Spoolman, and the change is reflected in this integration's normal spool data.
+> 3. If you currently rely on the green-badge / sort-by-active-spool snippet in this README, replace the attribute lookup with whatever active-spool indicator Spoolman/Moonraker exposes for your printer.
+>
+> The setting and attribute will keep working until they are removed; expect removal no earlier than the next minor release. Tracking issues: #312, #100, #105.
+
 <details open>
 <summary><h2>⚠️ IMPORTANT - Please Read! Upgrading to Version 1.2 🛤️</h2></summary>
 
@@ -98,7 +112,7 @@ Glad you asked! Here's the good stuff:
 - 📍 **Location Selector**: Move spools around with a simple dropdown
 - 🚨 **Smart Alerts**: Set thresholds for info, warning, and critical states
 - 📦 **Archive Support**: Old spools? Group them in an "Archived" device
-- 🖨️ **Klipper Integration**: Track active spools in your Klipper setup
+- 🖨️ ~~**Klipper Integration**: Track active spools in your Klipper setup~~ — **deprecated, scheduled for removal** (see banner above; use Moonraker's native Spoolman integration instead)
 - 🤖 **Automation Services**: `patch_spool` and `use_spool_filament` for automation magic
 - 🎯 **Auto Areas**: Assigns device areas automatically (won't overwrite yours!)
 - 💾 **Database Friendly**: Dedicated sensors = no more bloated databases
