@@ -7,11 +7,17 @@ on:
 jobs:
   check-commits:
     runs-on: ubuntu-latest
-    # Skip the auto-generated dev -> main release PR (its title is intentionally
-    # a non-conventional-commit summary).
+    # Skip:
+    #  - the auto-generated dev -> main release PR (its title is intentionally
+    #    a non-conventional-commit summary), and
+    #  - PRs opened by automation accounts (renovate, dependabot,
+    #    github-actions[bot], ...). They follow their own title schemes and we
+    #    don't want to spam them with format-required comments.
     if: |
       !(github.event.pull_request.head.ref == 'dev' &&
-        github.event.pull_request.base.ref == 'main')
+        github.event.pull_request.base.ref == 'main') &&
+      github.event.pull_request.user.type != 'Bot' &&
+      !contains(github.event.pull_request.user.login, '[bot]')
     permissions:
       pull-requests: write
       statuses: write
