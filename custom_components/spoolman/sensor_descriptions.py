@@ -27,7 +27,7 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
-from homeassistant.const import UnitOfLength, UnitOfMass, UnitOfTemperature
+from homeassistant.const import UnitOfMass, UnitOfTemperature
 
 from .models import SpoolData
 
@@ -93,7 +93,7 @@ SENSOR_DESCRIPTIONS: tuple[SpoolmanSensorEntityDescription, ...] = (
     SpoolmanSensorEntityDescription(
         key="vendor_name",
         name_suffix="Vendor",
-        entity_id_suffix="vendor_name",
+        entity_id_suffix="vendor",
         icon="mdi:factory",
         exists_fn=lambda s: bool(_vendor_name(s)),
         value_fn=_vendor_name,
@@ -181,7 +181,8 @@ SENSOR_DESCRIPTIONS: tuple[SpoolmanSensorEntityDescription, ...] = (
         key="price",
         name_suffix="Price",
         entity_id_suffix="price",
-        icon="mdi:currency-eur",
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:currency-usd",
         exists_fn=lambda s: s.get("price") is not None,
         value_fn=lambda s: s.get("price"),
     ),
@@ -213,9 +214,9 @@ SENSOR_DESCRIPTIONS: tuple[SpoolmanSensorEntityDescription, ...] = (
         entity_id_suffix="used_length",
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.TOTAL_INCREASING,
-        native_unit_of_measurement=UnitOfLength.METERS,
+        native_unit_of_measurement="mm",
         icon="mdi:tape-measure",
-        value_fn=lambda s: round(s.get("used_length", 0), 3),
+        value_fn=lambda s: round(s.get("used_length", 0), 2),
     ),
     SpoolmanSensorEntityDescription(
         key="remaining_length",
@@ -223,9 +224,9 @@ SENSOR_DESCRIPTIONS: tuple[SpoolmanSensorEntityDescription, ...] = (
         entity_id_suffix="remaining_length",
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
-        native_unit_of_measurement=UnitOfLength.METERS,
+        native_unit_of_measurement="mm",
         icon="mdi:tape-measure",
-        value_fn=lambda s: round(s.get("remaining_length") or 0, 3),
+        value_fn=lambda s: round(s.get("remaining_length", 0), 2),
     ),
     # ---- Timestamps ----
     SpoolmanSensorEntityDescription(
@@ -233,7 +234,7 @@ SENSOR_DESCRIPTIONS: tuple[SpoolmanSensorEntityDescription, ...] = (
         name_suffix="Registered",
         entity_id_suffix="registered",
         device_class=SensorDeviceClass.TIMESTAMP,
-        icon="mdi:clock-plus-outline",
+        icon="mdi:calendar-plus",
         exists_fn=lambda s: bool(s.get("registered")),
         value_fn=lambda s: s.get("registered"),
     ),
@@ -242,7 +243,7 @@ SENSOR_DESCRIPTIONS: tuple[SpoolmanSensorEntityDescription, ...] = (
         name_suffix="First Used",
         entity_id_suffix="first_used",
         device_class=SensorDeviceClass.TIMESTAMP,
-        icon="mdi:clock-start",
+        icon="mdi:calendar-start",
         exists_fn=lambda s: bool(s.get("first_used")),
         value_fn=lambda s: s.get("first_used"),
     ),
@@ -251,7 +252,7 @@ SENSOR_DESCRIPTIONS: tuple[SpoolmanSensorEntityDescription, ...] = (
         name_suffix="Last Used",
         entity_id_suffix="last_used",
         device_class=SensorDeviceClass.TIMESTAMP,
-        icon="mdi:clock-end",
+        icon="mdi:calendar-clock",
         exists_fn=lambda s: bool(s.get("last_used")),
         value_fn=lambda s: s.get("last_used"),
     ),

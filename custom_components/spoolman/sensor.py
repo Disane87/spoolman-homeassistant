@@ -2,7 +2,9 @@
 
 import logging
 import os
+from typing import Any
 
+from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -14,36 +16,60 @@ from .const import (
     LOCAL_IMAGE_PATH,
     PUBLIC_IMAGE_PATH,
 )
+from .entity import SpoolmanEntity
+from .sensor_descriptions import (
+    SENSOR_DESCRIPTIONS,
+    SpoolmanSensorEntityDescription,
+)
 from .sensors import (
     Filament,
-    FilamentArticleNumber,
-    FilamentBedTemp,
     FilamentColorHex,
-    FilamentDensity,
-    FilamentDiameter,
-    FilamentExtruderTemp,
-    FilamentMaterial,
-    FilamentName,
-    FilamentWeight,
     Spool,
-    SpoolComment,
     SpoolEstimatedRunOut,
     SpoolExtraField,
-    SpoolFirstUsed,
     SpoolFlowRate,
-    SpoolId,
-    SpoolLastUsed,
     SpoolLocation,
-    SpoolLotNumber,
-    SpoolPrice,
-    SpoolRegistered,
-    SpoolRemainingLength,
-    SpoolUsedLength,
     SpoolUsedPercentage,
-    SpoolUsedWeight,
-    SpoolWeight,
-    VendorName,
 )
+
+
+class SpoolmanSensor(SpoolmanEntity, SensorEntity):
+    """Generic Spoolman sensor driven by a SpoolmanSensorEntityDescription.
+
+    Replaces the bulk of the legacy ``sensors/`` tree. The 20 trivial
+    property sensors are now rows in :data:`SENSOR_DESCRIPTIONS` and a
+    single instance of this class per row.
+    """
+
+    entity_description: SpoolmanSensorEntityDescription
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        coordinator: Any,
+        spool: dict,
+        config_entry: ConfigEntry,
+        description: SpoolmanSensorEntityDescription,
+    ) -> None:
+        """Initialize a description-driven Spoolman sensor."""
+        super().__init__(hass, coordinator, spool, config_entry)
+        self.entity_description = description
+        self._attr_name = f"{self._spool_name} {description.name_suffix}"
+        self._attr_unique_id = self._make_unique_id(description.entity_id_suffix)
+        self.entity_id = self._make_entity_id("sensor", description.entity_id_suffix)
+        self._attr_device_info = self._make_device_info()
+
+    @property
+    def state(self) -> Any:  # noqa: ANN401 — return shape varies by description
+        """Return the value extracted from the spool dict by ``value_fn``.
+
+        Overrides ``state`` rather than ``native_value`` so timestamp-class
+        sensors that store ISO strings (the legacy convention) keep their
+        raw string state. Migrating to ``native_value`` would force a
+        datetime parse and change the snapshotted state representation.
+        """
+        return self.entity_description.value_fn(self._spool)
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -67,53 +93,39 @@ async def async_setup_entry(  # noqa: C901
     image_dir = hass.config.path(PUBLIC_IMAGE_PATH)
 
     async def _build_entities_for_spool(spool, idx):
-        """Build the full sensor stack for a single spool."""
+        """Build the full sensor stack for a single spool.
+
+        Complex sensors (Spool main entity, FlowRate, EstimatedRunOut,
+        UsedPercentage, Location, ExtraField, ColorHex with image) keep
+        their own classes in ``sensors/``. Trivial property sensors are
+        instantiated from :data:`SENSOR_DESCRIPTIONS`.
+        """
         entities: list = []
         image_url = await hass.async_add_executor_job(
             _generate_entity_picture, spool, image_dir
         )
+
+        # Complex sensors first — these have custom logic that doesn't
+        # fit the description pattern (image generation, computed state,
+        # custom name handling, dynamic per-key sensors).
         entities.append(Spool(hass, coordinator, spool, idx, config_entry, image_url))
         entities.append(SpoolFlowRate(hass, coordinator, spool, config_entry))
         entities.append(SpoolEstimatedRunOut(hass, coordinator, spool, config_entry))
-        entities.append(SpoolUsedWeight(hass, coordinator, spool, config_entry))
-        entities.append(SpoolRemainingLength(hass, coordinator, spool, config_entry))
-        entities.append(SpoolUsedLength(hass, coordinator, spool, config_entry))
         entities.append(SpoolLocation(hass, coordinator, spool, config_entry))
         entities.append(SpoolUsedPercentage(hass, coordinator, spool, config_entry))
 
-        if spool.get("registered"):
-            entities.append(SpoolRegistered(hass, coordinator, spool, config_entry))
-        if spool.get("first_used"):
-            entities.append(SpoolFirstUsed(hass, coordinator, spool, config_entry))
-        if spool.get("last_used"):
-            entities.append(SpoolLastUsed(hass, coordinator, spool, config_entry))
-        if spool.get("price") is not None:
-            entities.append(SpoolPrice(hass, coordinator, spool, config_entry))
-        if spool.get("spool_weight") is not None:
-            entities.append(SpoolWeight(hass, coordinator, spool, config_entry))
-        if spool.get("lot_nr"):
-            entities.append(SpoolLotNumber(hass, coordinator, spool, config_entry))
-        if spool.get("comment"):
-            entities.append(SpoolComment(hass, coordinator, spool, config_entry))
+        # Description-driven sensors. Each row's ``exists_fn`` mirrors the
+        # legacy if-checks and the resulting entity_id/unique_id/name/icon/
+        # device_class/unit values mirror the legacy classes byte-for-byte.
+        for desc in SENSOR_DESCRIPTIONS:
+            if desc.exists_fn(spool):
+                entities.append(
+                    SpoolmanSensor(hass, coordinator, spool, config_entry, desc)
+                )
 
+        # FilamentColorHex needs image generation, so it stays out of the
+        # description registry.
         filament = spool.get("filament", {})
-        if filament.get("density") is not None:
-            entities.append(FilamentDensity(hass, coordinator, spool, config_entry))
-        if filament.get("diameter") is not None:
-            entities.append(FilamentDiameter(hass, coordinator, spool, config_entry))
-        if filament.get("settings_extruder_temp") is not None:
-            entities.append(FilamentExtruderTemp(hass, coordinator, spool, config_entry))
-        if filament.get("settings_bed_temp") is not None:
-            entities.append(FilamentBedTemp(hass, coordinator, spool, config_entry))
-        if filament.get("article_number"):
-            entities.append(FilamentArticleNumber(hass, coordinator, spool, config_entry))
-
-        entities.append(SpoolId(hass, coordinator, spool, config_entry))
-
-        if filament.get("name"):
-            entities.append(FilamentName(hass, coordinator, spool, config_entry))
-        if filament.get("material"):
-            entities.append(FilamentMaterial(hass, coordinator, spool, config_entry))
         if filament.get("color_hex"):
             filament_image_url = await hass.async_add_executor_job(
                 _generate_filament_entity_picture, filament, image_dir
@@ -123,11 +135,8 @@ async def async_setup_entry(  # noqa: C901
                     hass, coordinator, spool, config_entry, filament_image_url
                 )
             )
-        if filament.get("vendor", {}).get("name"):
-            entities.append(VendorName(hass, coordinator, spool, config_entry))
-        if filament.get("weight") is not None:
-            entities.append(FilamentWeight(hass, coordinator, spool, config_entry))
 
+        # Extra fields are dynamic per spool, one entity per key.
         for field_key in spool.get("extra", {}):
             extra_sensor = SpoolExtraField(
                 hass, coordinator, spool, config_entry, field_key
@@ -144,9 +153,7 @@ async def async_setup_entry(  # noqa: C901
         # Use a stable index continuation for the picture filename.
         base_idx = len(existing_spool_ids)
         for offset, spool in enumerate(new_spools):
-            _LOGGER.info(
-                "Dynamically adding sensors for new spool %s", spool.get("id")
-            )
+            _LOGGER.info("Dynamically adding sensors for new spool %s", spool.get("id"))
             new_entities.extend(
                 await _build_entities_for_spool(spool, base_idx + offset)
             )
@@ -162,9 +169,7 @@ async def async_setup_entry(  # noqa: C901
         spools = coordinator.data.get("spools", [])
 
         # New spools (#327): full sensor stack, async because of image gen.
-        new_spools = [
-            s for s in spools if s.get("id") not in existing_spool_ids
-        ]
+        new_spools = [s for s in spools if s.get("id") not in existing_spool_ids]
         if new_spools:
             hass.async_create_task(_async_add_new_spools(new_spools))
 
@@ -193,224 +198,25 @@ async def async_setup_entry(  # noqa: C901
             async_add_entities(new_entities)
 
     if coordinator.data:
-        all_entities = []
+        all_entities: list = []
 
-        # Create spool entities
+        # Per-spool sensors via _build_entities_for_spool (single source of
+        # truth — same path used for dynamically-added spools later).
         spool_data = coordinator.data.get("spools", [])
         for idx, spool in enumerate(spool_data):
-            image_url = await hass.async_add_executor_job(
-                _generate_entity_picture, spool, image_dir
-            )
-            spool_device = Spool(
-                hass, coordinator, spool, idx, config_entry, image_url
-            )
-            all_entities.append(spool_device)
-            existing_spool_ids.add(spool["id"])
+            all_entities.extend(await _build_entities_for_spool(spool, idx))
 
-            # Create flow rate sensor for this spool
-            flow_rate_sensor = SpoolFlowRate(
-                hass, coordinator, spool, config_entry
-            )
-            all_entities.append(flow_rate_sensor)
-
-            # Create estimated run out sensor for this spool
-            estimated_runout_sensor = SpoolEstimatedRunOut(
-                hass, coordinator, spool, config_entry
-            )
-            all_entities.append(estimated_runout_sensor)
-
-            # Create additional sensors to reduce state attributes (#71)
-            # Used weight sensor
-            used_weight_sensor = SpoolUsedWeight(
-                hass, coordinator, spool, config_entry
-            )
-            all_entities.append(used_weight_sensor)
-
-            # Remaining length sensor
-            remaining_length_sensor = SpoolRemainingLength(
-                hass, coordinator, spool, config_entry
-            )
-            all_entities.append(remaining_length_sensor)
-
-            # Used length sensor
-            used_length_sensor = SpoolUsedLength(
-                hass, coordinator, spool, config_entry
-            )
-            all_entities.append(used_length_sensor)
-
-            # Location sensor (text)
-            location_sensor = SpoolLocation(
-                hass, coordinator, spool, config_entry
-            )
-            all_entities.append(location_sensor)
-
-            # Used percentage sensor
-            used_percentage_sensor = SpoolUsedPercentage(
-                hass, coordinator, spool, config_entry
-            )
-            all_entities.append(used_percentage_sensor)
-
-            # Metadata sensors (rarely changing)
-            # Registered timestamp
-            if spool.get("registered"):
-                registered_sensor = SpoolRegistered(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(registered_sensor)
-
-            # First used timestamp
-            if spool.get("first_used"):
-                first_used_sensor = SpoolFirstUsed(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(first_used_sensor)
-
-            # Last used timestamp
-            if spool.get("last_used"):
-                last_used_sensor = SpoolLastUsed(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(last_used_sensor)
-
-            # Price sensor
-            if spool.get("price") is not None:
-                price_sensor = SpoolPrice(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(price_sensor)
-
-            # Spool weight (tare weight)
-            if spool.get("spool_weight") is not None:
-                spool_weight_sensor = SpoolWeight(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(spool_weight_sensor)
-
-            # Lot number
-            if spool.get("lot_nr"):
-                lot_nr_sensor = SpoolLotNumber(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(lot_nr_sensor)
-
-            # Comment
-            if spool.get("comment"):
-                comment_sensor = SpoolComment(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(comment_sensor)
-
-            # Filament properties sensors
-            filament = spool.get("filament", {})
-
-            # Density
-            if filament.get("density") is not None:
-                density_sensor = FilamentDensity(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(density_sensor)
-
-            # Diameter
-            if filament.get("diameter") is not None:
-                diameter_sensor = FilamentDiameter(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(diameter_sensor)
-
-            # Extruder temperature
-            if filament.get("settings_extruder_temp") is not None:
-                extruder_temp_sensor = FilamentExtruderTemp(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(extruder_temp_sensor)
-
-            # Bed temperature
-            if filament.get("settings_bed_temp") is not None:
-                bed_temp_sensor = FilamentBedTemp(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(bed_temp_sensor)
-
-            # Article number
-            if filament.get("article_number"):
-                article_number_sensor = FilamentArticleNumber(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(article_number_sensor)
-
-
-            # Basic attribute sensors (always create for compatibility)
-            # ID sensor
-            id_sensor = SpoolId(
-                hass, coordinator, spool, config_entry
-            )
-            all_entities.append(id_sensor)
-
-            # Filament name
-            if filament.get("name"):
-                filament_name_sensor = FilamentName(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(filament_name_sensor)
-
-            # Filament material
-            if filament.get("material"):
-                material_sensor = FilamentMaterial(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(material_sensor)
-
-            # Filament color hex
-            if filament.get("color_hex"):
-                # Generate entity picture for color visualization
-                image_url = await hass.async_add_executor_job(
-                    _generate_filament_entity_picture, filament, image_dir
-                )
-                color_hex_sensor = FilamentColorHex(
-                    hass, coordinator, spool, config_entry, image_url
-                )
-                all_entities.append(color_hex_sensor)
-
-            # Vendor name
-            if filament.get("vendor", {}).get("name"):
-                vendor_sensor = VendorName(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(vendor_sensor)
-
-            # Filament weight (initial/total)
-            if filament.get("weight") is not None:
-                filament_weight_sensor = FilamentWeight(
-                    hass, coordinator, spool, config_entry
-                )
-                all_entities.append(filament_weight_sensor)
-
-            # Extra fields - create a sensor for each extra field
-            extra_data = spool.get("extra", {})
-            if extra_data:
-                for field_key in extra_data:
-                    extra_field_sensor = SpoolExtraField(
-                        hass, coordinator, spool, config_entry, field_key
-                    )
-                    all_entities.append(extra_field_sensor)
-                    # Track this extra field entity
-                    existing_extra_fields[(spool.get("id"), field_key)] = extra_field_sensor
-                    _LOGGER.debug(
-                        "Created extra field sensor for spool %s: %s",
-                        spool.get("id"),
-                        field_key
-                    )
-
-        # Create filament entities
+        # Per-filament Filament device sensor (separate from per-spool stack).
         filament_data = coordinator.data.get("filaments", [])
         for idx, filament in enumerate(filament_data):
-            image_url = await hass.async_add_executor_job(
+            filament_image_url = await hass.async_add_executor_job(
                 _generate_filament_entity_picture, filament, image_dir
             )
-            filament_device = Filament(
-                hass, coordinator, filament, idx, config_entry, image_url
+            all_entities.append(
+                Filament(
+                    hass, coordinator, filament, idx, config_entry, filament_image_url
+                )
             )
-            all_entities.append(filament_device)
 
         async_add_entities(all_entities)
 
@@ -450,17 +256,17 @@ def _generate_entity_picture(spool_data, image_dir):
         if multi_color_direction == "coaxial":
             step = image_size[0] // len(colors)
             for i, color in enumerate(colors):
-                draw.rectangle([
-                    (i * step, 0),
-                    ((i + 1) * step - 1, image_size[1])
-                ], fill=f"#{color}")
+                draw.rectangle(
+                    [(i * step, 0), ((i + 1) * step - 1, image_size[1])],
+                    fill=f"#{color}",
+                )
         elif multi_color_direction == "longitudinal":
             step = image_size[1] // len(colors)
             for i, color in enumerate(colors):
-                draw.rectangle([
-                    (0, i * step),
-                    (image_size[0], (i + 1) * step - 1)
-                ], fill=f"#{color}")
+                draw.rectangle(
+                    [(0, i * step), (image_size[0], (i + 1) * step - 1)],
+                    fill=f"#{color}",
+                )
     else:
         # Single color fallback
         draw.rectangle([(0, 0), image_size], fill=f"#{colors[0]}")
@@ -505,17 +311,17 @@ def _generate_filament_entity_picture(filament_data, image_dir):
         if multi_color_direction == "coaxial":
             step = image_size[0] // len(colors)
             for i, color in enumerate(colors):
-                draw.rectangle([
-                    (i * step, 0),
-                    ((i + 1) * step - 1, image_size[1])
-                ], fill=f"#{color}")
+                draw.rectangle(
+                    [(i * step, 0), ((i + 1) * step - 1, image_size[1])],
+                    fill=f"#{color}",
+                )
         elif multi_color_direction == "longitudinal":
             step = image_size[1] // len(colors)
             for i, color in enumerate(colors):
-                draw.rectangle([
-                    (0, i * step),
-                    (image_size[0], (i + 1) * step - 1)
-                ], fill=f"#{color}")
+                draw.rectangle(
+                    [(0, i * step), (image_size[0], (i + 1) * step - 1)],
+                    fill=f"#{color}",
+                )
     else:
         # Single color fallback
         draw.rectangle([(0, 0), image_size], fill=f"#{colors[0]}")
