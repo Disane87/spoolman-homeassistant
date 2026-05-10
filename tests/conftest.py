@@ -6,6 +6,7 @@ strings with a trailing space (e.g. ``allow_archived=False ``) and uses
 regex URL matchers so the mocks tolerate that quirk while we keep the
 existing API client byte-stable through phase 3.
 """
+
 from __future__ import annotations
 
 import json
@@ -42,7 +43,9 @@ def _encode_extra(spools: list[dict[str, Any]]) -> list[dict[str, Any]]:
         copy = {**spool}
         if "extra" in copy and copy["extra"]:
             copy["extra"] = {
-                k: v if isinstance(v, str) and (v.startswith('"') or v.startswith('{') or v.startswith('['))
+                k: v
+                if isinstance(v, str)
+                and (v.startswith('"') or v.startswith("{") or v.startswith("["))
                 else json.dumps(v)
                 for k, v in copy["extra"].items()
             }
@@ -56,6 +59,39 @@ def auto_enable_custom_integrations(
 ) -> AsyncGenerator[None, None]:
     """Enable loading of custom_components in the HA test harness."""
     yield
+
+
+@pytest.fixture(autouse=True)
+def _allow_asyncio_shutdown_thread(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Tolerate the Python 3.12 asyncio shutdown thread in PHACC's verify_cleanup.
+
+    PHACC's verify_cleanup fixture asserts that no non-DummyThread non-waitpid
+    threads linger after a test. Python 3.12 introduced an internal
+    ``_run_safe_shutdown_loop`` thread spawned by
+    ``BaseEventLoop.shutdown_default_executor`` that PHACC's check predates;
+    the thread is harmless (daemon, exits when the process dies). We allow
+    only that specific name through.
+    """
+    import threading as _threading
+
+    real_enumerate = _threading.enumerate
+
+    def filtered_enumerate() -> list[_threading.Thread]:
+        return [
+            t
+            for t in real_enumerate()
+            if t.name != "Thread-1 (_run_safe_shutdown_loop)"
+            and not t.name.startswith("asyncio_")
+        ]
+
+    monkeypatch.setattr(
+        "pytest_homeassistant_custom_component.plugins.threading.enumerate",
+        filtered_enumerate,
+        raising=False,
+    )
+    monkeypatch.setattr(_threading, "enumerate", filtered_enumerate)
 
 
 @pytest.fixture
@@ -93,8 +129,12 @@ def mock_spoolman_api(
     base = re.escape(f"{MOCK_URL}api/v1")
 
     with aioresponses() as mocked:
-        mocked.get(re.compile(rf"{base}/health.*"), payload={"status": "healthy"}, repeat=True)
-        mocked.get(re.compile(rf"{base}/info.*"), payload={"version": "0.20.0"}, repeat=True)
+        mocked.get(
+            re.compile(rf"{base}/health.*"), payload={"status": "healthy"}, repeat=True
+        )
+        mocked.get(
+            re.compile(rf"{base}/info.*"), payload={"version": "0.20.0"}, repeat=True
+        )
 
         # Spool list — match any allow_archived value, return filtered set based on the URL.
         archived_re = re.compile(rf"{base}/spool\?.*allow_archived=True.*")
@@ -106,9 +146,13 @@ def mock_spoolman_api(
             repeat=True,
         )
 
-        mocked.get(re.compile(rf"{base}/filament.*"), payload=filaments_data, repeat=True)
+        mocked.get(
+            re.compile(rf"{base}/filament.*"), payload=filaments_data, repeat=True
+        )
         mocked.get(re.compile(rf"{base}/location"), payload=locations_data, repeat=True)
-        mocked.get(re.compile(rf"{base}/field/spool"), payload=extra_fields_data, repeat=True)
+        mocked.get(
+            re.compile(rf"{base}/field/spool"), payload=extra_fields_data, repeat=True
+        )
 
         yield mocked
 

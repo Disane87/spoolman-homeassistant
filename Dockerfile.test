@@ -1,12 +1,12 @@
 # Reproducible local test environment.
 # HA core requires fcntl (Unix-only), so tests cannot run natively on Windows.
 # This image mirrors what CI uses on GitHub Actions (Python 3.13 on Linux).
-FROM python:3.13-slim
+FROM python:3.12-slim
 
 WORKDIR /workspace
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gcc git \
+    && apt-get install -y --no-install-recommends gcc g++ python3-dev git \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt requirements_test.txt ./

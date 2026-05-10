@@ -1,9 +1,11 @@
 """Spoolman home assistant data coordinator."""
+
 import asyncio
 import logging
 from datetime import timedelta
 
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .classes.klipper_api import KlipperAPI
@@ -19,6 +21,7 @@ from .const import (
 )
 
 _LOGGER = logging.getLogger(__name__)
+
 
 class SpoolManCoordinator(DataUpdateCoordinator):
     """My custom coordinator."""
@@ -38,13 +41,13 @@ class SpoolManCoordinator(DataUpdateCoordinator):
         )
         self.hass = hass
         self.config_entry = entry
-        self.spoolman_api = SpoolmanAPI(url)
+        self.spoolman_api = SpoolmanAPI(url, session=async_get_clientsession(hass))
 
         hass.data[DOMAIN] = {
             **entry.data,
             SPOOLMAN_API_WRAPPER: self.spoolman_api,
             "coordinator": self,
-            "klipper_active_spool": None
+            "klipper_active_spool": None,
         }
 
     async def _async_update_data(self):
@@ -62,7 +65,9 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 spool_extra_fields = await self.spoolman_api.get_extra_fields("spool")
             except Exception as exception:
                 # Older Spoolman versions or transient errors: degrade gracefully.
-                _LOGGER.debug("Could not fetch spool extra-field metadata: %s", exception)
+                _LOGGER.debug(
+                    "Could not fetch spool extra-field metadata: %s", exception
+                )
                 spool_extra_fields = {}
             try:
                 locations = await self.spoolman_api.get_locations()
@@ -94,7 +99,9 @@ class SpoolManCoordinator(DataUpdateCoordinator):
         # Add total remaining weight to each filament
         for filament in filaments:
             filament_id = filament.get("id")
-            filament["total_remaining_weight"] = filament_remaining_weights.get(filament_id, 0)
+            filament["total_remaining_weight"] = filament_remaining_weights.get(
+                filament_id, 0
+            )
 
         # Ensure the attribute exists consistently for all spools.
         for spool in spools:
@@ -103,10 +110,14 @@ class SpoolManCoordinator(DataUpdateCoordinator):
         try:
             klipper_url = config.get(KLIPPER_URL, "")
             if klipper_url is not None and klipper_url != "":
-                klipper_active_spool: int | None = await KlipperAPI(klipper_url).get_active_spool_id()
+                klipper_active_spool: int | None = await KlipperAPI(
+                    klipper_url
+                ).get_active_spool_id()
                 if klipper_active_spool is not None:
                     for spool in spools:
-                        spool["klipper_active_spool"] = spool["id"] == klipper_active_spool
+                        spool["klipper_active_spool"] = (
+                            spool["id"] == klipper_active_spool
+                        )
         except Exception as exception:
             _LOGGER.error(f"Error processing Klipper API data: {exception}")
             # Continue returning spools even if Klipper processing fails
@@ -114,11 +125,9 @@ class SpoolManCoordinator(DataUpdateCoordinator):
         # Fall back to deriving locations from spools when Spoolman doesn't
         # expose /location, so older servers keep working.
         if locations is None:
-            locations = sorted({
-                spool["location"]
-                for spool in spools
-                if spool.get("location")
-            })
+            locations = sorted(
+                {spool["location"] for spool in spools if spool.get("location")}
+            )
 
         return {
             "spools": spools,
@@ -142,7 +151,9 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 return
 
             entity_reg = er.async_get(self.hass)
-            entities = er.async_entries_for_config_entry(entity_reg, self.config_entry.entry_id)
+            entities = er.async_entries_for_config_entry(
+                entity_reg, self.config_entry.entry_id
+            )
 
             spools = self.data.get("spools", [])
 
@@ -152,7 +163,9 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 spool_id = spool.get("id")
                 extra_data = spool.get("extra", {})
                 for field_key in extra_data:
-                    safe_field_key = field_key.lower().replace(" ", "_").replace("-", "_")
+                    safe_field_key = (
+                        field_key.lower().replace(" ", "_").replace("-", "_")
+                    )
                     unique_id = f"spoolman_{self.config_entry.entry_id}_spool_{spool_id}_extra_{safe_field_key}"
                     current_extra_field_unique_ids.add(unique_id)
 
@@ -169,7 +182,9 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                         removed_count += 1
 
             if removed_count > 0:
-                _LOGGER.info(f"Update cleanup: Removed {removed_count} orphaned extra field entity/entities")
+                _LOGGER.info(
+                    f"Update cleanup: Removed {removed_count} orphaned extra field entity/entities"
+                )
         except asyncio.CancelledError:
             # Task was cancelled, just return silently
             _LOGGER.debug("Extra field cleanup was cancelled")
