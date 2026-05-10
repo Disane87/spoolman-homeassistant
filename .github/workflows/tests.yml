@@ -1,0 +1,39 @@
+name: "Tests"
+
+on:
+  workflow_call:
+
+jobs:
+  pytest:
+    name: "Pytest + 90% coverage gate"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6.2.0
+        with:
+          python-version: "3.13"
+          cache: "pip"
+      - name: Install runtime requirements
+        run: pip install -r requirements.txt
+      - name: Install test requirements
+        run: pip install -r requirements_test.txt
+      - name: Run pytest
+        run: pytest
+      - name: Upload coverage XML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+
+  mypy:
+    name: "Mypy --strict"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6.2.0
+        with:
+          python-version: "3.13"
+          cache: "pip"
+      - run: pip install -r requirements.txt -r requirements_test.txt
+      - run: mypy custom_components/spoolman

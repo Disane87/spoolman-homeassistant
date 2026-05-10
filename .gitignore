@@ -65,6 +65,7 @@ Pipfile*
 share/*
 scripts/*
 !/scripts/publish.sh
+!/scripts/install-hooks.sh
 
 # vimmy stuff
 *.swp
