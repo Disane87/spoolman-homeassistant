@@ -19,21 +19,22 @@ _LOGGER = logging.getLogger(__name__)
 
 ICON = "mdi:printer-3d-nozzle"
 
+
 class SpoolEstimatedRunOut(CoordinatorEntity, SensorEntity):
     """Representation of a Spoolman Spool Estimated Run Out Sensor."""
 
-    def __init__(
-        self, hass, coordinator, spool_data, config_entry
-    ) -> None:
+    def __init__(self, hass, coordinator, spool_data, config_entry) -> None:
         """Initialize the estimated run out sensor."""
         super().__init__(coordinator)
 
         self.config = hass.data[DOMAIN]
         self._spool = spool_data
-        self.spool_id = spool_data['id']
+        self.spool_id = spool_data["id"]
         self._entry = config_entry
         self._attr_available = True
-        self._flow_rate_entity_id = f"sensor.spoolman_spool_{spool_data['id']}_flow_rate"
+        self._flow_rate_entity_id = (
+            f"sensor.spoolman_spool_{spool_data['id']}_flow_rate"
+        )
 
         # Set initial name
         filament = self._spool.get("filament", {})
@@ -41,7 +42,9 @@ class SpoolEstimatedRunOut(CoordinatorEntity, SensorEntity):
 
         if filament.get("name") and filament.get("material"):
             if vendor_name:
-                spool_name = f"{vendor_name} {filament['name']} {filament.get('material')}"
+                spool_name = (
+                    f"{vendor_name} {filament['name']} {filament.get('material')}"
+                )
             else:
                 spool_name = f"{filament['name']} {filament.get('material')}"
         else:
@@ -50,9 +53,11 @@ class SpoolEstimatedRunOut(CoordinatorEntity, SensorEntity):
         self.entity_id = generate_entity_id(
             "sensor.{}",
             f"spoolman_spool_{spool_data['id']}_estimated_runout",
-            hass=hass
+            hass=hass,
         )
-        self._attr_unique_id = f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_estimated_runout"
+        self._attr_unique_id = (
+            f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_estimated_runout"
+        )
         self._attr_has_entity_name = False
         self._attr_name = f"{spool_name} Estimated Run Out"
         self._attr_device_class = SensorDeviceClass.TIMESTAMP
@@ -69,8 +74,12 @@ class SpoolEstimatedRunOut(CoordinatorEntity, SensorEntity):
 
         # Use ID-based lookup
         spool_data = next(
-            (s for s in self.coordinator.data.get("spools", []) if s["id"] == self.spool_id),
-            None
+            (
+                s
+                for s in self.coordinator.data.get("spools", [])
+                if s["id"] == self.spool_id
+            ),
+            None,
         )
 
         if spool_data is None:
@@ -97,7 +106,11 @@ class SpoolEstimatedRunOut(CoordinatorEntity, SensorEntity):
         flow_rate_state = self.hass.states.get(self._flow_rate_entity_id)
         flow_rate = 0.0
 
-        if flow_rate_state and flow_rate_state.state not in ['unknown', 'unavailable', None]:
+        if flow_rate_state and flow_rate_state.state not in [
+            "unknown",
+            "unavailable",
+            None,
+        ]:
             try:
                 flow_rate = float(flow_rate_state.state)
             except (ValueError, TypeError):
@@ -114,8 +127,12 @@ class SpoolEstimatedRunOut(CoordinatorEntity, SensorEntity):
             "spool_id": self.spool_id,
             "remaining_weight": remaining_weight,
             "flow_rate": flow_rate,
-            "hours_remaining": round(hours_remaining, 2) if hours_remaining is not None else None,
-            "days_remaining": round(days_remaining, 2) if days_remaining is not None else None,
+            "hours_remaining": round(hours_remaining, 2)
+            if hours_remaining is not None
+            else None,
+            "days_remaining": round(days_remaining, 2)
+            if days_remaining is not None
+            else None,
         }
 
     @property
@@ -129,7 +146,11 @@ class SpoolEstimatedRunOut(CoordinatorEntity, SensorEntity):
         flow_rate_state = self.hass.states.get(self._flow_rate_entity_id)
         flow_rate = 0.0
 
-        if flow_rate_state and flow_rate_state.state not in ['unknown', 'unavailable', None]:
+        if flow_rate_state and flow_rate_state.state not in [
+            "unknown",
+            "unavailable",
+            None,
+        ]:
             try:
                 flow_rate = float(flow_rate_state.state)
             except (ValueError, TypeError):

@@ -20,18 +20,17 @@ _LOGGER = logging.getLogger(__name__)
 
 ICON = "mdi:printer-3d-nozzle"
 
+
 class SpoolFlowRate(CoordinatorEntity, SensorEntity):
     """Representation of a Spoolman Spool Flow Rate Sensor."""
 
-    def __init__(
-        self, hass, coordinator, spool_data, config_entry
-    ) -> None:
+    def __init__(self, hass, coordinator, spool_data, config_entry) -> None:
         """Initialize the flow rate sensor."""
         super().__init__(coordinator)
 
         self.config = hass.data[DOMAIN]
         self._spool = spool_data
-        self.spool_id = spool_data['id']
+        self.spool_id = spool_data["id"]
         self._entry = config_entry
         self._attr_available = True
         self._previous_weight = None
@@ -44,18 +43,20 @@ class SpoolFlowRate(CoordinatorEntity, SensorEntity):
 
         if filament.get("name") and filament.get("material"):
             if vendor_name:
-                spool_name = f"{vendor_name} {filament['name']} {filament.get('material')}"
+                spool_name = (
+                    f"{vendor_name} {filament['name']} {filament.get('material')}"
+                )
             else:
                 spool_name = f"{filament['name']} {filament.get('material')}"
         else:
             spool_name = f"Spoolman Spool {self._spool['id']}"
 
         self.entity_id = generate_entity_id(
-            "sensor.{}",
-            f"spoolman_spool_{spool_data['id']}_flow_rate",
-            hass=hass
+            "sensor.{}", f"spoolman_spool_{spool_data['id']}_flow_rate", hass=hass
         )
-        self._attr_unique_id = f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_flow_rate"
+        self._attr_unique_id = (
+            f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_flow_rate"
+        )
         self._attr_has_entity_name = False
         self._attr_name = f"{spool_name} Flow Rate"
         self._attr_device_class = None
@@ -71,6 +72,7 @@ class SpoolFlowRate(CoordinatorEntity, SensorEntity):
         # Initialize with current weight and timestamp
         self._previous_weight = self._spool.get("remaining_weight", 0)
         from datetime import datetime
+
         self._previous_timestamp = datetime.now()
 
     @callback
@@ -80,8 +82,12 @@ class SpoolFlowRate(CoordinatorEntity, SensorEntity):
 
         # Use ID-based lookup
         spool_data = next(
-            (s for s in self.coordinator.data.get("spools", []) if s["id"] == self.spool_id),
-            None
+            (
+                s
+                for s in self.coordinator.data.get("spools", [])
+                if s["id"] == self.spool_id
+            ),
+            None,
         )
 
         if spool_data is None:
@@ -100,9 +106,15 @@ class SpoolFlowRate(CoordinatorEntity, SensorEntity):
         current_weight = self._spool.get("remaining_weight", 0)
         current_timestamp = datetime.now()
 
-        if self._previous_weight is not None and self._previous_timestamp is not None and current_weight != self._previous_weight:
+        if (
+            self._previous_weight is not None
+            and self._previous_timestamp is not None
+            and current_weight != self._previous_weight
+        ):
             # Calculate time difference in hours
-            time_diff = (current_timestamp - self._previous_timestamp).total_seconds() / 3600
+            time_diff = (
+                current_timestamp - self._previous_timestamp
+            ).total_seconds() / 3600
 
             if time_diff > 0:
                 # Calculate weight difference (positive means material used)
@@ -116,7 +128,7 @@ class SpoolFlowRate(CoordinatorEntity, SensorEntity):
                     self.spool_id,
                     self._flow_rate,
                     weight_diff,
-                    time_diff
+                    time_diff,
                 )
 
                 # Update previous values only when weight changed
@@ -136,7 +148,9 @@ class SpoolFlowRate(CoordinatorEntity, SensorEntity):
             "spool_id": self.spool_id,
             "previous_weight": self._previous_weight,
             "current_weight": self._spool.get("remaining_weight", 0),
-            "last_update": self._previous_timestamp.isoformat() if self._previous_timestamp else None,
+            "last_update": self._previous_timestamp.isoformat()
+            if self._previous_timestamp
+            else None,
         }
 
     @property

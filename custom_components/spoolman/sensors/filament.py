@@ -23,6 +23,7 @@ _LOGGER = logging.getLogger(__name__)
 
 ICON = "mdi:printer-3d-nozzle"
 
+
 class Filament(CoordinatorEntity, SensorEntity):
     """Representation of a Spoolman Filament Sensor."""
 
@@ -35,15 +36,19 @@ class Filament(CoordinatorEntity, SensorEntity):
         self.config = hass.data[DOMAIN]
 
         self._filament = filament_data
-        self.filament_id = filament_data['id']  # Store ID instead of index
+        self.filament_id = filament_data["id"]  # Store ID instead of index
         self._attr_entity_picture = image_url
         self._attr_available = True
 
         self.assign_name_and_location()
 
         self._entry = config_entry
-        self.entity_id = generate_entity_id("sensor.{}", f"spoolman_filament_{filament_data['id']}", hass=hass)
-        self._attr_unique_id = f"spoolman_{self._entry.entry_id}_filament_{filament_data['id']}"
+        self.entity_id = generate_entity_id(
+            "sensor.{}", f"spoolman_filament_{filament_data['id']}", hass=hass
+        )
+        self._attr_unique_id = (
+            f"spoolman_{self._entry.entry_id}_filament_{filament_data['id']}"
+        )
         self._attr_has_entity_name = False
         self._attr_device_class = SensorDeviceClass.WEIGHT
         self._attr_state_class = SensorStateClass.MEASUREMENT
@@ -56,10 +61,7 @@ class Filament(CoordinatorEntity, SensorEntity):
 
         vendor_name = self._filament.get("vendor", {}).get("name")
 
-        if (
-            self._filament.get("name") is None
-            or self._filament.get("material") is None
-        ):
+        if self._filament.get("name") is None or self._filament.get("material") is None:
             filament_name = f"Spoolman Filament {self._filament['id']}"
             _LOGGER.warning(
                 "SpoolManCoordinator: Filament with ID '%s' has no 'name' or 'material' set. Using default name.",
@@ -94,8 +96,13 @@ class Filament(CoordinatorEntity, SensorEntity):
         elif self._attr_device_info.get("name") != location_name:
             # Must update entry since async_write_ha_state does not update device
             if self.coordinator.config_entry is not None:
-                device = dr.async_get(self.coordinator.hass).async_get_or_create(config_entry_id=self.coordinator.config_entry.entry_id, **device_info)
-            self.registry_entry = er.async_get(self.coordinator.hass).async_update_entity(self.entity_id, device_id = device.id)
+                device = dr.async_get(self.coordinator.hass).async_get_or_create(
+                    config_entry_id=self.coordinator.config_entry.entry_id,
+                    **device_info,
+                )
+            self.registry_entry = er.async_get(
+                self.coordinator.hass
+            ).async_update_entity(self.entity_id, device_id=device.id)
 
         self._attr_name = filament_name
 
@@ -104,8 +111,12 @@ class Filament(CoordinatorEntity, SensorEntity):
         """Handle updated data from the coordinator."""
         # Use ID-based lookup instead of index to prevent IndexError
         filament_data = next(
-            (f for f in self.coordinator.data.get("filaments", []) if f["id"] == self.filament_id),
-            None
+            (
+                f
+                for f in self.coordinator.data.get("filaments", [])
+                if f["id"] == self.filament_id
+            ),
+            None,
         )
 
         if filament_data is None:

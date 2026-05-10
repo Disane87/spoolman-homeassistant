@@ -19,18 +19,17 @@ _LOGGER = logging.getLogger(__name__)
 
 ICON = "mdi:printer-3d-nozzle"
 
+
 class SpoolLocation(CoordinatorEntity, SensorEntity):
     """Sensor for spool location - text sensor."""
 
-    def __init__(
-        self, hass, coordinator, spool_data, config_entry
-    ) -> None:
+    def __init__(self, hass, coordinator, spool_data, config_entry) -> None:
         """Initialize the location sensor."""
         super().__init__(coordinator)
 
         self.config = hass.data[DOMAIN]
         self._spool = spool_data
-        self.spool_id = spool_data['id']
+        self.spool_id = spool_data["id"]
         self._entry = config_entry
         self._attr_available = True
 
@@ -40,18 +39,20 @@ class SpoolLocation(CoordinatorEntity, SensorEntity):
 
         if filament.get("name") and filament.get("material"):
             if vendor_name:
-                spool_name = f"{vendor_name} {filament['name']} {filament.get('material')}"
+                spool_name = (
+                    f"{vendor_name} {filament['name']} {filament.get('material')}"
+                )
             else:
                 spool_name = f"{filament['name']} {filament.get('material')}"
         else:
             spool_name = f"Spoolman Spool {self._spool['id']}"
 
         self.entity_id = generate_entity_id(
-            "sensor.{}",
-            f"spoolman_spool_{spool_data['id']}_location",
-            hass=hass
+            "sensor.{}", f"spoolman_spool_{spool_data['id']}_location", hass=hass
         )
-        self._attr_unique_id = f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_location"
+        self._attr_unique_id = (
+            f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_location"
+        )
         self._attr_has_entity_name = False
         self._attr_name = f"{spool_name} Location"
         self._attr_icon = "mdi:map-marker"
@@ -65,8 +66,12 @@ class SpoolLocation(CoordinatorEntity, SensorEntity):
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
         spool_data = next(
-            (s for s in self.coordinator.data.get("spools", []) if s["id"] == self.spool_id),
-            None
+            (
+                s
+                for s in self.coordinator.data.get("spools", [])
+                if s["id"] == self.spool_id
+            ),
+            None,
         )
 
         if spool_data is None:

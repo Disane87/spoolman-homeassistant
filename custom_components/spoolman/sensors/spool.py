@@ -25,6 +25,7 @@ _LOGGER = logging.getLogger(__name__)
 
 ICON = "mdi:printer-3d-nozzle"
 
+
 class Spool(CoordinatorEntity, SensorEntity):
     """Representation of a Spoolman Sensor."""
 
@@ -37,7 +38,7 @@ class Spool(CoordinatorEntity, SensorEntity):
         self.config = hass.data[DOMAIN]
 
         self._spool = spool_data
-        self.spool_id = spool_data['id']  # Store ID instead of index
+        self.spool_id = spool_data["id"]  # Store ID instead of index
         self.handled_threshold_events = []
         self._filament = self._spool["filament"]
         self._attr_entity_picture = image_url
@@ -45,8 +46,12 @@ class Spool(CoordinatorEntity, SensorEntity):
         self._entry = config_entry
 
         # Set entity properties first
-        self.entity_id = generate_entity_id("sensor.{}", f"spoolman_spool_{spool_data['id']}", hass=hass)
-        self._attr_unique_id = f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}"
+        self.entity_id = generate_entity_id(
+            "sensor.{}", f"spoolman_spool_{spool_data['id']}", hass=hass
+        )
+        self._attr_unique_id = (
+            f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}"
+        )
         self._attr_has_entity_name = False
         self._attr_device_class = SensorDeviceClass.WEIGHT
         self._attr_state_class = SensorStateClass.MEASUREMENT
@@ -62,10 +67,7 @@ class Spool(CoordinatorEntity, SensorEntity):
 
         vendor_name = self._filament.get("vendor", {}).get("name")
 
-        if (
-            self._filament.get("name") is None
-            or self._filament.get("material") is None
-        ):
+        if self._filament.get("name") is None or self._filament.get("material") is None:
             spool_name = f"Spoolman Spool {self._spool['id']}"
             _LOGGER.warning(
                 "SpoolManCoordinator: Spool with ID '%s' has no 'name' or 'material' set in filament. Using default name.",
@@ -120,13 +122,13 @@ class Spool(CoordinatorEntity, SensorEntity):
             # Create or get location hub
             device_registry.async_get_or_create(
                 config_entry_id=self.coordinator.config_entry.entry_id,
-                **location_device_info
+                **location_device_info,
             )
 
             # Create or get spool device
             spool_device = device_registry.async_get_or_create(
                 config_entry_id=self.coordinator.config_entry.entry_id,
-                **spool_device_info
+                **spool_device_info,
             )
 
             # Only update entity if it already exists, otherwise device_info will be used during entity creation
@@ -134,8 +136,7 @@ class Spool(CoordinatorEntity, SensorEntity):
             existing_entity = entity_registry.async_get(self.entity_id)
             if existing_entity:
                 self.registry_entry = entity_registry.async_update_entity(
-                    self.entity_id,
-                    device_id=spool_device.id
+                    self.entity_id, device_id=spool_device.id
                 )
 
         self._attr_device_info = spool_device_info
@@ -146,8 +147,12 @@ class Spool(CoordinatorEntity, SensorEntity):
         """Handle updated data from the coordinator."""
         # Use ID-based lookup instead of index to prevent IndexError
         spool_data = next(
-            (s for s in self.coordinator.data.get("spools", []) if s["id"] == self.spool_id),
-            None
+            (
+                s
+                for s in self.coordinator.data.get("spools", [])
+                if s["id"] == self.spool_id
+            ),
+            None,
         )
 
         if spool_data is None:

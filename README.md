@@ -1,5 +1,6 @@
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+[![Quality Scale](https://img.shields.io/badge/quality_scale-platinum-9c27b0.svg)](custom_components/spoolman/quality_scale.yaml)
 [![Validate](https://github.com/Disane87/spoolman-homeassistant/actions/workflows/validate.yml/badge.svg)](https://github.com/Disane87/spoolman-homeassistant/actions/workflows/validate.yml)
 ![GitHub all releases](https://img.shields.io/github/downloads/Disane87/spoolman-homeassistant/total)
 ![GitHub](https://img.shields.io/github/license/Disane87/spoolman-homeassistant)
