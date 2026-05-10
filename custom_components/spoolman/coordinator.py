@@ -58,6 +58,19 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 {"allow_archived": show_archived}
             )
             filaments = await self.spoolman_api.get_filaments({})
+            try:
+                spool_extra_fields = await self.spoolman_api.get_extra_fields("spool")
+            except Exception as exception:
+                # Older Spoolman versions or transient errors: degrade gracefully.
+                _LOGGER.debug("Could not fetch spool extra-field metadata: %s", exception)
+                spool_extra_fields = {}
+            try:
+                locations = await self.spoolman_api.get_locations()
+            except Exception as exception:
+                # /location endpoint isn't on every Spoolman version; fall back
+                # to deriving from spools at the consumer side.
+                _LOGGER.debug("Could not fetch locations: %s", exception)
+                locations = None
         except asyncio.CancelledError:
             # Task was cancelled (e.g., during shutdown), re-raise to let coordinator handle it
             _LOGGER.debug("Data update was cancelled")
@@ -83,21 +96,36 @@ class SpoolManCoordinator(DataUpdateCoordinator):
             filament_id = filament.get("id")
             filament["total_remaining_weight"] = filament_remaining_weights.get(filament_id, 0)
 
+        # Ensure the attribute exists consistently for all spools.
+        for spool in spools:
+            spool["klipper_active_spool"] = False
+
         try:
             klipper_url = config.get(KLIPPER_URL, "")
             if klipper_url is not None and klipper_url != "":
                 klipper_active_spool: int | None = await KlipperAPI(klipper_url).get_active_spool_id()
                 if klipper_active_spool is not None:
                     for spool in spools:
-                        if spool["id"] == klipper_active_spool:
-                            spool["klipper_active_spool"] = True
-                        else:
-                            spool["klipper_active_spool"] = False
+                        spool["klipper_active_spool"] = spool["id"] == klipper_active_spool
         except Exception as exception:
             _LOGGER.error(f"Error processing Klipper API data: {exception}")
             # Continue returning spools even if Klipper processing fails
 
-        return {"spools": spools, "filaments": filaments}
+        # Fall back to deriving locations from spools when Spoolman doesn't
+        # expose /location, so older servers keep working.
+        if locations is None:
+            locations = sorted({
+                spool["location"]
+                for spool in spools
+                if spool.get("location")
+            })
+
+        return {
+            "spools": spools,
+            "filaments": filaments,
+            "extra_fields": {"spool": spool_extra_fields},
+            "locations": locations,
+        }
 
     async def async_cleanup_extra_fields(self):
         """Cleanup orphaned extra field entities - can be called externally."""

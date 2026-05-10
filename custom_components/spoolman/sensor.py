@@ -4,7 +4,7 @@ import logging
 import os
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from PIL import Image, ImageDraw
 
@@ -57,25 +57,126 @@ async def async_setup_entry(  # noqa: C901
     # Use the coordinator from hass.data that was created in __init__.py
     coordinator = hass.data[DOMAIN]["coordinator"]
 
-    # Track existing extra field entities to detect new ones
-    existing_extra_fields = {}  # key: (spool_id, field_key), value: entity
+    # Track which spools / extra fields we've already materialised so we can
+    # add brand-new spools and extras when the coordinator notices them
+    # (#327: previously only extra fields were added dynamically; new spools
+    # required a full integration reload).
+    existing_spool_ids: set = set()
+    existing_extra_fields: dict = {}  # key: (spool_id, field_key), value: entity
 
-    async def async_add_extra_field_entities():
-        """Add new extra field entities when they appear in coordinator data."""
+    image_dir = hass.config.path(PUBLIC_IMAGE_PATH)
+
+    async def _build_entities_for_spool(spool, idx):
+        """Build the full sensor stack for a single spool."""
+        entities: list = []
+        image_url = await hass.async_add_executor_job(
+            _generate_entity_picture, spool, image_dir
+        )
+        entities.append(Spool(hass, coordinator, spool, idx, config_entry, image_url))
+        entities.append(SpoolFlowRate(hass, coordinator, spool, config_entry))
+        entities.append(SpoolEstimatedRunOut(hass, coordinator, spool, config_entry))
+        entities.append(SpoolUsedWeight(hass, coordinator, spool, config_entry))
+        entities.append(SpoolRemainingLength(hass, coordinator, spool, config_entry))
+        entities.append(SpoolUsedLength(hass, coordinator, spool, config_entry))
+        entities.append(SpoolLocation(hass, coordinator, spool, config_entry))
+        entities.append(SpoolUsedPercentage(hass, coordinator, spool, config_entry))
+
+        if spool.get("registered"):
+            entities.append(SpoolRegistered(hass, coordinator, spool, config_entry))
+        if spool.get("first_used"):
+            entities.append(SpoolFirstUsed(hass, coordinator, spool, config_entry))
+        if spool.get("last_used"):
+            entities.append(SpoolLastUsed(hass, coordinator, spool, config_entry))
+        if spool.get("price") is not None:
+            entities.append(SpoolPrice(hass, coordinator, spool, config_entry))
+        if spool.get("spool_weight") is not None:
+            entities.append(SpoolWeight(hass, coordinator, spool, config_entry))
+        if spool.get("lot_nr"):
+            entities.append(SpoolLotNumber(hass, coordinator, spool, config_entry))
+        if spool.get("comment"):
+            entities.append(SpoolComment(hass, coordinator, spool, config_entry))
+
+        filament = spool.get("filament", {})
+        if filament.get("density") is not None:
+            entities.append(FilamentDensity(hass, coordinator, spool, config_entry))
+        if filament.get("diameter") is not None:
+            entities.append(FilamentDiameter(hass, coordinator, spool, config_entry))
+        if filament.get("settings_extruder_temp") is not None:
+            entities.append(FilamentExtruderTemp(hass, coordinator, spool, config_entry))
+        if filament.get("settings_bed_temp") is not None:
+            entities.append(FilamentBedTemp(hass, coordinator, spool, config_entry))
+        if filament.get("article_number"):
+            entities.append(FilamentArticleNumber(hass, coordinator, spool, config_entry))
+
+        entities.append(SpoolId(hass, coordinator, spool, config_entry))
+
+        if filament.get("name"):
+            entities.append(FilamentName(hass, coordinator, spool, config_entry))
+        if filament.get("material"):
+            entities.append(FilamentMaterial(hass, coordinator, spool, config_entry))
+        if filament.get("color_hex"):
+            filament_image_url = await hass.async_add_executor_job(
+                _generate_filament_entity_picture, filament, image_dir
+            )
+            entities.append(
+                FilamentColorHex(
+                    hass, coordinator, spool, config_entry, filament_image_url
+                )
+            )
+        if filament.get("vendor", {}).get("name"):
+            entities.append(VendorName(hass, coordinator, spool, config_entry))
+        if filament.get("weight") is not None:
+            entities.append(FilamentWeight(hass, coordinator, spool, config_entry))
+
+        for field_key in spool.get("extra", {}):
+            extra_sensor = SpoolExtraField(
+                hass, coordinator, spool, config_entry, field_key
+            )
+            entities.append(extra_sensor)
+            existing_extra_fields[(spool["id"], field_key)] = extra_sensor
+
+        existing_spool_ids.add(spool["id"])
+        return entities
+
+    async def _async_add_new_spools(new_spools):
+        """Build & register sensors for spools the coordinator just discovered."""
+        new_entities: list = []
+        # Use a stable index continuation for the picture filename.
+        base_idx = len(existing_spool_ids)
+        for offset, spool in enumerate(new_spools):
+            _LOGGER.info(
+                "Dynamically adding sensors for new spool %s", spool.get("id")
+            )
+            new_entities.extend(
+                await _build_entities_for_spool(spool, base_idx + offset)
+            )
+        if new_entities:
+            async_add_entities(new_entities)
+
+    @callback
+    def add_dynamic_entities():
+        """Add new spools and new extra-field sensors as they appear."""
         if not coordinator.data:
             return
 
-        new_entities = []
         spools = coordinator.data.get("spools", [])
 
+        # New spools (#327): full sensor stack, async because of image gen.
+        new_spools = [
+            s for s in spools if s.get("id") not in existing_spool_ids
+        ]
+        if new_spools:
+            hass.async_create_task(_async_add_new_spools(new_spools))
+
+        # New extra fields on already-known spools.
+        new_entities = []
         for spool in spools:
             spool_id = spool.get("id")
-            extra_data = spool.get("extra", {})
-
-            for field_key in extra_data:
+            if spool_id not in existing_spool_ids:
+                # Will be handled by _async_add_new_spools above.
+                continue
+            for field_key in spool.get("extra", {}):
                 entity_key = (spool_id, field_key)
-
-                # Only create if it doesn't exist yet
                 if entity_key not in existing_extra_fields:
                     extra_field_sensor = SpoolExtraField(
                         hass, coordinator, spool, config_entry, field_key
@@ -83,18 +184,16 @@ async def async_setup_entry(  # noqa: C901
                     new_entities.append(extra_field_sensor)
                     existing_extra_fields[entity_key] = extra_field_sensor
                     _LOGGER.info(
-                        f"Dynamically adding new extra field sensor for spool {spool_id}: {field_key}"
+                        "Dynamically adding new extra field sensor for spool %s: %s",
+                        spool_id,
+                        field_key,
                     )
 
         if new_entities:
             async_add_entities(new_entities)
 
-    # Register listener for coordinator updates to add new extra fields
-    coordinator.async_add_listener(async_add_extra_field_entities)
-
     if coordinator.data:
         all_entities = []
-        image_dir = hass.config.path(PUBLIC_IMAGE_PATH)
 
         # Create spool entities
         spool_data = coordinator.data.get("spools", [])
@@ -106,6 +205,7 @@ async def async_setup_entry(  # noqa: C901
                 hass, coordinator, spool, idx, config_entry, image_url
             )
             all_entities.append(spool_device)
+            existing_spool_ids.add(spool["id"])
 
             # Create flow rate sensor for this spool
             flow_rate_sensor = SpoolFlowRate(
@@ -313,6 +413,10 @@ async def async_setup_entry(  # noqa: C901
             all_entities.append(filament_device)
 
         async_add_entities(all_entities)
+
+    # Register listener for coordinator updates so new spools (#327) and new
+    # extra fields are added without requiring an integration reload.
+    coordinator.async_add_listener(add_dynamic_entities)
 
 
 def _generate_entity_picture(spool_data, image_dir):
