@@ -11,12 +11,13 @@ from homeassistant.helpers import device_registry as dr, entity_registry as er
 from custom_components.spoolman.schema_helper import SchemaHelper
 
 from .const import (
+    CONF_URL,
     DOMAIN,
     SPOOLMAN_API_WRAPPER,
     SPOOLMAN_PATCH_SPOOL_SERVICENAME,
     SPOOLMAN_USE_SPOOL_FILAMENT_SERVICENAME,
 )
-from .coordinator import SpoolManCoordinator
+from .coordinator import SpoolManCoordinator, SpoolmanConfigEntry, SpoolmanRuntimeData
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ async def async_setup(hass: HomeAssistant, config):
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry):
+async def async_setup_entry(hass: HomeAssistant, entry: SpoolmanConfigEntry) -> bool:
     """Set up the Spoolman component from a config entry."""
     _LOGGER.debug("__init__.async_setup_entry")
 
@@ -48,6 +49,15 @@ async def async_setup_entry(hass: HomeAssistant, entry):
     # failure on first load so HA enters SETUP_RETRY instead of registering
     # entities against stale data.
     await coordinator.async_config_entry_first_refresh()
+
+    # Platinum rule ``runtime-data``: typed per-entry runtime container.
+    # Legacy classes still read ``hass.data[DOMAIN]`` (populated by the
+    # coordinator) during the gradual migration.
+    entry.runtime_data = SpoolmanRuntimeData(
+        coordinator=coordinator,
+        api=coordinator.spoolman_api,
+        url=entry.data[CONF_URL],
+    )
 
     # Clean up old location devices from previous versions
     await _async_remove_old_location_devices(hass, entry)

@@ -1,9 +1,14 @@
 """Spoolman home assistant data coordinator."""
 
+from __future__ import annotations
+
 import asyncio
 import logging
+from dataclasses import dataclass
 from datetime import timedelta
+from typing import TYPE_CHECKING
 
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
@@ -20,7 +25,30 @@ from .const import (
     SPOOLMAN_API_WRAPPER,
 )
 
+if TYPE_CHECKING:
+    pass
+
 _LOGGER = logging.getLogger(__name__)
+
+
+@dataclass
+class SpoolmanRuntimeData:
+    """Typed container stored on ``ConfigEntry.runtime_data``.
+
+    Replaces the legacy ``hass.data[DOMAIN]`` dict for new code paths
+    (Platinum quality scale rule ``runtime-data``). Legacy sensor
+    classes still read ``hass.data[DOMAIN]`` directly during the
+    gradual migration; the controller in ``__init__.py`` keeps both
+    in sync until the legacy classes are migrated separately.
+    """
+
+    coordinator: SpoolManCoordinator
+    api: SpoolmanAPI
+    url: str
+    klipper_active_spool: int | None = None
+
+
+SpoolmanConfigEntry = ConfigEntry[SpoolmanRuntimeData]
 
 
 class SpoolManCoordinator(DataUpdateCoordinator):

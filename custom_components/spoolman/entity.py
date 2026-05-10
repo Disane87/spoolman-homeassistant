@@ -78,13 +78,22 @@ class SpoolmanEntity(CoordinatorEntity["SpoolManCoordinator"]):
     def _make_device_info(self) -> DeviceInfo:
         """Build the spool device identifier shared by every per-spool entity.
 
+        Reads the URL from ``entry.runtime_data`` (Platinum rule
+        ``runtime-data``) with a defensive fallback to the legacy
+        ``hass.data[DOMAIN]`` while the legacy sensors are migrated.
+
         Note: identifiers carry a 3-tuple ``(DOMAIN, url, "spool_{id}")``
         rather than the strict 2-tuple HA expects. This legacy shape lets
         devices stay distinct across multiple Spoolman instances on the
         same HA host. Changing it would orphan every existing user's
         devices on upgrade, so the type is suppressed intentionally.
         """
-        url = self.hass.data[DOMAIN][CONF_URL]
+        runtime_data = getattr(self._entry, "runtime_data", None)
+        url = (
+            runtime_data.url
+            if runtime_data is not None
+            else self.hass.data[DOMAIN][CONF_URL]
+        )
         return DeviceInfo(
             identifiers={(DOMAIN, url, f"spool_{self.spool_id}")}  # type: ignore[arg-type]
         )

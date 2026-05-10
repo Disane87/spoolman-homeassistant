@@ -12,15 +12,10 @@ from __future__ import annotations
 from typing import Any
 
 from homeassistant.components.diagnostics import async_redact_data
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from .const import (
-    CONF_URL,
-    DOMAIN,
-    KLIPPER_URL,
-    SPOOLMAN_INFO_PROPERTY,
-)
+from .const import CONF_URL, KLIPPER_URL, SPOOLMAN_INFO_PROPERTY
+from .coordinator import SpoolmanConfigEntry
 
 # Keys removed from the diagnostics dump to avoid leaking sensitive info
 # in shared bug reports.
@@ -28,10 +23,14 @@ TO_REDACT = {CONF_URL, KLIPPER_URL, SPOOLMAN_INFO_PROPERTY}
 
 
 async def async_get_config_entry_diagnostics(
-    hass: HomeAssistant, entry: ConfigEntry
+    hass: HomeAssistant, entry: SpoolmanConfigEntry
 ) -> dict[str, Any]:
-    """Return diagnostics for a Spoolman config entry."""
-    coordinator = hass.data[DOMAIN]["coordinator"]
+    """Return diagnostics for a Spoolman config entry.
+
+    Reads the coordinator from ``entry.runtime_data`` (Platinum rule
+    ``runtime-data``).
+    """
+    coordinator = entry.runtime_data.coordinator
 
     return {
         "config_entry": {

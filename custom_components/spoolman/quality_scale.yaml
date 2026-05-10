@@ -51,12 +51,14 @@ rules:
     comment: Every entity sets _attr_unique_id. Snapshot test pins this.
   has-entity-name: exempt
   runtime-data:
-    status: todo
+    status: done
     comment: |
-      Currently uses hass.data[DOMAIN] as a global bag. Migration to
-      ConfigEntry.runtime_data is planned in a follow-up commit;
-      tracked in docs/superpowers/plans/2026-05-10-platinum-refactor.md
-      task 4.1.
+      __init__.async_setup_entry stores a typed ``SpoolmanRuntimeData``
+      dataclass on ``entry.runtime_data`` (coordinator, api, url).
+      The new modules (entity.py, diagnostics.py) read from it directly.
+      Legacy complex sensors in ``sensors/`` still read
+      ``hass.data[DOMAIN]`` during a gradual migration; the controller
+      keeps both stores in sync until those classes are migrated.
   test-before-configure: done
   test-before-setup:
     status: done
