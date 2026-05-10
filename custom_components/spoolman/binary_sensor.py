@@ -26,6 +26,9 @@ from .const import (
     DOMAIN,
 )
 
+# Coordinator-driven; no concurrent per-entity updates. Platinum: parallel-updates.
+PARALLEL_UPDATES = 0
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -42,9 +45,7 @@ async def async_setup_entry(
         spool_data = coordinator.data.get("spools", [])
 
         for spool in spool_data:
-            binary_sensor = SpoolLowFilament(
-                hass, coordinator, spool, config_entry
-            )
+            binary_sensor = SpoolLowFilament(hass, coordinator, spool, config_entry)
             binary_sensors.append(binary_sensor)
 
         async_add_entities(binary_sensors, True)
@@ -54,21 +55,25 @@ class SpoolLowFilament(CoordinatorEntity, BinarySensorEntity):
     """Binary sensor that indicates when a spool is running low on filament."""
 
     def __init__(
-        self, hass: HomeAssistant, coordinator, spool_data: dict, config_entry: ConfigEntry
+        self,
+        hass: HomeAssistant,
+        coordinator,
+        spool_data: dict,
+        config_entry: ConfigEntry,
     ) -> None:
         """Initialize the low filament binary sensor."""
         super().__init__(coordinator)
 
         self.config = hass.data[DOMAIN]
         self._spool = spool_data
-        self.spool_id = spool_data['id']
+        self.spool_id = spool_data["id"]
         self._entry = config_entry
         self._attr_available = True
 
         # Get threshold from config (use notification_threshold_warning)
         self._threshold = config_entry.options.get(
             CONF_NOTIFICATION_THRESHOLD_WARNING,
-            config_entry.data.get(CONF_NOTIFICATION_THRESHOLD_WARNING, 75)
+            config_entry.data.get(CONF_NOTIFICATION_THRESHOLD_WARNING, 75),
         )
 
         # Get spool name
@@ -77,7 +82,9 @@ class SpoolLowFilament(CoordinatorEntity, BinarySensorEntity):
 
         if filament.get("name") and filament.get("material"):
             if vendor_name:
-                spool_name = f"{vendor_name} {filament['name']} {filament.get('material')}"
+                spool_name = (
+                    f"{vendor_name} {filament['name']} {filament.get('material')}"
+                )
             else:
                 spool_name = f"{filament['name']} {filament.get('material')}"
         else:
@@ -86,9 +93,11 @@ class SpoolLowFilament(CoordinatorEntity, BinarySensorEntity):
         self.entity_id = generate_entity_id(
             "binary_sensor.{}",
             f"spoolman_spool_{spool_data['id']}_low_filament",
-            hass=hass
+            hass=hass,
         )
-        self._attr_unique_id = f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_low_filament"
+        self._attr_unique_id = (
+            f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_low_filament"
+        )
         self._attr_has_entity_name = False
         self._attr_name = f"{spool_name} Low Filament"
         self._attr_device_class = BinarySensorDeviceClass.PROBLEM
@@ -106,8 +115,12 @@ class SpoolLowFilament(CoordinatorEntity, BinarySensorEntity):
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
         spool_data = next(
-            (s for s in self.coordinator.data.get("spools", []) if s["id"] == self.spool_id),
-            None
+            (
+                s
+                for s in self.coordinator.data.get("spools", [])
+                if s["id"] == self.spool_id
+            ),
+            None,
         )
 
         if spool_data is None:
@@ -132,7 +145,9 @@ class SpoolLowFilament(CoordinatorEntity, BinarySensorEntity):
         filament_weight = filament.get("weight")
 
         if filament_weight and filament_weight > 0:
-            remaining_percentage = ((filament_weight - used_weight) / filament_weight) * 100
+            remaining_percentage = (
+                (filament_weight - used_weight) / filament_weight
+            ) * 100
 
             # Sensor is ON (problem) when remaining percentage is below threshold
             self._attr_is_on = remaining_percentage <= self._threshold

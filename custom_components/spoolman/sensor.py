@@ -32,6 +32,11 @@ from .sensors import (
     SpoolUsedPercentage,
 )
 
+# All updates fan out from a single DataUpdateCoordinator, so per-entity
+# parallelism would only multiply HA-internal locking. Platinum rule
+# ``parallel-updates``.
+PARALLEL_UPDATES = 0
+
 
 class SpoolmanSensor(SpoolmanEntity, SensorEntity):
     """Generic Spoolman sensor driven by a SpoolmanSensorEntityDescription.

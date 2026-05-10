@@ -1,0 +1,191 @@
+# Spoolman integration quality scale self-assessment.
+# Reference: https://www.home-assistant.io/docs/quality_scale/
+#
+# Each rule is one of:
+#   done   — currently satisfied; comment cites the implementing code
+#   todo   — known gap, listed for transparency
+#   exempt — does not apply; comment explains why
+
+rules:
+  # ---- Bronze ----
+  action-setup:
+    status: done
+    comment: |
+      Two services (patch_spool, use_spool_filament) are registered in
+      __init__.py async_setup_entry with explicit voluptuous schemas
+      from schema_helper.SchemaHelper.
+  appropriate-polling:
+    status: done
+    comment: |
+      DataUpdateCoordinator with a user-configurable update interval
+      (default 5 minutes); spool data is local-network local-polling.
+  brands: exempt
+  common-modules:
+    status: done
+    comment: |
+      Shared base class (entity.SpoolmanEntity), shared API client
+      (classes.spoolman_api.SpoolmanAPI), shared description registry
+      (sensor_descriptions). No cross-platform duplication.
+  config-flow:
+    status: done
+    comment: User-driven config flow, single step, schema validation.
+  config-flow-test-coverage:
+    status: done
+    comment: tests/test_config_flow.py covers user happy/unreachable/Klipper paths and options flow.
+  dependency-transparency: done
+  docs-actions:
+    status: done
+    comment: README documents both services.
+  docs-high-level-description:
+    status: done
+    comment: README header describes the integration purpose.
+  docs-installation-instructions:
+    status: done
+    comment: README documents HACS installation.
+  docs-removal-instructions:
+    status: done
+    comment: HACS-standard removal flow; documented in CONTRIBUTING / README dev sections.
+  entity-event-setup: exempt
+  entity-unique-id:
+    status: done
+    comment: Every entity sets _attr_unique_id. Snapshot test pins this.
+  has-entity-name: exempt
+  runtime-data:
+    status: todo
+    comment: |
+      Currently uses hass.data[DOMAIN] as a global bag. Migration to
+      ConfigEntry.runtime_data is planned in a follow-up commit;
+      tracked in docs/superpowers/plans/2026-05-10-platinum-refactor.md
+      task 4.1.
+  test-before-configure: done
+  test-before-setup:
+    status: done
+    comment: |
+      Coordinator uses async_config_entry_first_refresh so transient
+      failures yield SETUP_RETRY instead of half-setup state.
+  unique-config-entry:
+    status: done
+    comment: Config flow uses unique_id=spoolman_url to prevent duplicates.
+
+  # ---- Silver ----
+  action-exceptions:
+    status: done
+    comment: |
+      Service handlers raise HomeAssistantError on API failure
+      (test_services.test_patch_spool_service_propagates_api_error pins this).
+  config-entry-unloading:
+    status: done
+    comment: __init__.async_unload_entry forwards platform unloads and clears state.
+  docs-configuration-parameters:
+    status: done
+    comment: README describes update_interval and notification thresholds.
+  docs-installation-parameters:
+    status: done
+    comment: README documents URL, archived toggle, thresholds.
+  entity-unavailable:
+    status: done
+    comment: |
+      SpoolmanEntity._handle_coordinator_update marks the entity
+      unavailable when its spool disappears from the coordinator data.
+  integration-owner:
+    status: done
+    comment: codeowners=["@disane87"] in manifest.json.
+  log-when-unavailable: done
+  parallel-updates:
+    status: done
+    comment: PARALLEL_UPDATES = 0 set on sensor.py, binary_sensor.py, select.py.
+  reauthentication-flow:
+    status: exempt
+    comment: |
+      Spoolman has no authentication layer; the integration only needs a
+      reachable URL. If Spoolman gains auth, this should be revisited.
+  test-coverage:
+    status: todo
+    comment: |
+      Currently 77% with legacy sensors/ omitted. Target is 90% global.
+      Remaining gaps are in error paths of spoolman_api.patch_spool/
+      use_spool_filament and image-generation fallbacks. Tracked in
+      docs/superpowers/plans/2026-05-10-platinum-refactor.md task 5.1.
+
+  # ---- Gold ----
+  devices:
+    status: done
+    comment: Each spool gets its own DeviceInfo identifier.
+  diagnostics:
+    status: done
+    comment: |
+      diagnostics.py exposes the coordinator state with URL/key redaction.
+  discovery: exempt
+  discovery-update-info: exempt
+  docs-data-update:
+    status: done
+    comment: README documents the polling cycle and Spoolman as upstream.
+  docs-examples:
+    status: done
+    comment: README has Lovelace card examples and automation snippets.
+  docs-known-limitations: done
+  docs-supported-devices: exempt
+  docs-supported-functions: done
+  docs-troubleshooting:
+    status: done
+    comment: README references issue tracker; CONTRIBUTING covers dev tooling.
+  docs-use-cases: done
+  dynamic-devices:
+    status: done
+    comment: |
+      sensor.add_dynamic_entities listens to coordinator updates and adds
+      entities for new spools and new extra fields without integration reload.
+  entity-category:
+    status: todo
+    comment: Diagnostic-class entities not yet tagged. Phase 4 follow-up.
+  entity-device-class:
+    status: done
+    comment: |
+      Sensor descriptions set device_class where applicable
+      (WEIGHT, DISTANCE, TEMPERATURE, TIMESTAMP); binary_sensor uses PROBLEM.
+  entity-disabled-by-default: exempt
+  entity-translations:
+    status: todo
+    comment: |
+      Friendly names are still inline strings, not translation keys.
+      Tracked in docs/superpowers/plans/2026-05-10-platinum-refactor.md task 4.5.
+  exception-translations:
+    status: todo
+    comment: |
+      Exception messages currently English-only; will move to
+      strings.json keys with task 4.5.
+  icon-translations:
+    status: exempt
+    comment: |
+      Icons are MDI literals tied to specific fields; translation has
+      no semantic value here.
+  reconfiguration-flow: done
+  repair-issues:
+    status: exempt
+    comment: |
+      No known repair scenarios (no migrations, no breaking server-side
+      schema changes the integration must surface to the user).
+  stale-devices:
+    status: done
+    comment: |
+      _async_cleanup_orphaned_spool_devices in __init__.py removes the
+      device when a spool is deleted in Spoolman.
+
+  # ---- Platinum ----
+  async-dependency:
+    status: done
+    comment: |
+      The single runtime dependency that talks to a network is aiohttp,
+      already async. Pillow (for image generation) runs in the executor
+      via hass.async_add_executor_job.
+  inject-websession:
+    status: done
+    comment: |
+      SpoolmanAPI and KlipperAPI both accept a session in __init__;
+      coordinator and config flow pass async_get_clientsession(hass).
+  strict-typing:
+    status: todo
+    comment: |
+      Public surface is type-hinted; mypy --strict still reports errors
+      in the legacy complex sensors. Phase 4.4 of the refactor plan
+      drives this to zero.
