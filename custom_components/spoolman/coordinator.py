@@ -111,7 +111,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
             klipper_url = config.get(KLIPPER_URL, "")
             if klipper_url is not None and klipper_url != "":
                 klipper_active_spool: int | None = await KlipperAPI(
-                    klipper_url
+                    klipper_url, session=async_get_clientsession(self.hass)
                 ).get_active_spool_id()
                 if klipper_active_spool is not None:
                     for spool in spools:

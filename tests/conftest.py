@@ -82,7 +82,7 @@ def _allow_asyncio_shutdown_thread(
         return [
             t
             for t in real_enumerate()
-            if t.name != "Thread-1 (_run_safe_shutdown_loop)"
+            if "_run_safe_shutdown_loop" not in t.name
             and not t.name.startswith("asyncio_")
         ]
 
