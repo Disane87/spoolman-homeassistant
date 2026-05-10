@@ -1,3 +1,9 @@
+## [1.4.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v1.4.0-dev.1...v1.4.0-dev.2) (2026-05-10)
+
+### 🛠️ Fixes
+
+* dynamically add new spools and expose empty Spoolman locations ([5db99d1](https://github.com/Disane87/spoolman-homeassistant/commit/5db99d1c7fffeb42b7c27c57b9afd0851cf797b2)), closes [#327](https://github.com/Disane87/spoolman-homeassistant/issues/327) [#327](https://github.com/Disane87/spoolman-homeassistant/issues/327) [#835](https://github.com/Disane87/spoolman-homeassistant/issues/835)
+
 ## [1.4.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.3.1-dev.2...v1.4.0-dev.1) (2026-05-10)
 
 ### 🚀 Features
