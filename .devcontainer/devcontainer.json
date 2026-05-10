@@ -1,0 +1,43 @@
+{
+    "name": "Spoolman HA Integration",
+    "build": {
+        "context": "..",
+        "dockerfile": "../Dockerfile.test"
+    },
+    "overrideCommand": true,
+    "workspaceFolder": "/workspace",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.mypy-type-checker",
+                "charliermarsh.ruff"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.testing.pytestEnabled": true,
+                "python.testing.unittestEnabled": false,
+                "python.testing.pytestArgs": [
+                    "--no-cov",
+                    "tests"
+                ],
+                "python.analysis.typeCheckingMode": "strict",
+                "[python]": {
+                    "editor.defaultFormatter": "charliermarsh.ruff",
+                    "editor.formatOnSave": true,
+                    "editor.codeActionsOnSave": {
+                        "source.organizeImports": "explicit"
+                    }
+                },
+                "ruff.enable": true,
+                "mypy-type-checker.args": [
+                    "--explicit-package-bases",
+                    "--strict"
+                ]
+            }
+        }
+    },
+    "remoteUser": "root"
+}

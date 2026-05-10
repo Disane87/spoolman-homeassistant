@@ -720,7 +720,18 @@ Don't be shy - we're all learning together! If you have questions, just open an 
 
 The test suite uses `pytest-homeassistant-custom-component`, which boots a real Home Assistant core in-process. HA core depends on Unix-only modules (`fcntl`), so **the suite cannot run natively on Windows** — use one of:
 
-### Option A: Docker (recommended, works on Windows/macOS/Linux)
+### Option A: VS Code Dev Container (recommended, with Test Explorer)
+
+The repo ships a `.devcontainer/devcontainer.json` that wraps `Dockerfile.test`.
+
+1. Install Docker Desktop and the **Dev Containers** VS Code extension (already in `.vscode/extensions.json` recommendations).
+2. Open the project, then `F1` → **Dev Containers: Reopen in Container**.
+3. First open builds the image (~2 min). Subsequent opens are instant.
+4. The Python Test Explorer (left sidebar, flask icon) automatically discovers all tests under `tests/`. Hit ▶ to run, 🐛 to debug with breakpoints.
+
+To re-generate the characterization snapshot after intentional changes, open a terminal inside the container and run `pytest --snapshot-update tests/test_characterization.py`.
+
+### Option B: Docker CLI (no IDE integration)
 
 ```bash
 # One-off run (builds the image on first call):
