@@ -58,6 +58,12 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 {"allow_archived": show_archived}
             )
             filaments = await self.spoolman_api.get_filaments({})
+            try:
+                spool_extra_fields = await self.spoolman_api.get_extra_fields("spool")
+            except Exception as exception:
+                # Older Spoolman versions or transient errors: degrade gracefully.
+                _LOGGER.debug("Could not fetch spool extra-field metadata: %s", exception)
+                spool_extra_fields = {}
         except asyncio.CancelledError:
             # Task was cancelled (e.g., during shutdown), re-raise to let coordinator handle it
             _LOGGER.debug("Data update was cancelled")
@@ -98,7 +104,11 @@ class SpoolManCoordinator(DataUpdateCoordinator):
             _LOGGER.error(f"Error processing Klipper API data: {exception}")
             # Continue returning spools even if Klipper processing fails
 
-        return {"spools": spools, "filaments": filaments}
+        return {
+            "spools": spools,
+            "filaments": filaments,
+            "extra_fields": {"spool": spool_extra_fields},
+        }
 
     async def async_cleanup_extra_fields(self):
         """Cleanup orphaned extra field entities - can be called externally."""

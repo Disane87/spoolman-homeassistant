@@ -59,6 +59,31 @@ class SpoolmanAPI:
             _LOGGER.debug("SpoolmanAPI: backup response %s", response)
             return response
 
+    async def get_extra_fields(self, entity_type):
+        """Return extra-field metadata for the given entity type (e.g. ``spool``).
+
+        Returns a dict keyed by field key with ``name``, ``field_type``, ``unit``,
+        ``choices`` and ``multi_choice`` so the integration can set proper HA
+        device classes / units / state classes on dynamic extra-field sensors.
+        """
+        _LOGGER.debug("SpoolmanAPI: get_extra_fields(%s)", entity_type)
+        url = f"{self.base_url}/field/{entity_type}"
+        session = await self._get_session()
+        async with session.get(url) as response:
+            response.raise_for_status()
+            payload = await response.json()
+            _LOGGER.debug("SpoolmanAPI: get_extra_fields response %s", payload)
+            return {
+                item["key"]: {
+                    "name": item.get("name"),
+                    "field_type": item.get("field_type"),
+                    "unit": item.get("unit"),
+                    "choices": item.get("choices"),
+                    "multi_choice": item.get("multi_choice"),
+                }
+                for item in payload
+            }
+
     async def get_spools(self, params):
         """Return a list of all spools."""
         _LOGGER.debug("SpoolmanAPI: get_spools")
