@@ -7,6 +7,11 @@ on:
 jobs:
   check-commits:
     runs-on: ubuntu-latest
+    # Skip the auto-generated dev -> main release PR (its title is intentionally
+    # a non-conventional-commit summary).
+    if: |
+      !(github.event.pull_request.head.ref == 'dev' &&
+        github.event.pull_request.base.ref == 'main')
     permissions:
       pull-requests: write
       statuses: write
