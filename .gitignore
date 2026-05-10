@@ -89,3 +89,4 @@ virtualization/vagrant/config
 *.pyc
 test_ha_config/
 Include/
+.claude/

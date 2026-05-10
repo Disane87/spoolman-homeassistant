@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(gh api *)",
-      "Bash(mkdir -p /tmp/spoolman-brand)",
-      "Read(//tmp/**)"
-    ]
-  }
-}
