@@ -1,0 +1,22 @@
+"""Shared constants for Spoolman tests."""
+from __future__ import annotations
+
+from custom_components.spoolman.const import (
+    CONF_NOTIFICATION_THRESHOLD_CRITICAL,
+    CONF_NOTIFICATION_THRESHOLD_INFO,
+    CONF_NOTIFICATION_THRESHOLD_WARNING,
+    CONF_SHOW_ARCHIVED,
+    CONF_UPDATE_INTERVAL,
+    CONF_URL,
+)
+
+MOCK_URL = "http://spoolman.test:7912/"
+
+MOCK_CONFIG_DATA = {
+    CONF_URL: MOCK_URL,
+    CONF_UPDATE_INTERVAL: 5,
+    CONF_SHOW_ARCHIVED: False,
+    CONF_NOTIFICATION_THRESHOLD_INFO: 50,
+    CONF_NOTIFICATION_THRESHOLD_WARNING: 75,
+    CONF_NOTIFICATION_THRESHOLD_CRITICAL: 95,
+}
