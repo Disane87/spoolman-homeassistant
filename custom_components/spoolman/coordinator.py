@@ -83,16 +83,17 @@ class SpoolManCoordinator(DataUpdateCoordinator):
             filament_id = filament.get("id")
             filament["total_remaining_weight"] = filament_remaining_weights.get(filament_id, 0)
 
+        # Ensure the attribute exists consistently for all spools.
+        for spool in spools:
+            spool["klipper_active_spool"] = False
+
         try:
             klipper_url = config.get(KLIPPER_URL, "")
             if klipper_url is not None and klipper_url != "":
                 klipper_active_spool: int | None = await KlipperAPI(klipper_url).get_active_spool_id()
                 if klipper_active_spool is not None:
                     for spool in spools:
-                        if spool["id"] == klipper_active_spool:
-                            spool["klipper_active_spool"] = True
-                        else:
-                            spool["klipper_active_spool"] = False
+                        spool["klipper_active_spool"] = spool["id"] == klipper_active_spool
         except Exception as exception:
             _LOGGER.error(f"Error processing Klipper API data: {exception}")
             # Continue returning spools even if Klipper processing fails
