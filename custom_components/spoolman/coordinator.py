@@ -64,6 +64,13 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 # Older Spoolman versions or transient errors: degrade gracefully.
                 _LOGGER.debug("Could not fetch spool extra-field metadata: %s", exception)
                 spool_extra_fields = {}
+            try:
+                locations = await self.spoolman_api.get_locations()
+            except Exception as exception:
+                # /location endpoint isn't on every Spoolman version; fall back
+                # to deriving from spools at the consumer side.
+                _LOGGER.debug("Could not fetch locations: %s", exception)
+                locations = None
         except asyncio.CancelledError:
             # Task was cancelled (e.g., during shutdown), re-raise to let coordinator handle it
             _LOGGER.debug("Data update was cancelled")
@@ -104,10 +111,20 @@ class SpoolManCoordinator(DataUpdateCoordinator):
             _LOGGER.error(f"Error processing Klipper API data: {exception}")
             # Continue returning spools even if Klipper processing fails
 
+        # Fall back to deriving locations from spools when Spoolman doesn't
+        # expose /location, so older servers keep working.
+        if locations is None:
+            locations = sorted({
+                spool["location"]
+                for spool in spools
+                if spool.get("location")
+            })
+
         return {
             "spools": spools,
             "filaments": filaments,
             "extra_fields": {"spool": spool_extra_fields},
+            "locations": locations,
         }
 
     async def async_cleanup_extra_fields(self):

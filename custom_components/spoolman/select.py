@@ -16,6 +16,19 @@ _LOGGER = logging.getLogger(__name__)
 ICON = "mdi:map-marker"
 
 
+def _resolve_locations(coordinator_data, spools):
+    """Pick the canonical location list, preferring Spoolman's /location feed.
+
+    Falls back to the set of locations actually used by spools so older
+    Spoolman servers (without /api/v1/location) still work.
+    """
+    locations = coordinator_data.get("locations") if coordinator_data else None
+    if locations:
+        return sorted(set(locations))
+    derived = {spool["location"] for spool in spools if spool.get("location")}
+    return sorted(derived)
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
@@ -44,25 +57,47 @@ async def async_setup_entry(
     spool_data = coordinator.data.get("spools", [])
     _LOGGER.info("Found %d spools to create select entities for", len(spool_data))
 
-    # Get unique locations from all spools
-    locations = set()
-    for spool in spool_data:
-        location = spool.get("location")
-        if location:
-            locations.add(location)
-
+    locations = _resolve_locations(coordinator.data, spool_data)
     _LOGGER.info("Found locations: %s", locations)
+
+    existing_spool_ids: set = set()
 
     # Create a select entity for each spool
     for spool in spool_data:
         select_entity = SpoolLocationSelect(
-            hass, coordinator, spool, list(locations), config_entry
+            hass, coordinator, spool, locations, config_entry
         )
         all_entities.append(select_entity)
+        existing_spool_ids.add(spool["id"])
         _LOGGER.debug("Created select entity for spool %s", spool['id'])
 
     _LOGGER.info("Adding %d select entities", len(all_entities))
     async_add_entities(all_entities)
+
+    @callback
+    def add_dynamic_selects():
+        """Add a location select for spools that appeared after setup (#327)."""
+        if not coordinator.data:
+            return
+        new_entities = []
+        current_locations = _resolve_locations(
+            coordinator.data, coordinator.data.get("spools", [])
+        )
+        for spool in coordinator.data.get("spools", []):
+            spool_id = spool.get("id")
+            if spool_id in existing_spool_ids:
+                continue
+            new_entities.append(
+                SpoolLocationSelect(
+                    hass, coordinator, spool, current_locations, config_entry
+                )
+            )
+            existing_spool_ids.add(spool_id)
+            _LOGGER.info("Dynamically adding location select for spool %s", spool_id)
+        if new_entities:
+            async_add_entities(new_entities)
+
+    coordinator.async_add_listener(add_dynamic_selects)
 
 
 class SpoolLocationSelect(CoordinatorEntity, SelectEntity):
@@ -163,13 +198,12 @@ class SpoolLocationSelect(CoordinatorEntity, SelectEntity):
         self._attr_available = True
         self._spool = spool_data
 
-        # Update available locations from all spools
-        locations = set()
-        for spool in self.coordinator.data.get("spools", []):
-            location = spool.get("location")
-            if location:
-                locations.add(location)
-
-        self._locations = sorted(locations) if locations else ["Unknown"]
+        # Refresh available locations from coordinator (Spoolman /location
+        # feed) with fallback to spool-derived set.
+        locations = _resolve_locations(
+            self.coordinator.data,
+            self.coordinator.data.get("spools", []),
+        )
+        self._locations = locations if locations else ["Unknown"]
 
         self.async_write_ha_state()
