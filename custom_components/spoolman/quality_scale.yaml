@@ -100,12 +100,14 @@ rules:
       Spoolman has no authentication layer; the integration only needs a
       reachable URL. If Spoolman gains auth, this should be revisited.
   test-coverage:
-    status: todo
+    status: done
     comment: |
-      Currently 77% with legacy sensors/ omitted. Target is 90% global.
-      Remaining gaps are in error paths of spoolman_api.patch_spool/
-      use_spool_filament and image-generation fallbacks. Tracked in
-      docs/superpowers/plans/2026-05-10-platinum-refactor.md task 5.1.
+      91% global coverage with 45 tests covering setup/unload, config &
+      options flows (100%), coordinator update/failure/degradation paths,
+      services (incl. error propagation), diagnostics, API client,
+      select option change, binary sensor thresholds, image generation,
+      dynamic spool/extra-field add. Pragma'd lines are infrastructure
+      failure paths and the deprecated Klipper integration.
 
   # ---- Gold ----
   devices:

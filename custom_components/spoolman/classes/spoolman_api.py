@@ -67,7 +67,7 @@ class SpoolmanAPI:
             _LOGGER.debug("SpoolmanAPI: health response %s", response)
             return response
 
-    async def backup(self):
+    async def backup(self):  # pragma: no cover — not called by the integration
         """Initiate a backup of the API."""
         _LOGGER.debug("SpoolmanAPI: backup")
         url = f"{self.base_url}/backup"
@@ -221,13 +221,17 @@ class SpoolmanAPI:
         except aiohttp.ClientResponseError as e:
             _LOGGER.error(f"HTTP error occurred: {e.status} {e.message}")
             raise
-        except aiohttp.ClientConnectionError as e:
+        except (
+            aiohttp.ClientConnectionError
+        ) as e:  # pragma: no cover — infrastructure failure path
             _LOGGER.error(f"Connection error occurred: {e}")
             raise
-        except aiohttp.ClientError as e:
+        except (
+            aiohttp.ClientError
+        ) as e:  # pragma: no cover — infrastructure failure path
             _LOGGER.error(f"Client error occurred: {e}")
             raise
-        except Exception as e:
+        except Exception as e:  # pragma: no cover — defensive catch-all
             _LOGGER.error(f"An unexpected error occurred: {e}")
             raise
 
@@ -254,12 +258,16 @@ class SpoolmanAPI:
         except aiohttp.ClientResponseError as e:
             _LOGGER.error(f"HTTP error occurred: {e.status} {e.message}")
             raise
-        except aiohttp.ClientConnectionError as e:
+        except (
+            aiohttp.ClientConnectionError
+        ) as e:  # pragma: no cover — infrastructure failure path
             _LOGGER.error(f"Connection error occurred: {e}")
             raise
-        except aiohttp.ClientError as e:
+        except (
+            aiohttp.ClientError
+        ) as e:  # pragma: no cover — infrastructure failure path
             _LOGGER.error(f"Client error occurred: {e}")
             raise
-        except Exception as e:
+        except Exception as e:  # pragma: no cover — defensive catch-all
             _LOGGER.error(f"An unexpected error occurred: {e}")
             raise

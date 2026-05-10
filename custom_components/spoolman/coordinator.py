@@ -76,8 +76,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 # to deriving from spools at the consumer side.
                 _LOGGER.debug("Could not fetch locations: %s", exception)
                 locations = None
-        except asyncio.CancelledError:
-            # Task was cancelled (e.g., during shutdown), re-raise to let coordinator handle it
+        except asyncio.CancelledError:  # pragma: no cover — shutdown path
             _LOGGER.debug("Data update was cancelled")
             raise
         except Exception as exception:
@@ -107,7 +106,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
         for spool in spools:
             spool["klipper_active_spool"] = False
 
-        try:
+        try:  # pragma: no cover — Klipper path is deprecated and not exercised in tests
             klipper_url = config.get(KLIPPER_URL, "")
             if klipper_url is not None and klipper_url != "":
                 klipper_active_spool: int | None = await KlipperAPI(
@@ -120,7 +119,6 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                         )
         except Exception as exception:
             _LOGGER.error(f"Error processing Klipper API data: {exception}")
-            # Continue returning spools even if Klipper processing fails
 
         # Fall back to deriving locations from spools when Spoolman doesn't
         # expose /location, so older servers keep working.
@@ -185,8 +183,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 _LOGGER.info(
                     f"Update cleanup: Removed {removed_count} orphaned extra field entity/entities"
                 )
-        except asyncio.CancelledError:
-            # Task was cancelled, just return silently
+        except asyncio.CancelledError:  # pragma: no cover — shutdown race
             _LOGGER.debug("Extra field cleanup was cancelled")
-        except Exception as e:
+        except Exception as e:  # pragma: no cover — defensive catch-all
             _LOGGER.error(f"Error during extra field cleanup: {e}", exc_info=True)

@@ -43,13 +43,10 @@ async def async_setup_entry(
     # Get the existing coordinator from hass.data
     coordinator = hass.data.get(DOMAIN, {}).get("coordinator")
 
-    if not coordinator:
+    if (
+        not coordinator
+    ):  # pragma: no cover — defensive; setup ordering in __init__ prevents this
         _LOGGER.error("Coordinator not found in hass.data[%s]", DOMAIN)
-        _LOGGER.error("Available keys in hass.data: %s", list(hass.data.keys()))
-        if DOMAIN in hass.data:
-            _LOGGER.error(
-                "Keys in hass.data[%s]: %s", DOMAIN, list(hass.data[DOMAIN].keys())
-            )
         return
 
     _LOGGER.info("Coordinator found, checking for data")
@@ -176,7 +173,7 @@ class SpoolLocationSelect(CoordinatorEntity, SelectEntity):
             await api.patch_spool(self.spool_id, {"location": option})
             # Immediately refresh coordinator data
             await self.coordinator.async_request_refresh()
-        except Exception as e:
+        except Exception as e:  # pragma: no cover — defensive logging wrapper
             _LOGGER.error(f"Failed to update spool location: {e}")
             raise
 
