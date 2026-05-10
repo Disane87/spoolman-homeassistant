@@ -9,11 +9,15 @@ on:
 jobs:
   check-target-branch:
     runs-on: ubuntu-latest
-    # Skip for bot accounts (renovate, dependabot, etc.)
+    # Skip for bot accounts (renovate, dependabot, etc.) and for the
+    # auto-generated dev -> main release PR (opened by github-actions[bot],
+    # which the maintainer-permission lookup rejects).
     if: |
       github.actor != 'renovate[bot]' &&
       github.actor != 'dependabot[bot]' &&
-      !contains(github.actor, '[bot]')
+      !contains(github.actor, '[bot]') &&
+      !(github.event.pull_request.head.ref == 'dev' &&
+        github.event.pull_request.base.ref == 'main')
     permissions:
       pull-requests: write
       issues: write
