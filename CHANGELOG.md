@@ -1,3 +1,13 @@
+## [1.3.1-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v1.3.1-dev.1...v1.3.1-dev.2) (2026-05-10)
+
+### 📔 Docs
+
+* add related Spoolman ecosystem projects section ([f96b14a](https://github.com/Disane87/spoolman-homeassistant/commit/f96b14af330040c39bbe426e666a5e169a16ed7e))
+
+### 🛠️ Fixes
+
+* always set klipper_active_spool on spools ([5576017](https://github.com/Disane87/spoolman-homeassistant/commit/5576017147a8fde8a2ab76db5f0acd225ddd790c))
+
 ## [1.3.1-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.3.0...v1.3.1-dev.1) (2026-02-18)
 
 ### 🛠️ Fixes
