@@ -59,6 +59,21 @@ class SpoolmanAPI:
             _LOGGER.debug("SpoolmanAPI: backup response %s", response)
             return response
 
+    async def get_locations(self):
+        """Return the list of configured spool locations from Spoolman.
+
+        Uses ``GET /api/v1/location`` so that locations without any assigned
+        spool (e.g. empty AMS trays) are still selectable in HA.
+        """
+        _LOGGER.debug("SpoolmanAPI: get_locations")
+        url = f"{self.base_url}/location"
+        session = await self._get_session()
+        async with session.get(url) as response:
+            response.raise_for_status()
+            payload = await response.json()
+            _LOGGER.debug("SpoolmanAPI: get_locations response %s", payload)
+            return [str(loc) for loc in payload if loc]
+
     async def get_extra_fields(self, entity_type):
         """Return extra-field metadata for the given entity type (e.g. ``spool``).
 
