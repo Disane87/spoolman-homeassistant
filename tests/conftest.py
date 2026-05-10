@@ -159,13 +159,18 @@ def mock_spoolman_api(
 
 @pytest.fixture
 def config_entry() -> MockConfigEntry:
-    """Build a config entry without adding it to hass."""
+    """Build a config entry without adding it to hass.
+
+    The entry_id is pinned to a fixed ULID so that characterization
+    snapshots stay byte-stable across test runs.
+    """
     return MockConfigEntry(
         domain=DOMAIN,
         data=MOCK_CONFIG_DATA,
         options={},
         title="Spoolman",
         unique_id=MOCK_URL,
+        entry_id="01J0TESTSPOOLMAN0000000000",
     )
 
 
