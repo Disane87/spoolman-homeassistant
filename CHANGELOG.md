@@ -1,3 +1,9 @@
+## [1.4.0-dev.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.3.1-dev.2...v1.4.0-dev.1) (2026-05-10)
+
+### 🚀 Features
+
+* **sensors:** expose Spoolman extra-field metadata on HA sensors ([12a4dec](https://github.com/Disane87/spoolman-homeassistant/commit/12a4dec7e2a1073848a7cf8bf871045f026b198c)), closes [#837](https://github.com/Disane87/spoolman-homeassistant/issues/837)
+
 ## [1.3.1-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v1.3.1-dev.1...v1.3.1-dev.2) (2026-05-10)
 
 ### 📔 Docs
