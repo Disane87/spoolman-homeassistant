@@ -5,7 +5,11 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorStateClass,
+)
 from homeassistant.core import callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import generate_entity_id
@@ -14,6 +18,33 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from ..const import CONF_URL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+
+_NUMERIC_FIELD_TYPES = {"integer", "float"}
+
+# Map normalized Spoolman unit strings to (device_class, icon).
+# Matched on the unit reported by Spoolman, not on the user-chosen field name,
+# so it works regardless of locale.
+_UNIT_DEVICE_CLASS = {
+    "%": (SensorDeviceClass.HUMIDITY, "mdi:water-percent"),
+    "°c": (SensorDeviceClass.TEMPERATURE, "mdi:thermometer"),
+    "°f": (SensorDeviceClass.TEMPERATURE, "mdi:thermometer"),
+    "k": (SensorDeviceClass.TEMPERATURE, "mdi:thermometer"),
+    "g": (SensorDeviceClass.WEIGHT, "mdi:weight-gram"),
+    "kg": (SensorDeviceClass.WEIGHT, "mdi:weight-kilogram"),
+    "mm": (SensorDeviceClass.DISTANCE, "mdi:ruler"),
+    "m": (SensorDeviceClass.DISTANCE, "mdi:ruler"),
+}
+
+
+def _device_class_for(field_type: str | None, unit: str | None) -> tuple[Any, str]:
+    """Pick a device class + icon based on Spoolman field metadata."""
+    if field_type == "datetime":
+        return SensorDeviceClass.TIMESTAMP, "mdi:calendar"
+    if unit:
+        match = _UNIT_DEVICE_CLASS.get(unit.strip().lower())
+        if match:
+            return match
+    return None, "mdi:tag-outline"
 
 
 class SpoolExtraField(CoordinatorEntity, SensorEntity):
@@ -42,6 +73,19 @@ class SpoolExtraField(CoordinatorEntity, SensorEntity):
         else:
             spool_name = f"Spoolman Spool {self._spool['id']}"
 
+        # Pull metadata reported by Spoolman (`/api/v1/field/spool`) so we can
+        # set proper device class / unit / state class. Falls back to a derived
+        # display name and a plain icon when metadata isn't available.
+        field_meta = (
+            (coordinator.data or {})
+            .get("extra_fields", {})
+            .get("spool", {})
+            .get(field_key, {})
+        )
+        display_name = field_meta.get("name") or field_key.replace("_", " ").title()
+        field_type = field_meta.get("field_type")
+        unit = field_meta.get("unit")
+
         # Create entity ID with the field key
         # e.g., sensor.spoolman_spool_1_extra_humidity
         safe_field_key = field_key.lower().replace(" ", "_").replace("-", "_")
@@ -52,8 +96,19 @@ class SpoolExtraField(CoordinatorEntity, SensorEntity):
         )
         self._attr_unique_id = f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_extra_{safe_field_key}"
         self._attr_has_entity_name = False
-        self._attr_name = f"{spool_name} Extra {field_key.replace('_', ' ').title()}"
-        self._attr_icon = "mdi:tag-outline"
+        self._attr_name = f"{spool_name} Extra {display_name}"
+
+        device_class, icon = _device_class_for(field_type, unit)
+        if device_class is not None:
+            self._attr_device_class = device_class
+        self._attr_icon = icon
+
+        if field_type in _NUMERIC_FIELD_TYPES:
+            self._attr_state_class = SensorStateClass.MEASUREMENT
+
+        if unit:
+            self._attr_native_unit_of_measurement = unit
+
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")}  # type: ignore[arg-type]
         )
@@ -91,6 +146,7 @@ class SpoolExtraField(CoordinatorEntity, SensorEntity):
         # Convert value to string if it's a complex type
         if isinstance(value, dict | list):
             import json
+
             return json.dumps(value)
 
         return value
