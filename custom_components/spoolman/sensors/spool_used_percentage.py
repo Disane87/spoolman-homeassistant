@@ -3,28 +3,33 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.components.sensor.const import SensorStateClass
-from homeassistant.core import callback
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import generate_entity_id
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from ..const import (
-    CONF_URL,
-    DOMAIN,
-)
+from ..const import CONF_URL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
 ICON = "mdi:printer-3d-nozzle"
 
 
-class SpoolUsedPercentage(CoordinatorEntity, SensorEntity):
+class SpoolUsedPercentage(CoordinatorEntity[Any], SensorEntity):
     """Sensor for spool used percentage."""
 
-    def __init__(self, hass, coordinator, spool_data, config_entry) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        coordinator: Any,
+        spool_data: dict[str, Any],
+        config_entry: ConfigEntry,
+    ) -> None:
         """Initialize the used percentage sensor."""
         super().__init__(coordinator)
 
@@ -62,7 +67,9 @@ class SpoolUsedPercentage(CoordinatorEntity, SensorEntity):
 
         # Set device info to match spool device
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")},
+            identifiers={
+                (DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")  # type: ignore[arg-type]
+            },
         )
 
     @callback
@@ -100,11 +107,17 @@ class SpoolUsedPercentage(CoordinatorEntity, SensorEntity):
 
         self.async_write_ha_state()
 
-    @property
-    def state(self):
-        """Return the used percentage."""
-        return self._spool.get("used_percentage", 0)
+    @property  # type: ignore[misc]
+    def state(self) -> float | int:
+        """Return the used percentage.
 
-    async def async_update(self):
+        Type kept as ``float | int`` to preserve byte-stable snapshot
+        output: integer 0 default vs. rounded float for the calculated
+        percentage.
+        """
+        value = self._spool.get("used_percentage", 0)
+        return value if isinstance(value, int | float) else 0
+
+    async def async_update(self) -> None:
         """Fetch the latest data from the coordinator."""
         await self.coordinator.async_request_refresh()
