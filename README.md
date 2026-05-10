@@ -715,6 +715,68 @@ We'd love to have you on board! Check out our [Contributing Guidelines](CONTRIBU
 
 Don't be shy - we're all learning together! If you have questions, just open an issue and let's chat! 💬
 
+## 🧪 Running the Test Suite Locally
+
+The test suite uses `pytest-homeassistant-custom-component`, which boots a real Home Assistant core in-process. HA core depends on Unix-only modules (`fcntl`), so **the suite cannot run natively on Windows** — use one of:
+
+### Option A: Docker (recommended, works on Windows/macOS/Linux)
+
+```bash
+# One-off run (builds the image on first call):
+docker compose -f docker-compose.test.yml run --rm test
+
+# Re-generate the characterization snapshots after intentional changes:
+docker compose -f docker-compose.test.yml run --rm test --snapshot-update
+
+# Open an interactive shell with the test environment loaded:
+docker compose -f docker-compose.test.yml run --rm --entrypoint bash test
+```
+
+The image pins Python 3.13 to mirror what GitHub Actions uses, so local results match CI.
+
+### Option B: Native (Linux / macOS / WSL with sudo)
+
+```bash
+python3.13 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt -r requirements_test.txt
+pytest                 # runs full suite with the 90% coverage gate
+pytest --no-cov -x     # fast iteration, no coverage gate
+```
+
+### Option C: Pre-commit & pre-push hooks
+
+```bash
+bash scripts/install-hooks.sh
+```
+
+This wires `pre-commit` (lint + format on every commit) and the test gate on `git push`.
+
+## 🔄 Updating Home Assistant in the Dev Environment
+
+Home Assistant moves fast. The `requirements.txt` keeps a minimum-version constraint (`homeassistant>=2023.9.3`); to bump your local dev environment to the latest release matching that constraint:
+
+```bash
+# Native venv:
+pip install --upgrade homeassistant pytest-homeassistant-custom-component
+
+# Docker:
+docker compose -f docker-compose.test.yml build --no-cache test
+```
+
+`pytest-homeassistant-custom-component` ships in lockstep with HA core releases — keep the two upgraded together so the harness matches the runtime. After upgrading:
+
+1. Run the full suite once to surface deprecations: `pytest -W error::DeprecationWarning`.
+2. If the characterization snapshot diffs, **investigate before regenerating** — a diff usually means HA changed something user-visible (entity-id slugging, attribute defaults, device-class rules) and your integration may need a matching change.
+3. Update `requirements.txt` only when raising the **minimum** required HA version (e.g., to use a new `runtime_data` API). Don't pin upper bounds; HACS users always run the latest HA.
+
+To pin a specific HA version locally without touching the published `requirements.txt`:
+
+```bash
+pip install "homeassistant==2026.5.0"      # native
+HA_VERSION=2026.5.0 docker compose -f docker-compose.test.yml build test  # docker (uses build arg, see Dockerfile.test)
+```
+
 ## 🌟 Contributors
 
 A big thank you to everyone who has contributed to this project! Your efforts make this integration better for everyone! 🙌
