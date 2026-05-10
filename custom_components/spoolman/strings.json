@@ -19,8 +19,7 @@
         "error": {
             "cannot_connect": "Failed to connect to Spoolman",
             "invalid_url": "Invalid URL format",
-            "klipper_cannot_connect": "Failed to connect to Klipper/Moonraker",
-            "already_configured": "Device is already configured"
+            "klipper_cannot_connect": "Failed to connect to Klipper/Moonraker"
         },
         "abort": {
             "already_configured": "This Spoolman instance is already configured"

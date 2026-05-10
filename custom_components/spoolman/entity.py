@@ -76,9 +76,18 @@ class SpoolmanEntity(CoordinatorEntity["SpoolManCoordinator"]):
         return f"spoolman_{self._entry.entry_id}_spool_{self.spool_id}_{suffix}"
 
     def _make_device_info(self) -> DeviceInfo:
-        """Build the spool device identifier shared by every per-spool entity."""
+        """Build the spool device identifier shared by every per-spool entity.
+
+        Note: identifiers carry a 3-tuple ``(DOMAIN, url, "spool_{id}")``
+        rather than the strict 2-tuple HA expects. This legacy shape lets
+        devices stay distinct across multiple Spoolman instances on the
+        same HA host. Changing it would orphan every existing user's
+        devices on upgrade, so the type is suppressed intentionally.
+        """
         url = self.hass.data[DOMAIN][CONF_URL]
-        return DeviceInfo(identifiers={(DOMAIN, url, f"spool_{self.spool_id}")})
+        return DeviceInfo(
+            identifiers={(DOMAIN, url, f"spool_{self.spool_id}")}  # type: ignore[arg-type]
+        )
 
     @callback
     def _handle_coordinator_update(self) -> None:
