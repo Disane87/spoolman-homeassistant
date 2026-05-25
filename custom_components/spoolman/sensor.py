@@ -482,16 +482,17 @@ def _generate_filament_entity_picture(filament_data, image_dir):
     multi_color_hexes = filament_data.get("multi_color_hexes", "").split(",")
     color_hex = filament_data.get("color_hex", DEFAULT_SPOOL_COLOR_HEX)
     multi_color_direction = filament_data.get("multi_color_direction", "coaxial")
+    id = filament_data.get("id", "unknown")
 
     # Determine colors: prioritize multi_color_hexes if available
     if multi_color_hexes and any(c.strip() for c in multi_color_hexes):
-        colors = [c.strip() for c in multi_color_hexes if len(c.strip()) == 6]
+        colors = [c.strip() for c in multi_color_hexes]
     elif color_hex:
         colors = [color_hex]
     else:
         _LOGGER.warning(
             "SpoolManCoordinator: Filament with ID '%s' has no valid color information.",
-            filament_data.get("id", "unknown"),
+            id
         )
         return None
 
