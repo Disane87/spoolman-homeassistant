@@ -1,3 +1,9 @@
+## [1.4.0-dev.4](https://github.com/Disane87/spoolman-homeassistant/compare/v1.4.0-dev.3...v1.4.0-dev.4) (2026-06-02)
+
+### 🛠️ Fixes
+
+* **release:** stamp manifest.json version so HA shows the real version ([c82e805](https://github.com/Disane87/spoolman-homeassistant/commit/c82e805011a3604e59c2a720f2c87851679f34aa)), closes [#854](https://github.com/Disane87/spoolman-homeassistant/issues/854)
+
 ## [1.4.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v1.4.0-dev.2...v1.4.0-dev.3) (2026-06-02)
 
 ### 📔 Docs

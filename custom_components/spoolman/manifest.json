@@ -11,10 +11,12 @@
   "integration_type": "service",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/Disane87/spoolman-homeassistant/issues",
-  "loggers": ["custom_components.spoolman"],
+  "loggers": [
+    "custom_components.spoolman"
+  ],
   "quality_scale": "platinum",
   "requirements": [],
   "ssdp": [],
-  "version": "0.0.0",
+  "version": "1.4.0-dev.4",
   "zeroconf": []
 }
