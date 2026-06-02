@@ -24,5 +24,7 @@ jobs:
         - name: "Install requirements"
           run: python3 -m pip install -r requirements.txt
 
-        - name: "Run"
-          run: python3 -m ruff check .
+        - name: "Run ruff check"
+          run: python3 -m ruff check custom_components/spoolman tests
+        - name: "Run ruff format check"
+          run: python3 -m ruff format --check custom_components/spoolman tests

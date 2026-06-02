@@ -1,17 +1,26 @@
 """Spoolman home assistant integration."""
+
+from __future__ import annotations
+
 import logging
+from typing import Any
 
 import homeassistant.helpers.config_validation as cv
 from homeassistant.const import Platform
-from homeassistant.core import HomeAssistant
+from homeassistant.core import Event, HomeAssistant, ServiceCall
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 
 from custom_components.spoolman.schema_helper import SchemaHelper
 
-from .const import (DOMAIN, SPOOLMAN_API_WRAPPER, SPOOLMAN_PATCH_SPOOL_SERVICENAME,
-    SPOOLMAN_USE_SPOOL_FILAMENT_SERVICENAME)
-from .coordinator import SpoolManCoordinator
+from .const import (
+    CONF_URL,
+    DOMAIN,
+    SPOOLMAN_API_WRAPPER,
+    SPOOLMAN_PATCH_SPOOL_SERVICENAME,
+    SPOOLMAN_USE_SPOOL_FILAMENT_SERVICENAME,
+)
+from .coordinator import SpoolManCoordinator, SpoolmanConfigEntry, SpoolmanRuntimeData
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,24 +31,39 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
 async def async_setup_platform(
-    hass: HomeAssistant, config, add_devices, discovery_info=None
-):
+    hass: HomeAssistant,
+    config: dict[str, Any],
+    add_devices: Any,
+    discovery_info: Any | None = None,
+) -> None:
     """Set up Spoolman sensor."""
     _LOGGER.debug("__init__.async_setup_platform")
 
 
-async def async_setup(hass: HomeAssistant, config):
+async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
     """Set up the Spoolman component."""
     _LOGGER.debug("__init__.async_setup")
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry):
+async def async_setup_entry(hass: HomeAssistant, entry: SpoolmanConfigEntry) -> bool:
     """Set up the Spoolman component from a config entry."""
     _LOGGER.debug("__init__.async_setup_entry")
 
     coordinator = SpoolManCoordinator(hass, entry)
-    await coordinator.async_refresh()
+    # Platinum rule ``test-before-setup``: surface a transient connection
+    # failure on first load so HA enters SETUP_RETRY instead of registering
+    # entities against stale data.
+    await coordinator.async_config_entry_first_refresh()
+
+    # Platinum rule ``runtime-data``: typed per-entry runtime container.
+    # Legacy classes still read ``hass.data[DOMAIN]`` (populated by the
+    # coordinator) during the gradual migration.
+    entry.runtime_data = SpoolmanRuntimeData(
+        coordinator=coordinator,
+        api=coordinator.spoolman_api,
+        url=entry.data[CONF_URL],
+    )
 
     # Clean up old location devices from previous versions
     await _async_remove_old_location_devices(hass, entry)
@@ -53,18 +77,27 @@ async def async_setup_entry(hass: HomeAssistant, entry):
         await _async_cleanup_extra_field_entities(hass, entry, coordinator)
 
     # Register listener to cleanup extra fields and orphaned devices after coordinator updates
-    def _cleanup_on_update():
+    def _cleanup_on_update() -> None:
         """Cleanup extra fields and orphaned devices on coordinator update."""
         hass.async_create_task(coordinator.async_cleanup_extra_fields())
-        hass.async_create_task(_async_cleanup_orphaned_spool_devices(hass, entry, coordinator))
+        hass.async_create_task(
+            _async_cleanup_orphaned_spool_devices(hass, entry, coordinator)
+        )
 
     # Add listener that runs cleanup on every update
-    entry.async_on_unload(
-        coordinator.async_add_listener(_cleanup_on_update)
-    )
+    entry.async_on_unload(coordinator.async_add_listener(_cleanup_on_update))
+
+    # Reload the integration when options change (Platinum: dynamic-options).
+    async def _async_options_updated(
+        hass: HomeAssistant, updated_entry: SpoolmanConfigEntry
+    ) -> None:
+        """Reload integration after options-flow change so update_interval etc. take effect."""
+        await hass.config_entries.async_reload(updated_entry.entry_id)
+
+    entry.async_on_unload(entry.add_update_listener(_async_options_updated))
 
     # Register shutdown event to close aiohttp session
-    async def _async_close_session(event):
+    async def _async_close_session(event: Event) -> None:
         """Close the API session on shutdown."""
         if DOMAIN in hass.data and SPOOLMAN_API_WRAPPER in hass.data[DOMAIN]:
             api = hass.data[DOMAIN][SPOOLMAN_API_WRAPPER]
@@ -76,42 +109,53 @@ async def async_setup_entry(hass: HomeAssistant, entry):
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
-    async def handle_spoolman_patch_spool(call):
-        spool_id = call.data.get('id')
-        data = {key: call.data[key] for key in call.data if key != 'id'}
+    async def handle_spoolman_patch_spool(call: ServiceCall) -> None:
+        spool_id = int(call.data["id"])
+        data = {key: call.data[key] for key in call.data if key != "id"}
         _LOGGER.info(f"Patch spool called with id: {spool_id} and data: {data}")
 
         try:
             await coordinator.spoolman_api.patch_spool(spool_id, data)
-            # Immediately refresh coordinator data to reflect changes
-            _LOGGER.debug(f"Requesting coordinator refresh after patching spool {spool_id}")
+            _LOGGER.debug(
+                f"Requesting coordinator refresh after patching spool {spool_id}"
+            )
             await coordinator.async_request_refresh()
         except Exception as e:
             _LOGGER.error(f"Failed to patch spool: {e}")
-            raise HomeAssistantError(f"Failed to patch spool: {e}")
+            raise HomeAssistantError(f"Failed to patch spool: {e}") from e
 
-    async def handle_spoolman_use_spool_filament(call):
-        spool_id = call.data.get('id')
-        data = {key: call.data[key] for key in call.data if key != 'id'}
+    async def handle_spoolman_use_spool_filament(call: ServiceCall) -> None:
+        spool_id = int(call.data["id"])
+        data = {key: call.data[key] for key in call.data if key != "id"}
         _LOGGER.info(f"Use spool filament called with id: {spool_id} and data: {data}")
 
         try:
             await coordinator.spoolman_api.use_spool_filament(spool_id, data)
-            # Immediately refresh coordinator data to reflect changes
-            _LOGGER.debug(f"Requesting coordinator refresh after using filament from spool {spool_id}")
+            _LOGGER.debug(
+                f"Requesting coordinator refresh after using filament from spool {spool_id}"
+            )
             await coordinator.async_request_refresh()
         except Exception as e:
             _LOGGER.error(f"Failed to use filament: {e}")
-            raise HomeAssistantError(f"Failed to use filament: {e}")
+            raise HomeAssistantError(f"Failed to use filament: {e}") from e
 
-
-    hass.services.async_register(DOMAIN, SPOOLMAN_PATCH_SPOOL_SERVICENAME, handle_spoolman_patch_spool, schema=SchemaHelper.get_spoolman_patch_spool_schema())
-    hass.services.async_register(DOMAIN, SPOOLMAN_USE_SPOOL_FILAMENT_SERVICENAME, handle_spoolman_use_spool_filament, schema=SchemaHelper.get_spoolman_use_spool_filament_schema())
+    hass.services.async_register(
+        DOMAIN,
+        SPOOLMAN_PATCH_SPOOL_SERVICENAME,
+        handle_spoolman_patch_spool,
+        schema=SchemaHelper.get_spoolman_patch_spool_schema(),
+    )
+    hass.services.async_register(
+        DOMAIN,
+        SPOOLMAN_USE_SPOOL_FILAMENT_SERVICENAME,
+        handle_spoolman_use_spool_filament,
+        schema=SchemaHelper.get_spoolman_use_spool_filament_schema(),
+    )
 
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry):
+async def async_unload_entry(hass: HomeAssistant, entry: SpoolmanConfigEntry) -> bool:
     """Unload a config entry."""
     _LOGGER.debug("__init__.async_unload_entry")
     # Unload all platforms
@@ -125,15 +169,16 @@ async def async_unload_entry(hass: HomeAssistant, entry):
     return unload_ok
 
 
-async def async_get_data(hass: HomeAssistant):
+async def async_get_data(hass: HomeAssistant) -> list[dict[str, Any]]:
     """Get the latest data from the Spoolman API."""
     _LOGGER.debug("__init__.async_get_data")
-    return await hass.data[DOMAIN][SPOOLMAN_API_WRAPPER].get_spools(
-        {"allow_archived": False}
-    )
+    api = hass.data[DOMAIN][SPOOLMAN_API_WRAPPER]
+    return await api.get_spools({"allow_archived": False})  # type: ignore[no-any-return]
 
 
-async def _async_remove_old_location_devices(hass: HomeAssistant, entry):
+async def _async_remove_old_location_devices(
+    hass: HomeAssistant, entry: SpoolmanConfigEntry
+) -> None:
     """Remove old location devices from previous integration versions.
 
     In earlier versions, this integration created devices for locations.
@@ -150,16 +195,24 @@ async def _async_remove_old_location_devices(hass: HomeAssistant, entry):
         for identifier in device.identifiers:
             if len(identifier) >= 3 and isinstance(identifier[2], str):
                 if identifier[2].startswith("location_"):
-                    _LOGGER.info(f"Removing old location device: {device.name} ({identifier[2]})")
+                    _LOGGER.info(
+                        f"Removing old location device: {device.name} ({identifier[2]})"
+                    )
                     device_reg.async_remove_device(device.id)
                     removed_count += 1
                     break
 
     if removed_count > 0:
-        _LOGGER.info(f"Migration complete: Removed {removed_count} old location device(s)")
+        _LOGGER.info(
+            f"Migration complete: Removed {removed_count} old location device(s)"
+        )
 
 
-async def _async_cleanup_orphaned_spool_devices(hass: HomeAssistant, entry, coordinator):
+async def _async_cleanup_orphaned_spool_devices(
+    hass: HomeAssistant,
+    entry: SpoolmanConfigEntry,
+    coordinator: SpoolManCoordinator,
+) -> None:
     """Remove orphaned spool devices when spools are deleted from Spoolman.
 
     When a spool is deleted in Spoolman, the corresponding device in Home Assistant
@@ -195,10 +248,16 @@ async def _async_cleanup_orphaned_spool_devices(hass: HomeAssistant, entry, coor
                         break
 
     if removed_count > 0:
-        _LOGGER.info(f"Cleanup complete: Removed {removed_count} orphaned spool device(s)")
+        _LOGGER.info(
+            f"Cleanup complete: Removed {removed_count} orphaned spool device(s)"
+        )
 
 
-async def _async_cleanup_extra_field_entities(hass: HomeAssistant, entry, coordinator):
+async def _async_cleanup_extra_field_entities(
+    hass: HomeAssistant,
+    entry: SpoolmanConfigEntry,
+    coordinator: SpoolManCoordinator,
+) -> None:
     """Remove orphaned extra field entities when fields are deleted from Spoolman.
 
     When extra fields are removed from a spool in Spoolman, the corresponding
@@ -219,7 +278,9 @@ async def _async_cleanup_extra_field_entities(hass: HomeAssistant, entry, coordi
         extra_data = spool.get("extra", {})
         for field_key in extra_data:
             safe_field_key = field_key.lower().replace(" ", "_").replace("-", "_")
-            unique_id = f"spoolman_{entry.entry_id}_spool_{spool_id}_extra_{safe_field_key}"
+            unique_id = (
+                f"spoolman_{entry.entry_id}_spool_{spool_id}_extra_{safe_field_key}"
+            )
             current_extra_field_unique_ids.add(unique_id)
 
     removed_count = 0
@@ -235,4 +296,6 @@ async def _async_cleanup_extra_field_entities(hass: HomeAssistant, entry, coordi
                 removed_count += 1
 
     if removed_count > 0:
-        _LOGGER.info(f"Cleanup complete: Removed {removed_count} orphaned extra field entity/entities")
+        _LOGGER.info(
+            f"Cleanup complete: Removed {removed_count} orphaned extra field entity/entities"
+        )

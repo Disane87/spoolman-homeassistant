@@ -6,7 +6,6 @@ Icon
 
 # Thumbnails
 ._*
-tests
 config
 
 .history
@@ -66,6 +65,7 @@ Pipfile*
 share/*
 scripts/*
 !/scripts/publish.sh
+!/scripts/install-hooks.sh
 
 # vimmy stuff
 *.swp
@@ -89,3 +89,4 @@ virtualization/vagrant/config
 *.pyc
 test_ha_config/
 Include/
+.claude/
