@@ -3,34 +3,38 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.core import callback
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import generate_entity_id
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from ..const import (
-    CONF_URL,
-    DOMAIN,
-)
+from ..const import CONF_URL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
 ICON = "mdi:printer-3d-nozzle"
 
-class SpoolLocation(CoordinatorEntity, SensorEntity):
+
+class SpoolLocation(CoordinatorEntity[Any], SensorEntity):
     """Sensor for spool location - text sensor."""
 
     def __init__(
-        self, hass, coordinator, spool_data, config_entry
+        self,
+        hass: HomeAssistant,
+        coordinator: Any,
+        spool_data: dict[str, Any],
+        config_entry: ConfigEntry,
     ) -> None:
         """Initialize the location sensor."""
         super().__init__(coordinator)
 
         self.config = hass.data[DOMAIN]
         self._spool = spool_data
-        self.spool_id = spool_data['id']
+        self.spool_id = spool_data["id"]
         self._entry = config_entry
         self._attr_available = True
 
@@ -40,33 +44,41 @@ class SpoolLocation(CoordinatorEntity, SensorEntity):
 
         if filament.get("name") and filament.get("material"):
             if vendor_name:
-                spool_name = f"{vendor_name} {filament['name']} {filament.get('material')}"
+                spool_name = (
+                    f"{vendor_name} {filament['name']} {filament.get('material')}"
+                )
             else:
                 spool_name = f"{filament['name']} {filament.get('material')}"
         else:
             spool_name = f"Spoolman Spool {self._spool['id']}"
 
         self.entity_id = generate_entity_id(
-            "sensor.{}",
-            f"spoolman_spool_{spool_data['id']}_location",
-            hass=hass
+            "sensor.{}", f"spoolman_spool_{spool_data['id']}_location", hass=hass
         )
-        self._attr_unique_id = f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_location"
+        self._attr_unique_id = (
+            f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_location"
+        )
         self._attr_has_entity_name = False
         self._attr_name = f"{spool_name} Location"
         self._attr_icon = "mdi:map-marker"
 
         # Set device info to match spool device
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")},
+            identifiers={
+                (DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")  # type: ignore[arg-type]
+            },
         )
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
         spool_data = next(
-            (s for s in self.coordinator.data.get("spools", []) if s["id"] == self.spool_id),
-            None
+            (
+                s
+                for s in self.coordinator.data.get("spools", [])
+                if s["id"] == self.spool_id
+            ),
+            None,
         )
 
         if spool_data is None:
@@ -82,11 +94,11 @@ class SpoolLocation(CoordinatorEntity, SensorEntity):
         self._spool = spool_data
         self.async_write_ha_state()
 
-    @property
-    def state(self):
+    @property  # type: ignore[misc]
+    def state(self) -> str:
         """Return the location."""
-        return self._spool.get("location", "Unknown")
+        return str(self._spool.get("location", "Unknown"))
 
-    async def async_update(self):
+    async def async_update(self) -> None:
         """Fetch the latest data from the coordinator."""
         await self.coordinator.async_request_refresh()

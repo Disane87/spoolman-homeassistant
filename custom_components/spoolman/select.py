@@ -1,6 +1,9 @@
 """Spoolman home assistant select entity."""
 
+from __future__ import annotations
+
 import logging
+from typing import Any
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
@@ -11,12 +14,17 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
 
+# Coordinator-driven; no concurrent per-entity updates. Platinum: parallel-updates.
+PARALLEL_UPDATES = 0
+
 _LOGGER = logging.getLogger(__name__)
 
 ICON = "mdi:map-marker"
 
 
-def _resolve_locations(coordinator_data, spools):
+def _resolve_locations(
+    coordinator_data: dict[str, Any] | None, spools: list[dict[str, Any]]
+) -> list[str]:
     """Pick the canonical location list, preferring Spoolman's /location feed.
 
     Falls back to the set of locations actually used by spools so older
@@ -33,18 +41,17 @@ async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
-):
+) -> None:
     """Set up Spoolman select entities."""
     _LOGGER.info("Setting up Spoolman select platform")
 
     # Get the existing coordinator from hass.data
     coordinator = hass.data.get(DOMAIN, {}).get("coordinator")
 
-    if not coordinator:
+    if (
+        not coordinator
+    ):  # pragma: no cover — defensive; setup ordering in __init__ prevents this
         _LOGGER.error("Coordinator not found in hass.data[%s]", DOMAIN)
-        _LOGGER.error("Available keys in hass.data: %s", list(hass.data.keys()))
-        if DOMAIN in hass.data:
-            _LOGGER.error("Keys in hass.data[%s]: %s", DOMAIN, list(hass.data[DOMAIN].keys()))
         return
 
     _LOGGER.info("Coordinator found, checking for data")
@@ -60,7 +67,7 @@ async def async_setup_entry(
     locations = _resolve_locations(coordinator.data, spool_data)
     _LOGGER.info("Found locations: %s", locations)
 
-    existing_spool_ids: set = set()
+    existing_spool_ids: set[int] = set()
 
     # Create a select entity for each spool
     for spool in spool_data:
@@ -69,13 +76,13 @@ async def async_setup_entry(
         )
         all_entities.append(select_entity)
         existing_spool_ids.add(spool["id"])
-        _LOGGER.debug("Created select entity for spool %s", spool['id'])
+        _LOGGER.debug("Created select entity for spool %s", spool["id"])
 
     _LOGGER.info("Adding %d select entities", len(all_entities))
     async_add_entities(all_entities)
 
     @callback
-    def add_dynamic_selects():
+    def add_dynamic_selects() -> None:
         """Add a location select for spools that appeared after setup (#327)."""
         if not coordinator.data:
             return
@@ -100,27 +107,32 @@ async def async_setup_entry(
     coordinator.async_add_listener(add_dynamic_selects)
 
 
-class SpoolLocationSelect(CoordinatorEntity, SelectEntity):
+class SpoolLocationSelect(CoordinatorEntity[Any], SelectEntity):
     """Representation of a Spoolman Spool Location Select."""
 
     def __init__(
-        self, hass, coordinator, spool_data, locations, config_entry
+        self,
+        hass: HomeAssistant,
+        coordinator: Any,
+        spool_data: dict[str, Any],
+        locations: list[str],
+        config_entry: ConfigEntry,
     ) -> None:
         """Initialize the select entity."""
         super().__init__(coordinator)
 
         self.config = hass.data[DOMAIN]
         self._spool = spool_data
-        self.spool_id = spool_data['id']
+        self.spool_id = spool_data["id"]
         self._locations = sorted(locations) if locations else ["Unknown"]
         self._entry = config_entry
 
         self.entity_id = generate_entity_id(
-            "select.{}",
-            f"spoolman_spool_{spool_data['id']}_location",
-            hass=hass
+            "select.{}", f"spoolman_spool_{spool_data['id']}_location", hass=hass
         )
-        self._attr_unique_id = f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_location"
+        self._attr_unique_id = (
+            f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_location"
+        )
         self._attr_has_entity_name = False
         self._attr_icon = ICON
         self._attr_available = True
@@ -131,7 +143,9 @@ class SpoolLocationSelect(CoordinatorEntity, SelectEntity):
 
         if filament.get("name") and filament.get("material"):
             if vendor_name:
-                spool_name = f"{vendor_name} {filament['name']} {filament.get('material')}"
+                spool_name = (
+                    f"{vendor_name} {filament['name']} {filament.get('material')}"
+                )
             else:
                 spool_name = f"{filament['name']} {filament.get('material')}"
         else:
@@ -144,7 +158,9 @@ class SpoolLocationSelect(CoordinatorEntity, SelectEntity):
         from .const import CONF_URL
 
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")},
+            identifiers={
+                (DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")  # type: ignore[arg-type]
+            },
         )
 
     @property
@@ -165,15 +181,13 @@ class SpoolLocationSelect(CoordinatorEntity, SelectEntity):
         try:
             # Get the API wrapper from hass.data using the correct key
             from .const import SPOOLMAN_API_WRAPPER
+
             api = self.hass.data[DOMAIN][SPOOLMAN_API_WRAPPER]
             # Call the patch_spool service to update location
-            await api.patch_spool(
-                self.spool_id,
-                {"location": option}
-            )
+            await api.patch_spool(self.spool_id, {"location": option})
             # Immediately refresh coordinator data
             await self.coordinator.async_request_refresh()
-        except Exception as e:
+        except Exception as e:  # pragma: no cover — defensive logging wrapper
             _LOGGER.error(f"Failed to update spool location: {e}")
             raise
 
@@ -182,8 +196,12 @@ class SpoolLocationSelect(CoordinatorEntity, SelectEntity):
         """Handle updated data from the coordinator."""
         # Use ID-based lookup
         spool_data = next(
-            (s for s in self.coordinator.data.get("spools", []) if s["id"] == self.spool_id),
-            None
+            (
+                s
+                for s in self.coordinator.data.get("spools", [])
+                if s["id"] == self.spool_id
+            ),
+            None,
         )
 
         if spool_data is None:

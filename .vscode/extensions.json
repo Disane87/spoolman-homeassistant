@@ -11,6 +11,8 @@
         "eamodio.gitlens",
         "ms-python.vscode-pylance",
         "ms-python.python",
-        "charliermarsh.ruff"
+        "charliermarsh.ruff",
+        "ms-python.mypy-type-checker",
+        "ms-vscode-remote.remote-containers"
     ]
 }

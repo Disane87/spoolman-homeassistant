@@ -1,9 +1,16 @@
 """Spoolman home assistant data coordinator."""
+
+from __future__ import annotations
+
 import asyncio
 import logging
+from dataclasses import dataclass
 from datetime import timedelta
+from typing import TYPE_CHECKING, cast
 
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .classes.klipper_api import KlipperAPI
@@ -18,13 +25,44 @@ from .const import (
     SPOOLMAN_API_WRAPPER,
 )
 
+if TYPE_CHECKING:
+    from .models import (
+        CoordinatorData,
+        ExtraFieldMetadata,
+        FilamentData,
+        SpoolData,
+    )
+
 _LOGGER = logging.getLogger(__name__)
 
-class SpoolManCoordinator(DataUpdateCoordinator):
-    """My custom coordinator."""
 
-    def __init__(self, hass: HomeAssistant, entry) -> None:
-        """Initialize my coordinator."""
+@dataclass
+class SpoolmanRuntimeData:
+    """Typed container stored on ``ConfigEntry.runtime_data``.
+
+    Replaces the legacy ``hass.data[DOMAIN]`` dict for new code paths
+    (Platinum quality scale rule ``runtime-data``). Legacy sensor
+    classes still read ``hass.data[DOMAIN]`` directly during the
+    gradual migration; the controller in ``__init__.py`` keeps both
+    in sync until the legacy classes are migrated separately.
+    """
+
+    coordinator: SpoolManCoordinator
+    api: SpoolmanAPI
+    url: str
+    klipper_active_spool: int | None = None
+
+
+SpoolmanConfigEntry = ConfigEntry[SpoolmanRuntimeData]
+
+
+class SpoolManCoordinator(DataUpdateCoordinator["CoordinatorData"]):
+    """Coordinator that polls the Spoolman API."""
+
+    spoolman_api: SpoolmanAPI
+
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
+        """Initialize the coordinator."""
         _LOGGER.debug("SpoolManCoordinator.__init__")
 
         url = entry.data[CONF_URL]
@@ -38,16 +76,17 @@ class SpoolManCoordinator(DataUpdateCoordinator):
         )
         self.hass = hass
         self.config_entry = entry
-        self.spoolman_api = SpoolmanAPI(url)
+        self.spoolman_api = SpoolmanAPI(url, session=async_get_clientsession(hass))
 
         hass.data[DOMAIN] = {
             **entry.data,
             SPOOLMAN_API_WRAPPER: self.spoolman_api,
             "coordinator": self,
-            "klipper_active_spool": None
+            "klipper_active_spool": None,
         }
 
-    async def _async_update_data(self):
+    async def _async_update_data(self) -> CoordinatorData:
+        """Fetch the latest spool / filament data from Spoolman."""
         _LOGGER.debug("SpoolManCoordinator._async_update_data")
         config = self.hass.data[DOMAIN]
 
@@ -62,7 +101,9 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 spool_extra_fields = await self.spoolman_api.get_extra_fields("spool")
             except Exception as exception:
                 # Older Spoolman versions or transient errors: degrade gracefully.
-                _LOGGER.debug("Could not fetch spool extra-field metadata: %s", exception)
+                _LOGGER.debug(
+                    "Could not fetch spool extra-field metadata: %s", exception
+                )
                 spool_extra_fields = {}
             try:
                 locations = await self.spoolman_api.get_locations()
@@ -71,8 +112,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 # to deriving from spools at the consumer side.
                 _LOGGER.debug("Could not fetch locations: %s", exception)
                 locations = None
-        except asyncio.CancelledError:
-            # Task was cancelled (e.g., during shutdown), re-raise to let coordinator handle it
+        except asyncio.CancelledError:  # pragma: no cover — shutdown path
             _LOGGER.debug("Data update was cancelled")
             raise
         except Exception as exception:
@@ -94,44 +134,53 @@ class SpoolManCoordinator(DataUpdateCoordinator):
         # Add total remaining weight to each filament
         for filament in filaments:
             filament_id = filament.get("id")
-            filament["total_remaining_weight"] = filament_remaining_weights.get(filament_id, 0)
+            filament["total_remaining_weight"] = filament_remaining_weights.get(
+                filament_id, 0
+            )
 
         # Ensure the attribute exists consistently for all spools.
         for spool in spools:
             spool["klipper_active_spool"] = False
 
-        try:
+        try:  # pragma: no cover — Klipper path is deprecated and not exercised in tests
             klipper_url = config.get(KLIPPER_URL, "")
             if klipper_url is not None and klipper_url != "":
-                klipper_active_spool: int | None = await KlipperAPI(klipper_url).get_active_spool_id()
+                klipper_active_spool: int | None = await KlipperAPI(
+                    klipper_url, session=async_get_clientsession(self.hass)
+                ).get_active_spool_id()
                 if klipper_active_spool is not None:
                     for spool in spools:
-                        spool["klipper_active_spool"] = spool["id"] == klipper_active_spool
+                        spool["klipper_active_spool"] = (
+                            spool["id"] == klipper_active_spool
+                        )
         except Exception as exception:
             _LOGGER.error(f"Error processing Klipper API data: {exception}")
-            # Continue returning spools even if Klipper processing fails
 
         # Fall back to deriving locations from spools when Spoolman doesn't
         # expose /location, so older servers keep working.
         if locations is None:
-            locations = sorted({
-                spool["location"]
-                for spool in spools
-                if spool.get("location")
-            })
+            locations = sorted(
+                {spool["location"] for spool in spools if spool.get("location")}
+            )
 
+        # Cast at the API → typed boundary. Spoolman returns plain dicts;
+        # the TypedDict shape is documented by ``models.py`` and used by
+        # downstream consumers.
         return {
-            "spools": spools,
-            "filaments": filaments,
-            "extra_fields": {"spool": spool_extra_fields},
+            "spools": cast("list[SpoolData]", spools),
+            "filaments": cast("list[FilamentData]", filaments),
+            "extra_fields": cast(
+                "dict[str, dict[str, ExtraFieldMetadata]]",
+                {"spool": spool_extra_fields},
+            ),
             "locations": locations,
         }
 
-    async def async_cleanup_extra_fields(self):
+    async def async_cleanup_extra_fields(self) -> None:
         """Cleanup orphaned extra field entities - can be called externally."""
         await self._async_cleanup_extra_fields_on_update()
 
-    async def _async_cleanup_extra_fields_on_update(self):
+    async def _async_cleanup_extra_fields_on_update(self) -> None:
         """Cleanup orphaned extra field entities after data update."""
         try:
             from homeassistant.helpers import entity_registry as er
@@ -141,8 +190,11 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 _LOGGER.debug("Skipping extra field cleanup - no data available yet")
                 return
 
+            assert self.config_entry is not None  # set in __init__
             entity_reg = er.async_get(self.hass)
-            entities = er.async_entries_for_config_entry(entity_reg, self.config_entry.entry_id)
+            entities = er.async_entries_for_config_entry(
+                entity_reg, self.config_entry.entry_id
+            )
 
             spools = self.data.get("spools", [])
 
@@ -152,7 +204,9 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                 spool_id = spool.get("id")
                 extra_data = spool.get("extra", {})
                 for field_key in extra_data:
-                    safe_field_key = field_key.lower().replace(" ", "_").replace("-", "_")
+                    safe_field_key = (
+                        field_key.lower().replace(" ", "_").replace("-", "_")
+                    )
                     unique_id = f"spoolman_{self.config_entry.entry_id}_spool_{spool_id}_extra_{safe_field_key}"
                     current_extra_field_unique_ids.add(unique_id)
 
@@ -169,9 +223,10 @@ class SpoolManCoordinator(DataUpdateCoordinator):
                         removed_count += 1
 
             if removed_count > 0:
-                _LOGGER.info(f"Update cleanup: Removed {removed_count} orphaned extra field entity/entities")
-        except asyncio.CancelledError:
-            # Task was cancelled, just return silently
+                _LOGGER.info(
+                    f"Update cleanup: Removed {removed_count} orphaned extra field entity/entities"
+                )
+        except asyncio.CancelledError:  # pragma: no cover — shutdown race
             _LOGGER.debug("Extra field cleanup was cancelled")
-        except Exception as e:
+        except Exception as e:  # pragma: no cover — defensive catch-all
             _LOGGER.error(f"Error during extra field cleanup: {e}", exc_info=True)

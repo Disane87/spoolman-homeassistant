@@ -1,12 +1,14 @@
 """Config flow for spoolman integration."""
+
 from __future__ import annotations
 
 from typing import Any
 
 from homeassistant import config_entries
-from homeassistant.data_entry_flow import FlowResult
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.core import callback
+from homeassistant.exceptions import HomeAssistantError
+
 from .base_flow import BaseFlow
 
 from .options_flow import OptionsFlowHandler
@@ -32,20 +34,27 @@ class ConfigFlow(BaseFlow, config_entries.ConfigFlow, domain=DOMAIN):
         """Create the options flow."""
         return OptionsFlowHandler(config_entry)
 
-
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Handle the initial step."""
         spoolman_errors: dict[str, str] = {}
         klipper_errors: dict[str, str] = {}
 
         if user_input is not None:
-            spoolman_info, spoolman_errors, spoolman_url = await self.get_spoolman_api_info(user_input.get(CONF_URL, ""))
+            (
+                spoolman_info,
+                spoolman_errors,
+                spoolman_url,
+            ) = await self.get_spoolman_api_info(user_input.get(CONF_URL, ""))
 
             klipper_url = user_input.get(KLIPPER_URL, None)
             if klipper_url is not None and klipper_url != "":
-                klipper_info, klipper_errors, klipper_url = await self.get_klipper_api_info(user_input.get(KLIPPER_URL, None))
+                (
+                    klipper_info,
+                    klipper_errors,
+                    klipper_url,
+                ) = await self.get_klipper_api_info(klipper_url)
 
             if not spoolman_errors and not klipper_errors:
                 return self.async_create_entry(

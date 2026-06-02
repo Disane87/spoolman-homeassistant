@@ -61,3 +61,50 @@ env = "GH_TOKEN"
 [tool.semantic_release.publish]
 dist_glob_patterns = ["dist/*"]
 upload_to_vcs_release = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--cov=custom_components.spoolman",
+    "--cov-report=term-missing",
+    "--cov-report=xml",
+    "--cov-fail-under=90",
+]
+
+[tool.coverage.run]
+source = ["custom_components/spoolman"]
+branch = true
+omit = [
+    "custom_components/spoolman/__pycache__/*",
+    # The legacy sensors/ tree is replaced in phase 3 by sensor_descriptions.py +
+    # sensor_complex.py. Excluding it from coverage during the refactor
+    # avoids writing throwaway tests; the post-phase-3 structure will hit 90%
+    # naturally and this omit will be removed.
+    "custom_components/spoolman/sensors/*",
+    # Klipper integration is deprecated and slated for removal; it is
+    # exercised through the config flow but not unit-tested in isolation.
+    "custom_components/spoolman/classes/klipper_api.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
+show_missing = true
+skip_covered = false
+
+[tool.mypy]
+python_version = "3.13"
+explicit_package_bases = true
+strict = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ["homeassistant.*", "pytest_homeassistant_custom_component.*", "aioresponses.*", "syrupy.*", "PIL.*"]
+ignore_missing_imports = true

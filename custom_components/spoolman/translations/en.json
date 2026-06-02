@@ -2,39 +2,84 @@
     "config": {
         "step": {
             "user": {
-                "title": "Configuration",
+                "title": "Spoolman",
+                "description": "Connect Home Assistant to your Spoolman instance.",
                 "data": {
-                    "spoolman_url": "Host (incl. protocol)",
+                    "spoolman_url": "Spoolman URL (incl. protocol)",
                     "update-interval": "Update interval (minutes)",
-                    "show_archived": "Show archived",
-                    "notification_threshold_info": "Threshold Info",
-                    "notification_threshold_warning": "Threshold Warning",
-                    "notification_threshold_critical": "Threshold Critical",
-                    "klipper_url": "Klipper url",
-                    "klipper_url_desc": "Klipper url"
+                    "show_archived": "Show archived spools",
+                    "notification_threshold_info": "Info threshold (%)",
+                    "notification_threshold_warning": "Warning threshold (%)",
+                    "notification_threshold_critical": "Critical threshold (%)",
+                    "klipper_url": "Klipper URL (deprecated)",
+                    "klipper_url_desc": "Optional Moonraker/Klipper URL — deprecated, use Moonraker's native Spoolman integration"
                 }
             }
         },
         "error": {
+            "cannot_connect": "Failed to connect to Spoolman",
+            "invalid_url": "Invalid URL format",
+            "klipper_cannot_connect": "Failed to connect to Klipper/Moonraker",
             "already_configured": "Device is already configured"
         },
         "abort": {
-            "already_configured": "Device is already configured"
+            "already_configured": "This Spoolman instance is already configured"
         }
     },
     "options": {
         "step": {
             "init": {
-                "title": "Konfiguration",
+                "title": "Spoolman options",
                 "data": {
-                    "spoolman_url": "Host (incl. protocol)",
+                    "spoolman_url": "Spoolman URL (incl. protocol)",
                     "update-interval": "Update interval (minutes)",
-                    "show_archived": "Show archived",
-                    "notification_threshold_info": "Threshold Info",
-                    "notification_threshold_warning": "Threshold Warning",
-                    "notification_threshold_critical": "Threshold Critical",
-                    "klipper_url": "Klipper url",
-                    "klipper_url_desc": "Klipper url"
+                    "show_archived": "Show archived spools",
+                    "notification_threshold_info": "Info threshold (%)",
+                    "notification_threshold_warning": "Warning threshold (%)",
+                    "notification_threshold_critical": "Critical threshold (%)",
+                    "klipper_url": "Klipper URL (deprecated)",
+                    "klipper_url_desc": "Optional Moonraker/Klipper URL — deprecated"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Failed to connect to Spoolman"
+        }
+    },
+    "exceptions": {
+        "patch_spool_failed": {
+            "message": "Failed to patch spool {spool_id}: {error}"
+        },
+        "use_spool_filament_failed": {
+            "message": "Failed to use filament from spool {spool_id}: {error}"
+        }
+    },
+    "services": {
+        "patch_spool": {
+            "name": "Update spool",
+            "description": "Update one or more fields on a Spoolman spool.",
+            "fields": {
+                "id": {
+                    "name": "Spool ID",
+                    "description": "Numeric Spoolman spool ID."
+                }
+            }
+        },
+        "use_spool_filament": {
+            "name": "Use filament",
+            "description": "Record filament usage on a Spoolman spool.",
+            "fields": {
+                "id": {
+                    "name": "Spool ID",
+                    "description": "Numeric Spoolman spool ID."
+                },
+                "use_length": {
+                    "name": "Length used (mm)",
+                    "description": "Length of filament consumed, in millimetres."
+                },
+                "use_weight": {
+                    "name": "Weight used (g)",
+                    "description": "Weight of filament consumed, in grams."
                 }
             }
         }
