@@ -198,8 +198,18 @@ async def setup_integration(
     config_entry: MockConfigEntry,
     mock_spoolman_api: aioresponses,
 ) -> MockConfigEntry:
-    """Boot the integration end-to-end against the mocked API."""
+    """Boot the integration end-to-end against the mocked API.
+
+    After setup we force one coordinator refresh so every entity's
+    ``_handle_coordinator_update`` runs deterministically. Some attributes
+    (e.g. the spool sensor's ``used_percentage``) are only computed in that
+    handler, not in the constructor; without this, whether they appear in a
+    state snapshot depends on update timing and diverges between machines
+    (local vs. CI), making the characterization snapshot flaky.
+    """
     config_entry.add_to_hass(hass)
     assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    await config_entry.runtime_data.coordinator.async_refresh()
     await hass.async_block_till_done()
     return config_entry
