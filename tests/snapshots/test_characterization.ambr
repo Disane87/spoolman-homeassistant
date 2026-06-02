@@ -70,7 +70,7 @@
       'attributes': dict({
         'color_hex': 'FF6600',
         'device_class': 'weight',
-        'friendly_name': 'Bambu Lab PLA Basic PLA',
+        'friendly_name': 'Filaments Bambu Lab PLA Basic PLA',
         'icon': 'mdi:printer-3d-nozzle',
         'id': 10,
         'material': 'PLA',
@@ -92,7 +92,7 @@
       'attributes': dict({
         'color_hex': '00AA00',
         'device_class': 'weight',
-        'friendly_name': 'Spoolman Filament 11',
+        'friendly_name': 'Filaments Spoolman Filament 11',
         'icon': 'mdi:printer-3d-nozzle',
         'id': 11,
         'material': 'PETG',
@@ -111,7 +111,7 @@
     dict({
       'attributes': dict({
         'device_class': 'weight',
-        'friendly_name': 'Generic Old PLA PLA',
+        'friendly_name': 'Filaments Generic Old PLA PLA',
         'icon': 'mdi:printer-3d-nozzle',
         'id': 12,
         'material': 'PLA',
@@ -163,6 +163,7 @@
         'state_class': <SensorStateClass.MEASUREMENT: 'measurement'>,
         'unit_of_measurement': <UnitOfMass.GRAMS: 'g'>,
         'used_length': 82.8,
+        'used_percentage': 25.0,
         'used_weight': 250,
       }),
       'device_class': <SensorDeviceClass.WEIGHT: 'weight'>,
@@ -512,7 +513,7 @@
       'device_class': None,
       'entity_id': 'sensor.spoolman_spool_1_used_percentage',
       'platform': 'spoolman',
-      'state': '0',
+      'state': '25.0',
       'unique_id': 'spoolman_01J0TESTSPOOLMAN0000000000_spool_1_used_percentage',
       'unit': '%',
     }),

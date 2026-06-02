@@ -1,6 +1,6 @@
 # Test dependencies — pin majors, allow patches.
-pytest>=8.3,<9
-pytest-homeassistant-custom-component>=0.13.180
+pytest>=9,<10
+pytest-homeassistant-custom-component>=0.13.333
 pytest-cov>=5.0
 pytest-asyncio>=0.24
 aioresponses>=0.7.6

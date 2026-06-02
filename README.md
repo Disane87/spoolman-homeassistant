@@ -744,12 +744,13 @@ docker compose -f docker-compose.test.yml run --rm test --snapshot-update
 docker compose -f docker-compose.test.yml run --rm --entrypoint bash test
 ```
 
-The image pins Python 3.13 to mirror what GitHub Actions uses, so local results match CI.
+The image pins Python 3.14 to mirror what GitHub Actions uses, so local results match CI.
+Home Assistant 2026.5.x requires Python >=3.14.2, so an older interpreter cannot install it.
 
 ### Option B: Native (Linux / macOS / WSL with sudo)
 
 ```bash
-python3.13 -m venv .venv
+python3.14 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt -r requirements_test.txt
 pytest                 # runs full suite with the 90% coverage gate
@@ -766,7 +767,7 @@ This wires `pre-commit` (lint + format on every commit) and the test gate on `gi
 
 ## 🔄 Updating Home Assistant in the Dev Environment
 
-Home Assistant moves fast. The `requirements.txt` keeps a minimum-version constraint (`homeassistant>=2023.9.3`); to bump your local dev environment to the latest release matching that constraint:
+Home Assistant moves fast. The `requirements.txt` keeps a minimum-version constraint (`homeassistant>=2026.5.4`); to bump your local dev environment to the latest release matching that constraint:
 
 ```bash
 # Native venv:

@@ -1,7 +1,9 @@
 # Reproducible local test environment.
 # HA core requires fcntl (Unix-only), so tests cannot run natively on Windows.
-# This image mirrors what CI uses on GitHub Actions (Python 3.13 on Linux).
-FROM python:3.12-slim
+# This image mirrors what CI uses on GitHub Actions (Python 3.14 on Linux).
+# Home Assistant 2026.5.x requires Python >=3.14.2, so the base image must be
+# python:3.14-slim — older interpreters cannot install current HA.
+FROM python:3.14-slim
 
 WORKDIR /workspace
 

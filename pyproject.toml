@@ -100,7 +100,7 @@ show_missing = true
 skip_covered = false
 
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.14"
 explicit_package_bases = true
 strict = true
 warn_unused_ignores = true
