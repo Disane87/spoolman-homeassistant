@@ -1,3 +1,27 @@
+## [1.4.0-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v1.4.0-dev.2...v1.4.0-dev.3) (2026-06-02)
+
+### 📔 Docs
+
+* add platinum refactor implementation plan ([938e6e6](https://github.com/Disane87/spoolman-homeassistant/commit/938e6e66b2d76d5e62f971d92ef0b4bc41b472f6))
+* **readme:** deprecate built-in Klipper integration ([8415179](https://github.com/Disane87/spoolman-homeassistant/commit/841517988067ed610f266c9bc36cb3873c3dfada)), closes [#100](https://github.com/Disane87/spoolman-homeassistant/issues/100) [#105](https://github.com/Disane87/spoolman-homeassistant/issues/105) [#312](https://github.com/Disane87/spoolman-homeassistant/issues/312)
+
+### 🚀 Features
+
+* **devx:** non-root vscode user for Dev Container ([d777365](https://github.com/Disane87/spoolman-homeassistant/commit/d7773652c6574be00068593819a78ba7c9cb2ed5))
+* **devx:** VS Code Dev Container for Test Explorer integration ([22b997a](https://github.com/Disane87/spoolman-homeassistant/commit/22b997a080541af3cd06ae1bf53e7fb313320933))
+* **phase 4.4-4.5:** translations + per-module strict typing ([d63594b](https://github.com/Disane87/spoolman-homeassistant/commit/d63594bf5e0e57db721d5767fa5975a94e209e9e))
+* **phase 4:** platinum compliance — first_refresh, parallel_updates, diagnostics, options reload, manifest, quality_scale.yaml ([6aae130](https://github.com/Disane87/spoolman-homeassistant/commit/6aae1305087775c8d27bf203914faeeb56bfea57))
+* **phase 5:** platinum badge in README, ruff scope to integration paths ([26f3827](https://github.com/Disane87/spoolman-homeassistant/commit/26f3827b4d907dbf502a792d8423ace1dc0feefa))
+* **platinum:** migrate to ConfigEntry.runtime_data (typed SpoolmanRuntimeData) ([7c5564e](https://github.com/Disane87/spoolman-homeassistant/commit/7c5564eb6b8e4a1e7f2792e9cade5af6068da46b))
+* **platinum:** mypy --strict clean across the entire integration (28 files) ([112cabb](https://github.com/Disane87/spoolman-homeassistant/commit/112cabbde88ae5ecc0c34b3e40257db1bced2089))
+* **platinum:** mypy --strict clean on the integration core ([1117e49](https://github.com/Disane87/spoolman-homeassistant/commit/1117e49f8302577eddf3e66e0a1031bb157da6d0))
+* **platinum:** strict typing on filament_color_hex, spool_location, spool_used_percentage; remove unused base.py ([79650a7](https://github.com/Disane87/spoolman-homeassistant/commit/79650a73d1e05e18ba2bf06cb5642e7837e23df2))
+
+### 🛠️ Fixes
+
+* **locations:** include empty Locations-page entries ([#854](https://github.com/Disane87/spoolman-homeassistant/issues/854)) ([897b0fe](https://github.com/Disane87/spoolman-homeassistant/commit/897b0fe15d0e3477e0d4bd31d33ad92a2c4e01c1)), closes [#839](https://github.com/Disane87/spoolman-homeassistant/issues/839)
+* restore scripts/, ignore .claude/ ([12ea0a0](https://github.com/Disane87/spoolman-homeassistant/commit/12ea0a04db8e0b18e4d44fde1172159f276073f3))
+
 ## [1.4.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v1.4.0-dev.1...v1.4.0-dev.2) (2026-05-10)
 
 ### 🛠️ Fixes
