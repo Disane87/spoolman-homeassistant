@@ -105,13 +105,32 @@ class SpoolManCoordinator(DataUpdateCoordinator["CoordinatorData"]):
                     "Could not fetch spool extra-field metadata: %s", exception
                 )
                 spool_extra_fields = {}
+            # Merge two location sources (issue #854):
+            #   * /setting/locations — the full UI-managed Locations page,
+            #     including empty locations not used by any spool.
+            #   * /location — locations actually referenced by spools, which
+            #     can include values absent from the settings list.
+            # Either endpoint may be missing on older Spoolman versions, so
+            # each is fetched independently and failures degrade gracefully.
             try:
-                locations = await self.spoolman_api.get_locations()
+                setting_locations = await self.spoolman_api.get_setting_locations()
+            except Exception as exception:
+                _LOGGER.debug("Could not fetch setting locations: %s", exception)
+                setting_locations = None
+            try:
+                spool_locations = await self.spoolman_api.get_locations()
             except Exception as exception:
                 # /location endpoint isn't on every Spoolman version; fall back
                 # to deriving from spools at the consumer side.
                 _LOGGER.debug("Could not fetch locations: %s", exception)
+                spool_locations = None
+            if setting_locations is None and spool_locations is None:
                 locations = None
+            else:
+                merged: set[str] = set()
+                merged.update(setting_locations or [])
+                merged.update(spool_locations or [])
+                locations = sorted(merged)
         except asyncio.CancelledError:  # pragma: no cover — shutdown path
             _LOGGER.debug("Data update was cancelled")
             raise

@@ -70,6 +70,11 @@ async def test_extra_fields_endpoint_404_degrades(
             repeat=True,
         )
         m.get(
+            re.compile(rf"{re.escape(MOCK_URL)}api/v1/setting/locations.*"),
+            status=404,
+            repeat=True,
+        )
+        m.get(
             re.compile(rf"{re.escape(MOCK_URL)}api/v1/location.*"),
             payload=locations_data,
             repeat=True,
@@ -92,7 +97,7 @@ async def test_locations_fallback_to_derived(
     spools_data: list[dict[str, Any]],
     filaments_data: list[dict[str, Any]],
 ) -> None:
-    """No /location endpoint → derive from spool.location values."""
+    """Neither /setting/locations nor /location → derive from spool.location."""
     config_entry.add_to_hass(hass)
     with aioresponses() as m:
         m.get(
@@ -103,6 +108,11 @@ async def test_locations_fallback_to_derived(
         m.get(
             re.compile(rf"{re.escape(MOCK_URL)}api/v1/filament.*"),
             payload=filaments_data,
+            repeat=True,
+        )
+        m.get(
+            re.compile(rf"{re.escape(MOCK_URL)}api/v1/setting/locations.*"),
+            status=404,
             repeat=True,
         )
         m.get(
@@ -121,6 +131,108 @@ async def test_locations_fallback_to_derived(
     assert coord.last_update_success
     # Derived from spool fixture: "Shelf A" + "Shelf B" (alphabetical):
     assert set(coord.data["locations"]) == {"Shelf A", "Shelf B"}
+
+
+async def test_locations_merge_setting_and_spool(
+    hass: HomeAssistant,
+    config_entry: MockConfigEntry,
+    mock_spoolman_api: aioresponses,
+) -> None:
+    """#854: empty Locations-page entries are merged with spool-referenced ones."""
+    config_entry.add_to_hass(hass)
+    coord = SpoolManCoordinator(hass, config_entry)
+    await coord.async_refresh()
+
+    assert coord.last_update_success
+    locations = set(coord.data["locations"])
+    # Empty locations only present in /setting/locations (the bug in #854):
+    assert {"External Spool Holder", "Ordered"} <= locations
+    # ...merged with the /location feed ("Drawer 1") and spool-derived ones:
+    assert {"Shelf A", "Shelf B", "Drawer 1"} <= locations
+
+
+async def test_setting_locations_404_falls_back_to_location(
+    hass: HomeAssistant,
+    config_entry: MockConfigEntry,
+    spools_data: list[dict[str, Any]],
+    filaments_data: list[dict[str, Any]],
+    locations_data: list[str],
+) -> None:
+    """Older Spoolman without /setting/locations still uses the /location feed."""
+    config_entry.add_to_hass(hass)
+    with aioresponses() as m:
+        m.get(
+            re.compile(rf"{re.escape(MOCK_URL)}api/v1/spool.*"),
+            payload=[s for s in spools_data if not s.get("archived")],
+            repeat=True,
+        )
+        m.get(
+            re.compile(rf"{re.escape(MOCK_URL)}api/v1/filament.*"),
+            payload=filaments_data,
+            repeat=True,
+        )
+        m.get(
+            re.compile(rf"{re.escape(MOCK_URL)}api/v1/setting/locations.*"),
+            status=404,
+            repeat=True,
+        )
+        m.get(
+            re.compile(rf"{re.escape(MOCK_URL)}api/v1/location.*"),
+            payload=locations_data,
+            repeat=True,
+        )
+        m.get(
+            re.compile(rf"{re.escape(MOCK_URL)}api/v1/field/spool.*"),
+            payload=[],
+            repeat=True,
+        )
+        coord = SpoolManCoordinator(hass, config_entry)
+        await coord.async_refresh()
+
+    assert coord.last_update_success
+    assert set(coord.data["locations"]) == {"Shelf A", "Shelf B", "Drawer 1"}
+
+
+async def test_setting_locations_malformed_value_degrades(
+    hass: HomeAssistant,
+    config_entry: MockConfigEntry,
+    spools_data: list[dict[str, Any]],
+    filaments_data: list[dict[str, Any]],
+    locations_data: list[str],
+) -> None:
+    """A malformed Setting value doesn't crash; /location still contributes."""
+    config_entry.add_to_hass(hass)
+    with aioresponses() as m:
+        m.get(
+            re.compile(rf"{re.escape(MOCK_URL)}api/v1/spool.*"),
+            payload=[s for s in spools_data if not s.get("archived")],
+            repeat=True,
+        )
+        m.get(
+            re.compile(rf"{re.escape(MOCK_URL)}api/v1/filament.*"),
+            payload=filaments_data,
+            repeat=True,
+        )
+        m.get(
+            re.compile(rf"{re.escape(MOCK_URL)}api/v1/setting/locations.*"),
+            payload={"value": "{not valid json", "is_set": True},
+            repeat=True,
+        )
+        m.get(
+            re.compile(rf"{re.escape(MOCK_URL)}api/v1/location.*"),
+            payload=locations_data,
+            repeat=True,
+        )
+        m.get(
+            re.compile(rf"{re.escape(MOCK_URL)}api/v1/field/spool.*"),
+            payload=[],
+            repeat=True,
+        )
+        coord = SpoolManCoordinator(hass, config_entry)
+        await coord.async_refresh()
+
+    assert coord.last_update_success
+    assert set(coord.data["locations"]) == {"Shelf A", "Shelf B", "Drawer 1"}
 
 
 async def test_total_remaining_weight_calculated(

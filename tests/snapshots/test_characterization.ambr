@@ -38,6 +38,8 @@
         'icon': 'mdi:map-marker',
         'options': list([
           'Drawer 1',
+          'External Spool Holder',
+          'Ordered',
           'Shelf A',
           'Shelf B',
         ]),
@@ -55,6 +57,8 @@
         'icon': 'mdi:map-marker',
         'options': list([
           'Drawer 1',
+          'External Spool Holder',
+          'Ordered',
           'Shelf A',
           'Shelf B',
         ]),

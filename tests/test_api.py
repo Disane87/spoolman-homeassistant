@@ -86,3 +86,42 @@ async def test_close_only_closes_owned_session() -> None:
     await api.close()
     assert not session.closed
     await session.close()
+
+
+async def test_get_setting_locations_parses_json_value(hass: HomeAssistant) -> None:
+    """#854: the Setting's JSON-encoded ``value`` is decoded to a list of names."""
+    with aioresponses() as m:
+        m.get(
+            re.compile(rf"{re.escape(MOCK_URL)}api/v1/setting/locations"),
+            payload={"value": '["Ordered", "External Spool Holder"]', "is_set": True},
+        )
+        api = SpoolmanAPI(MOCK_URL, session=async_get_clientsession(hass))
+        assert await api.get_setting_locations() == ["Ordered", "External Spool Holder"]
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"value": "", "is_set": False},  # unset → empty default
+        {"value": None},  # explicit null
+        {},  # no value key at all
+        {"value": "{not json"},  # malformed JSON
+        {"value": '"a string"'},  # valid JSON but not a list
+        {"value": '["Ordered", "", null, "Ordered"]'},  # falsy entries dropped
+    ],
+)
+async def test_get_setting_locations_handles_edge_values(
+    hass: HomeAssistant, payload: dict[str, object]
+) -> None:
+    """Unset / malformed / non-list values degrade to a sane list, never raise."""
+    with aioresponses() as m:
+        m.get(
+            re.compile(rf"{re.escape(MOCK_URL)}api/v1/setting/locations"),
+            payload=payload,
+        )
+        api = SpoolmanAPI(MOCK_URL, session=async_get_clientsession(hass))
+        result = await api.get_setting_locations()
+
+    assert isinstance(result, list)
+    # The only payload yielding entries keeps non-falsy strings, duplicates intact:
+    assert result in ([], ["Ordered", "Ordered"])

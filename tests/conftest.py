@@ -113,6 +113,16 @@ def locations_data() -> list[str]:
 
 
 @pytest.fixture
+def setting_locations_data() -> list[str]:
+    """Return the full UI Locations list served by ``GET /setting/locations``.
+
+    Includes empty locations ("External Spool Holder", "Ordered") absent from
+    the spool-referenced ``/location`` feed (issue #854).
+    """
+    return _load_fixture("setting_locations.json")
+
+
+@pytest.fixture
 def extra_fields_data() -> list[dict[str, Any]]:
     """Return extra-field metadata served by ``GET /field/spool``."""
     return _load_fixture("extra_fields.json")
@@ -123,6 +133,7 @@ def mock_spoolman_api(
     spools_data: list[dict[str, Any]],
     filaments_data: list[dict[str, Any]],
     locations_data: list[str],
+    setting_locations_data: list[str],
     extra_fields_data: list[dict[str, Any]],
 ) -> AsyncGenerator[aioresponses, None]:
     """Mock the Spoolman HTTP API. Default = healthy server, all endpoints respond."""
@@ -148,6 +159,13 @@ def mock_spoolman_api(
 
         mocked.get(
             re.compile(rf"{base}/filament.*"), payload=filaments_data, repeat=True
+        )
+        # /setting/locations is registered before /location so the more
+        # specific Setting endpoint is matched first (issue #854).
+        mocked.get(
+            re.compile(rf"{base}/setting/locations"),
+            payload={"value": json.dumps(setting_locations_data), "is_set": True},
+            repeat=True,
         )
         mocked.get(re.compile(rf"{base}/location"), payload=locations_data, repeat=True)
         mocked.get(

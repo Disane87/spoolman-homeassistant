@@ -88,10 +88,13 @@ class SpoolmanAPI:
             return payload
 
     async def get_locations(self) -> list[str]:
-        """Return the list of configured spool locations from Spoolman.
+        """Return the spool-referenced locations from Spoolman.
 
-        Uses ``GET /api/v1/location`` so that locations without any assigned
-        spool (e.g. empty AMS trays) are still selectable in HA.
+        Uses ``GET /api/v1/location``, which only lists location values that
+        are currently assigned to at least one spool. Locations created on
+        the Spoolman *Locations* settings page but not yet used by any spool
+        are NOT returned here — see :meth:`get_setting_locations` for the full
+        UI-managed list (issue #854).
         """
         _LOGGER.debug("SpoolmanAPI: get_locations")
         url = f"{self.base_url}/location"
@@ -101,6 +104,39 @@ class SpoolmanAPI:
             payload: list[Any] = await response.json()
             _LOGGER.debug("SpoolmanAPI: get_locations response %s", payload)
             return [str(loc) for loc in payload if loc]
+
+    async def get_setting_locations(self) -> list[str]:
+        """Return the full Locations list from Spoolman's settings page.
+
+        Uses ``GET /api/v1/setting/locations``. Unlike ``/api/v1/location``
+        (which only lists locations referenced by a spool), this holds the
+        complete UI-managed list — including empty locations such as
+        "External Spool Holder" or "Ordered" (issue #854).
+
+        Spoolman returns a ``Setting`` object whose ``value`` is a
+        JSON-encoded string array (a string containing e.g. ``["Ordered"]``),
+        which we decode here. Robust against older servers (404), an
+        unset/empty value and malformed JSON — callers get an empty list in
+        those cases.
+        """
+        _LOGGER.debug("SpoolmanAPI: get_setting_locations")
+        url = f"{self.base_url}/setting/locations"
+        session = await self._get_session()
+        async with session.get(url) as response:
+            response.raise_for_status()
+            payload: dict[str, Any] = await response.json()
+            _LOGGER.debug("SpoolmanAPI: get_setting_locations response %s", payload)
+            raw = payload.get("value")
+            if not raw:
+                return []
+            try:
+                parsed = json.loads(raw) if isinstance(raw, str) else raw
+            except (ValueError, TypeError):
+                _LOGGER.debug("SpoolmanAPI: could not parse locations value %r", raw)
+                return []
+            if not isinstance(parsed, list):
+                return []
+            return [str(loc) for loc in parsed if loc]
 
     async def get_extra_fields(self, entity_type: str) -> dict[str, dict[str, Any]]:
         """Return extra-field metadata for the given entity type (e.g. ``spool``).
