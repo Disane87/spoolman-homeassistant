@@ -8,6 +8,6 @@ pytest-homeassistant-custom-component==0.13.339
 pytest-cov>=5.0
 pytest-asyncio>=0.24
 aioresponses>=0.7.6
-syrupy>=4.7
+syrupy>=5.3.2
 mypy>=1.13
 freezegun>=1.5
