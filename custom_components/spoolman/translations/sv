@@ -1,0 +1,42 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Konfiguration",
+                "data": {
+                  "spoolman_url": "Värd (inkl. protokoll)",
+                  "update-interval": "Uppdateringsintervall (minuter)",
+                    "show_archived": "Visa arkiverat",
+                    "notification_threshold_info": "Tröskellsinformation",
+                    "notification_threshold_warning": "Tröskell för varning",
+                    "notification_threshold_critical": "Tröskell för kritisk",
+                    "klipper_url": "Klipper url",
+                    "klipper_url_desc": "Klipper url"
+                }
+            }
+        },
+        "error": {
+            "already_configured": "Enhet redan konfigurerad"
+        },
+        "abort": {
+            "already_configured": "Enhet redan konfigurerad"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Konfiguration",
+                "data": {
+                    "spoolman_url": "Värd (inkl. protokoll",
+                    "update-interval": "Uppdateringsintervall (minuter)",
+                    "show_archived": "Visa arkiverat",
+                    "notification_threshold_info": "Tröskellsinformation",
+                    "notification_threshold_warning": "Tröskell för varning",
+                    "notification_threshold_critical": "Tröskell för kritisk",
+                    "klipper_url": "Klipper url",
+                    "klipper_url_desc": "Klipper url"
+                }
+            }
+        }
+    }
+}
