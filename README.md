@@ -12,6 +12,19 @@
 
 Hey there! 👋 This integration brings [Spoolman](https://github.com/Donkie/Spoolman/) into your Home Assistant setup. Keep an eye on your filament spools and get notified before you run out of material mid-print! 🖨️✨
 
+<p align="center">
+  <a href="https://subthiel.eu">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="resources/subthiel-logo-dark-bg.svg">
+      <source media="(prefers-color-scheme: light)" srcset="resources/subthiel-logo-light-bg.svg">
+      <img src="resources/subthiel-logo-light-bg.svg" alt="Subthiel" height="40">
+    </picture>
+  </a>
+</p>
+<p align="center">
+  Sponsored by <a href="https://subthiel.eu">Subthiel</a> — 3D-Druck &amp; Softwareentwicklung. Check out the <a href="https://shop.subthiel.eu">shop</a> for prints, filament, and maker gear.
+</p>
+
 > [!WARNING]
 > ## 🪦 Klipper Integration is Deprecated
 >
@@ -739,3 +752,17 @@ _Made with [contrib.rocks](https://contrib.rocks)._
 Thanks for using this integration! If you like it, give it a ⭐ on GitHub - it really helps! 🙌
 
 Found a bug? Have an idea? Open an issue and let's make this better together! 🚀
+
+---
+
+<p align="center">
+  <a href="https://subthiel.eu">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="resources/subthiel-logo-dark-bg.svg">
+      <source media="(prefers-color-scheme: light)" srcset="resources/subthiel-logo-light-bg.svg">
+      <img src="resources/subthiel-logo-light-bg.svg" alt="Subthiel" height="32">
+    </picture>
+  </a>
+  <br>
+  Built with ❤️ and support from <a href="https://subthiel.eu">Subthiel</a> — 3D-Druck &amp; Softwareentwicklung · <a href="https://shop.subthiel.eu">Shop besuchen</a>
+</p>
