@@ -26,11 +26,11 @@ class BaseFlow:
         return None, errors, cleaned_url  # Fehler: Rückgabe von None für info und das errors dict
 
     @staticmethod
-    async def get_klipper_api_info(url: str) -> tuple[str | None, dict, str]:
+    async def get_klipper_api_info(url: str, api_key: str | None = None) -> tuple[str | None, dict, str]:
         """Test the connection with the given url and return health information about the Klipper API."""
         errors = {}
         cleaned_url: str = add_trailing_slash(url)
-        klipper_api = KlipperAPI(cleaned_url)
+        klipper_api = KlipperAPI(cleaned_url, api_key)
 
         try:
             healthy = await klipper_api.api_version()

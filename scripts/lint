@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Run linters.
+set -e
+cd "$(dirname "$0")/.."
+ruff check custom_components/spoolman

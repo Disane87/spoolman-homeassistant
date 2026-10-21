@@ -65,6 +65,9 @@ venv
 Pipfile*
 share/*
 scripts/*
+!/scripts/develop
+!/scripts/setup
+!/scripts/lint
 !/scripts/publish.sh
 
 # vimmy stuff

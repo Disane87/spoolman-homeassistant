@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import logging
 
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.components.sensor.const import SensorStateClass
+from homeassistant.const import UnitOfLength
 from homeassistant.core import callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import generate_entity_id
@@ -37,8 +38,9 @@ class FilamentDiameter(CoordinatorEntity, SensorEntity):
         self._attr_unique_id = f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_diameter"
         self._attr_has_entity_name = False
         self._attr_name = f"{spool_name} Diameter"
+        self._attr_device_class = SensorDeviceClass.DISTANCE
         self._attr_state_class = SensorStateClass.MEASUREMENT
-        self._attr_native_unit_of_measurement = "mm"
+        self._attr_native_unit_of_measurement = UnitOfLength.MILLIMETERS
         self._attr_icon = "mdi:diameter-outline"
         self._attr_device_info = DeviceInfo(identifiers={(DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")})
 

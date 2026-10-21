@@ -7,6 +7,7 @@ from .base_flow import BaseFlow
 from .schema_helper import SchemaHelper
 from .const import (
     CONF_URL,
+    KLIPPER_API_KEY,
     KLIPPER_URL,
     SPOOLMAN_INFO_PROPERTY,
 )
@@ -28,7 +29,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow, BaseFlow):
 
             klipper_url = user_input.get(KLIPPER_URL, None)
             if klipper_url is not None and klipper_url != "":
-                klipper_info, klipper_errors, klipper_url = await self.get_klipper_api_info(user_input.get(KLIPPER_URL, None))
+                klipper_info, klipper_errors, klipper_url = await self.get_klipper_api_info(user_input.get(KLIPPER_URL, None), user_input.get(KLIPPER_API_KEY) or None)
 
             if not spoolman_errors and not klipper_errors:
                 self.hass.config_entries.async_update_entry(

@@ -9,6 +9,7 @@ from .const import (
     CONF_SHOW_ARCHIVED,
     CONF_UPDATE_INTERVAL,
     CONF_URL,
+    KLIPPER_API_KEY,
     KLIPPER_URL,
     KLIPPER_URL_DESC,
     NOTIFICATION_THRESHOLDS
@@ -74,6 +75,7 @@ class SchemaHelper:
             ): vol.All(int, vol.Range(min=0, max=100)),
             vol.Required(CONF_SHOW_ARCHIVED, default=get_default_value(CONF_SHOW_ARCHIVED, False)): bool,
             vol.Optional(KLIPPER_URL, msg=KLIPPER_URL_DESC, default=get_default_value(KLIPPER_URL, "")): str,
+            vol.Optional(KLIPPER_API_KEY, default=get_default_value(KLIPPER_API_KEY, "")): str,
             vol.Optional(CONF_UPDATE_INTERVAL, default=get_default_value(CONF_UPDATE_INTERVAL, 15)): vol.All(
                 vol.Coerce(int), vol.Range(min=1)
             )

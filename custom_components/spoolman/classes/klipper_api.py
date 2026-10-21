@@ -9,15 +9,17 @@ _LOGGER = logging.getLogger(__name__)
 class KlipperAPI:
     """Class for interacting with Klipper API."""
 
-    def __init__(self, base_url):
+    def __init__(self, base_url, api_key: str | None = None):
         """Initialize the Klipper API."""
         self.base_url = add_trailing_slash(base_url)
+        self.api_key = api_key or None
 
     async def _get_json(self, endpoint: str) -> dict:
         """Convert the response to JSON."""
+        headers = {"X-Api-Key": self.api_key} if self.api_key else {}
         async with aiohttp.ClientSession() as session:
             url = f"{self.base_url}server/{endpoint}"
-            async with session.get(url) as response:
+            async with session.get(url, headers=headers) as response:
                 response.raise_for_status()
                 return await response.json()
 

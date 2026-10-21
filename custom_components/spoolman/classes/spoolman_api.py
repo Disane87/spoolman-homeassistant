@@ -60,19 +60,46 @@ class SpoolmanAPI:
             return response
 
     async def get_locations(self):
-        """Return the list of configured spool locations from Spoolman.
+        """Return the list of spool locations from Spoolman.
 
-        Uses ``GET /api/v1/location`` so that locations without any assigned
-        spool (e.g. empty AMS trays) are still selectable in HA.
+        Merges ``GET /api/v1/location`` (locations referenced by spools) with
+        ``GET /api/v1/setting/locations`` (the Locations-page list, which also
+        contains empty locations, see #854). Either endpoint may be missing on
+        older Spoolman versions; only if both fail is an error raised.
         """
         _LOGGER.debug("SpoolmanAPI: get_locations")
-        url = f"{self.base_url}/location"
         session = await self._get_session()
-        async with session.get(url) as response:
-            response.raise_for_status()
-            payload = await response.json()
-            _LOGGER.debug("SpoolmanAPI: get_locations response %s", payload)
-            return [str(loc) for loc in payload if loc]
+        locations: list[str] = []
+        errors = []
+
+        try:
+            async with session.get(f"{self.base_url}/location") as response:
+                response.raise_for_status()
+                payload = await response.json()
+                locations.extend(str(loc) for loc in payload if loc)
+        except Exception as exception:  # pylint: disable=broad-except
+            errors.append(exception)
+
+        try:
+            async with session.get(f"{self.base_url}/setting/locations") as response:
+                response.raise_for_status()
+                payload = await response.json()
+                # Spoolman stores the list as a JSON-encoded string in "value"
+                value = payload.get("value") if isinstance(payload, dict) else payload
+                if isinstance(value, str):
+                    value = json.loads(value)
+                if isinstance(value, list):
+                    locations.extend(str(loc) for loc in value if loc)
+        except Exception as exception:  # pylint: disable=broad-except
+            errors.append(exception)
+
+        if len(errors) == 2:
+            raise errors[0]
+
+        # De-duplicate while keeping order
+        result = list(dict.fromkeys(locations))
+        _LOGGER.debug("SpoolmanAPI: get_locations result %s", result)
+        return result
 
     async def get_extra_fields(self, entity_type):
         """Return extra-field metadata for the given entity type (e.g. ``spool``).

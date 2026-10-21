@@ -108,7 +108,6 @@ class Spool(CoordinatorEntity, SensorEntity):
             name=spool_name,
             manufacturer=vendor_name if vendor_name else "Unknown",
             model=f"{self._filament.get('material', 'Unknown')} - {self._filament.get('name', 'Unknown')}",
-            via_device=(DOMAIN, self.config[CONF_URL], f"location_{location_name}"),
             configuration_url=self.config[CONF_URL],
             sw_version=f"Spool ID: {self._spool['id']}",
         )
@@ -118,14 +117,16 @@ class Spool(CoordinatorEntity, SensorEntity):
             device_registry = dr.async_get(self.coordinator.hass)
 
             # Create or get location hub
-            device_registry.async_get_or_create(
+            location_device = device_registry.async_get_or_create(
                 config_entry_id=self.coordinator.config_entry.entry_id,
                 **location_device_info
             )
 
-            # Create or get spool device
+            # Create or get spool device (via_device_id replaces the
+            # deprecated via_device tuple, see #887)
             spool_device = device_registry.async_get_or_create(
                 config_entry_id=self.coordinator.config_entry.entry_id,
+                via_device_id=location_device.id,
                 **spool_device_info
             )
 

@@ -6,6 +6,7 @@ import logging
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.components.sensor.const import SensorStateClass
+from homeassistant.const import UnitOfLength
 from homeassistant.core import callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import generate_entity_id
@@ -57,7 +58,7 @@ class SpoolUsedLength(CoordinatorEntity, SensorEntity):
         self._attr_name = f"{spool_name} Used Length"
         self._attr_device_class = SensorDeviceClass.DISTANCE
         self._attr_state_class = SensorStateClass.TOTAL_INCREASING
-        self._attr_native_unit_of_measurement = "mm"
+        self._attr_native_unit_of_measurement = UnitOfLength.MILLIMETERS
         self._attr_icon = "mdi:tape-measure"
 
         # Set device info to match spool device

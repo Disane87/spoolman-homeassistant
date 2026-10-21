@@ -11,6 +11,7 @@
                     "notification_threshold_warning": "Schwellenwert Warnung",
                     "notification_threshold_critical": "Schwellenwert Kritisch",
                     "klipper_url": "Klipper URL",
+                    "klipper_api_key": "Klipper API-Key (optional)",
                     "klipper_url_desc": "Klipper URL"
                 }
             }
@@ -34,6 +35,7 @@
                     "notification_threshold_warning": "Schwellenwert Warnung",
                     "notification_threshold_critical": "Schwellenwert Kritisch",
                     "klipper_url": "Klipper URL",
+                    "klipper_api_key": "Klipper API-Key (optional)",
                     "klipper_url_desc": "Klipper URL"
                 }
             }

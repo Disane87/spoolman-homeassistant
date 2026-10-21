@@ -14,6 +14,7 @@ from .const import (
     CONF_UPDATE_INTERVAL,
     CONF_URL,
     DOMAIN,
+    KLIPPER_API_KEY,
     KLIPPER_URL,
     SPOOLMAN_API_WRAPPER,
 )
@@ -103,7 +104,7 @@ class SpoolManCoordinator(DataUpdateCoordinator):
         try:
             klipper_url = config.get(KLIPPER_URL, "")
             if klipper_url is not None and klipper_url != "":
-                klipper_active_spool: int | None = await KlipperAPI(klipper_url).get_active_spool_id()
+                klipper_active_spool: int | None = await KlipperAPI(klipper_url, config.get(KLIPPER_API_KEY)).get_active_spool_id()
                 if klipper_active_spool is not None:
                     for spool in spools:
                         spool["klipper_active_spool"] = spool["id"] == klipper_active_spool

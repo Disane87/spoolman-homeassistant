@@ -22,6 +22,7 @@ SPOOLMAN_API_WRAPPER = "spoolman_api_wrapper"
 
 KLIPPER_URL = "klipper_url"
 KLIPPER_URL_DESC = "klipper_url_desc"
+KLIPPER_API_KEY = "klipper_api_key"
 
 SPOOLMAN_PATCH_SPOOL_SERVICENAME = "patch_spool"
 SPOOLMAN_USE_SPOOL_FILAMENT_SERVICENAME = "use_spool_filament"

@@ -11,6 +11,7 @@
                     "notification_threshold_warning": "Threshold Warning",
                     "notification_threshold_critical": "Threshold Critical",
                     "klipper_url": "Klipper url",
+                    "klipper_api_key": "Klipper API key (optional)",
                     "klipper_url_desc": "Klipper url"
                 }
             }
@@ -34,6 +35,7 @@
                     "notification_threshold_warning": "Threshold Warning",
                     "notification_threshold_critical": "Threshold Critical",
                     "klipper_url": "Klipper url",
+                    "klipper_api_key": "Klipper API key (optional)",
                     "klipper_url_desc": "Klipper url"
                 }
             }

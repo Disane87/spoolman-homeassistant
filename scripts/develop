@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Start a local Home Assistant instance with this integration mounted.
+set -e
+cd "$(dirname "$0")/.."
+
+mkdir -p config
+if [ ! -f config/configuration.yaml ]; then
+    hass --script ensure_config -c config
+fi
+
+# Make the integration available to Home Assistant
+mkdir -p config/custom_components
+ln -sfn "$(pwd)/custom_components/spoolman" config/custom_components/spoolman
+
+export PYTHONPATH="${PYTHONPATH:-}:$(pwd)/custom_components"
+hass --config "$(pwd)/config" --debug
