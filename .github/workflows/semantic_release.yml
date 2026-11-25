@@ -35,6 +35,9 @@ jobs:
         uses: "actions/checkout@v7"
         with:
           fetch-depth: 0
+          # push with GH_TOKEN (admin, may bypass the main ruleset), not the
+          # non-admin Actions token checkout would otherwise leave in git config
+          persist-credentials: false
 
       - name: "Setup Node"
         uses: actions/setup-node@v7
