@@ -92,6 +92,22 @@
 * **locations:** include empty Locations-page entries ([#854](https://github.com/Disane87/spoolman-homeassistant/issues/854)) ([897b0fe](https://github.com/Disane87/spoolman-homeassistant/commit/897b0fe15d0e3477e0d4bd31d33ad92a2c4e01c1)), closes [#839](https://github.com/Disane87/spoolman-homeassistant/issues/839)
 * restore scripts/, ignore .claude/ ([12ea0a0](https://github.com/Disane87/spoolman-homeassistant/commit/12ea0a04db8e0b18e4d44fde1172159f276073f3))
 
+## [1.4.0](https://github.com/Disane87/spoolman-homeassistant/compare/v1.3.0...v1.4.0) (2026-05-10)
+
+### 📔 Docs
+
+* add related Spoolman ecosystem projects section ([f96b14a](https://github.com/Disane87/spoolman-homeassistant/commit/f96b14af330040c39bbe426e666a5e169a16ed7e))
+
+### 🚀 Features
+
+* **sensors:** expose Spoolman extra-field metadata on HA sensors ([12a4dec](https://github.com/Disane87/spoolman-homeassistant/commit/12a4dec7e2a1073848a7cf8bf871045f026b198c)), closes [#837](https://github.com/Disane87/spoolman-homeassistant/issues/837)
+
+### 🛠️ Fixes
+
+* always set klipper_active_spool on spools ([5576017](https://github.com/Disane87/spoolman-homeassistant/commit/5576017147a8fde8a2ab76db5f0acd225ddd790c))
+* dynamically add new spools and expose empty Spoolman locations ([5db99d1](https://github.com/Disane87/spoolman-homeassistant/commit/5db99d1c7fffeb42b7c27c57b9afd0851cf797b2)), closes [#327](https://github.com/Disane87/spoolman-homeassistant/issues/327) [#327](https://github.com/Disane87/spoolman-homeassistant/issues/327) [#835](https://github.com/Disane87/spoolman-homeassistant/issues/835)
+* **sensor:** resolve unawaited coroutine and duplicate entity ID errors ([ab3f582](https://github.com/Disane87/spoolman-homeassistant/commit/ab3f582ac9e1f8ec98613a2735432ceb5e593855))
+
 ## [1.4.0-dev.2](https://github.com/Disane87/spoolman-homeassistant/compare/v1.4.0-dev.1...v1.4.0-dev.2) (2026-05-10)
 
 ### 🛠️ Fixes
@@ -543,7 +559,6 @@ issues where sensors created separate devices instead of grouping together.
 * :bug: Add debug logging for spool information ([df84521](https://github.com/Disane87/spoolman-homeassistant/commit/df845215c0a90bd1f12f60866de8b02d0d1c0ed3)), closes [#77](https://github.com/Disane87/spoolman-homeassistant/issues/77)
 
 ## [0.2.2-dev.3](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.2-dev.2...v0.2.2-dev.3) (2024-02-06)
-=======
 ## [0.2.2](https://github.com/Disane87/spoolman-homeassistant/compare/v0.2.1...v0.2.2) (2023-11-02)
 
 
@@ -563,7 +578,6 @@ issues where sensors created separate devices instead of grouping together.
 ### 📔 Docs
 
 * added usage of entities in cards to readme ([c99262f](https://github.com/Disane87/spoolman-homeassistant/commit/c99262f452e82c8f7da0c89cf5d2385c919aaca2)), closes [#62](https://github.com/Disane87/spoolman-homeassistant/issues/62)
-=======
 * :bug: fixed a bug where location from spoolman is empty ([8ce5abd](https://github.com/Disane87/spoolman-homeassistant/commit/8ce5abd6a90b77ab4f233305ae5475623c042aa0)), closes [#44](https://github.com/Disane87/spoolman-homeassistant/issues/44)
 * build ci system ([b8fa3eb](https://github.com/Disane87/spoolman-homeassistant/commit/b8fa3eba855c9c6efc3c01a1f08f47b2971abe7e))
 * interims commit ([33949b6](https://github.com/Disane87/spoolman-homeassistant/commit/33949b6bc0e5cb2691e3a6349bd10062528c6f7e)), closes [#44](https://github.com/Disane87/spoolman-homeassistant/issues/44) [#44](https://github.com/Disane87/spoolman-homeassistant/issues/44)
