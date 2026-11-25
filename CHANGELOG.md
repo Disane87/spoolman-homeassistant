@@ -1,3 +1,21 @@
+## [1.4.0-dev.6](https://github.com/Disane87/spoolman-homeassistant/compare/v1.4.0-dev.5...v1.4.0-dev.6) (2026-11-25)
+
+### 🧪 Tests
+
+* add tests for add_trailing_slash helper ([#289](https://github.com/Disane87/spoolman-homeassistant/issues/289)) ([4a4b325](https://github.com/Disane87/spoolman-homeassistant/commit/4a4b32590f7e217090381bc8abe2474eef172a19))
+
+### 🧹 Other
+
+* **deps:** update ruff to 0.17.6, pip, mypy >=2.1.0, pytest-cov >=7.1.0 ([918886e](https://github.com/Disane87/spoolman-homeassistant/commit/918886ef97169e037711ac045ecb83ae8c4612cb)), closes [#897](https://github.com/Disane87/spoolman-homeassistant/issues/897) [#855](https://github.com/Disane87/spoolman-homeassistant/issues/855) [#864](https://github.com/Disane87/spoolman-homeassistant/issues/864) [#862](https://github.com/Disane87/spoolman-homeassistant/issues/862)
+
+### 🚀 Features
+
+* **i18n:** add Swedish translation ([#882](https://github.com/Disane87/spoolman-homeassistant/issues/882)) ([8e7676f](https://github.com/Disane87/spoolman-homeassistant/commit/8e7676fa85a8f236e68236b4c7f2313e0cf8e59a))
+
+### 🛠️ Fixes
+
+* **image:** accept alpha-enabled RRGGBBAA multi-color hex values ([#852](https://github.com/Disane87/spoolman-homeassistant/issues/852)) ([bfa7aa5](https://github.com/Disane87/spoolman-homeassistant/commit/bfa7aa5594edc938598c99bba46cffac34fc6f69))
+
 ## [1.4.0-dev.5](https://github.com/Disane87/spoolman-homeassistant/compare/v1.4.0-dev.4...v1.4.0-dev.5) (2026-11-25)
 
 ### 📔 Docs
