@@ -1,3 +1,18 @@
+## [1.5.1](https://github.com/Disane87/spoolman-homeassistant/compare/v1.5.0...v1.5.1) (2026-11-25)
+
+### 🦊 CI/CD
+
+* drop dev branch, develop and release from main only ([2e62182](https://github.com/Disane87/spoolman-homeassistant/commit/2e62182851ae41d476b2466775718e2b6a27ca8a))
+* push release commits with GH_TOKEN instead of the Actions token ([9297f6a](https://github.com/Disane87/spoolman-homeassistant/commit/9297f6a3a08036f6b0a21c07836ed6dc56da22d5))
+
+### 🧪 Tests
+
+* pin HA snapshot extension to fix CI-only snapshot failures ([68412ad](https://github.com/Disane87/spoolman-homeassistant/commit/68412adc9949324c202b83b8951d948b3f8a0781))
+
+### 🛠️ Fixes
+
+* stop unpacking DeviceInfo for HA 2026.12 dataclass change ([2bb05d2](https://github.com/Disane87/spoolman-homeassistant/commit/2bb05d23ea176bf250f465ef5b01d5ecc382d1f7)), closes [#912](https://github.com/Disane87/spoolman-homeassistant/issues/912)
+
 ## [1.5.0](https://github.com/Disane87/spoolman-homeassistant/compare/v1.4.0...v1.5.0) (2026-11-25)
 
 ### ♻️ Refactor
