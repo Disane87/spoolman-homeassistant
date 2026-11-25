@@ -23,6 +23,7 @@ from ..const import (
     NOTIFICATION_THRESHOLDS,
     SPOOLMAN_INFO_PROPERTY,
 )
+from ..helpers.device_info import device_info_dict
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -137,13 +138,13 @@ class Spool(CoordinatorEntity[Any], SensorEntity):
             # Create or get location hub
             location_device = device_registry.async_get_or_create(
                 config_entry_id=self.coordinator.config_entry.entry_id,
-                **location_device_info,
+                **device_info_dict(location_device_info),
             )
 
             # Create or get spool device
             spool_device = device_registry.async_get_or_create(
                 config_entry_id=self.coordinator.config_entry.entry_id,
-                **spool_device_info,
+                **device_info_dict(spool_device_info),
             )
             # async_update_device works on all supported HA versions; the
             # via_device_id kwarg of async_get_or_create is newer.
