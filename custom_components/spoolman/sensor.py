@@ -248,7 +248,7 @@ def _generate_entity_picture(spool_data: dict[str, Any], image_dir: str) -> str 
 
     # Determine colors: prioritize multi_color_hexes if available
     if multi_color_hexes and any(c.strip() for c in multi_color_hexes):
-        colors = [c.strip() for c in multi_color_hexes if len(c.strip()) == 6]
+        colors = [c.strip() for c in multi_color_hexes if len(c.strip()) in (6, 8)]
     elif color_hex:
         colors = [color_hex]
     else:
@@ -305,7 +305,7 @@ def _generate_filament_entity_picture(
 
     # Determine colors: prioritize multi_color_hexes if available
     if multi_color_hexes and any(c.strip() for c in multi_color_hexes):
-        colors = [c.strip() for c in multi_color_hexes if len(c.strip()) == 6]
+        colors = [c.strip() for c in multi_color_hexes if len(c.strip()) in (6, 8)]
     elif color_hex:
         colors = [color_hex]
     else:

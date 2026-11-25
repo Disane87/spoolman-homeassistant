@@ -81,3 +81,11 @@ def test_generate_filament_entity_picture_multi_longitudinal(tmp_path) -> None:
     }
     url = _generate_filament_entity_picture(fil, str(tmp_path))
     assert url is not None
+
+
+def test_generate_filament_entity_picture_alpha_hexes(tmp_path) -> None:
+    """Multi-color hexes with an alpha channel (RRGGBBAA) are accepted (#852)."""
+    filament = {"id": 5, "multi_color_hexes": "FF6A13FF,00AA0080"}
+    url = _generate_filament_entity_picture(filament, str(tmp_path))
+    assert url is not None
+    assert os.path.exists(os.path.join(str(tmp_path), "filament_5.png"))
