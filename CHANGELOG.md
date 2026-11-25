@@ -1,3 +1,111 @@
+## [1.5.0](https://github.com/Disane87/spoolman-homeassistant/compare/v1.4.0...v1.5.0) (2026-11-25)
+
+### ♻️ Refactor
+
+* inject HA-shared aiohttp session into SpoolmanAPI (Platinum: inject-websession) ([acb1969](https://github.com/Disane87/spoolman-homeassistant/commit/acb19692a812fae3c403f4ef89f1a170c36b9370))
+* **phase 3.1:** add TypedDict models for SpoolData / FilamentData / CoordinatorData ([147839a](https://github.com/Disane87/spoolman-homeassistant/commit/147839a0eb02fc30ac75fa31e32f24e722455e34))
+* **phase 3.2-3.3:** add SpoolmanEntity base + SpoolmanSensorEntityDescription registry ([9243be3](https://github.com/Disane87/spoolman-homeassistant/commit/9243be340d7c0da8f420cecdb52c1e4e6ac0d90e))
+* **phase 3.4-3.5:** description-driven SpoolmanSensor + delete 20 legacy sensor files ([883307e](https://github.com/Disane87/spoolman-homeassistant/commit/883307ecf18cb0f1601a660b1827dd56835e5f0c))
+
+### 📔 Docs
+
+* add platinum refactor implementation plan ([938e6e6](https://github.com/Disane87/spoolman-homeassistant/commit/938e6e66b2d76d5e62f971d92ef0b4bc41b472f6))
+* add Subthiel sponsor branding to README ([d6d2575](https://github.com/Disane87/spoolman-homeassistant/commit/d6d257586da5fff506ed72517cac927c988b7f08))
+* add Subthiel sponsor branding to README ([03191fa](https://github.com/Disane87/spoolman-homeassistant/commit/03191fa8bc07814e8c183bb25f7ad75501656744))
+* deprecate built-in Klipper integration in README ([#843](https://github.com/Disane87/spoolman-homeassistant/issues/843)) ([4de52ba](https://github.com/Disane87/spoolman-homeassistant/commit/4de52baf4008d42465c4096eb8f90b0dc955a995))
+* **readme:** deprecate built-in Klipper integration ([8415179](https://github.com/Disane87/spoolman-homeassistant/commit/841517988067ed610f266c9bc36cb3873c3dfada)), references [#100](https://github.com/Disane87/spoolman-homeassistant/issues/100) [#105](https://github.com/Disane87/spoolman-homeassistant/issues/105) [#312](https://github.com/Disane87/spoolman-homeassistant/issues/312)
+* rephrase Subthiel note in English, drop product references ([3d89f70](https://github.com/Disane87/spoolman-homeassistant/commit/3d89f7053956430884b320876ed815475032772b))
+* rephrase Subthiel note in English, drop product references ([35814e5](https://github.com/Disane87/spoolman-homeassistant/commit/35814e52661d0a486f591f0b6bea1df3addd8ad0))
+
+### 🦊 CI/CD
+
+* pin phacc to stable HA and restore publish.sh exec bit ([b7058f8](https://github.com/Disane87/spoolman-homeassistant/commit/b7058f8850e4d0181bbbced7d6525094c6687c9c))
+* pin Python back to 3.14 (no Pillow wheel for 3.15 yet) ([234e55c](https://github.com/Disane87/spoolman-homeassistant/commit/234e55cf8d96608cbade053b28eb29c663230b63))
+* revert Python 3.15 bump ([#903](https://github.com/Disane87/spoolman-homeassistant/issues/903)), deps don't install on 3.15 yet ([d15e8ee](https://github.com/Disane87/spoolman-homeassistant/commit/d15e8ee3802357cd04cca6c631c15feb57e9fe37))
+* revert Python 3.15 bump ([#907](https://github.com/Disane87/spoolman-homeassistant/issues/907)), deps don't install on 3.15 yet ([eaed916](https://github.com/Disane87/spoolman-homeassistant/commit/eaed916297c5401c31f5cf79e77795a664d27020))
+* revert Python 3.15 bump ([#909](https://github.com/Disane87/spoolman-homeassistant/issues/909)) until release brings the Renovate rule to main ([eefbe6c](https://github.com/Disane87/spoolman-homeassistant/commit/eefbe6c757cde4097f28033fea3f95da107397ce))
+
+### 🧪 Tests
+
+* 91% coverage achieved — test-coverage rule done in quality_scale.yaml ([ec3de06](https://github.com/Disane87/spoolman-homeassistant/commit/ec3de0654c02db064dd55a9d0a91e89d5092f2b4))
+* add characterization snapshot pinning all 47 entities (regression contract) ([193e66a](https://github.com/Disane87/spoolman-homeassistant/commit/193e66a1da447719baffb98f494753f65886325d))
+* add diagnostics, API client, select, binary_sensor tests (35 tests, 79% coverage) ([b122c1f](https://github.com/Disane87/spoolman-homeassistant/commit/b122c1fbac88404b39fe3d7cfe30e451749d7334))
+* add integration setup/unload sanity test ([824ab32](https://github.com/Disane87/spoolman-homeassistant/commit/824ab32053b5e5a2dfa4900839111e8e7a6f40e5))
+* add pytest, coverage, mypy tooling configuration ([22c28fc](https://github.com/Disane87/spoolman-homeassistant/commit/22c28fcec5e7bfea47a6b1e5bd5b12e07cabae6b))
+* add Spoolman API fixture data covering the spool variation matrix ([f6b6175](https://github.com/Disane87/spoolman-homeassistant/commit/f6b6175e968edbae5b6fe010c1d95c9fc403758d))
+* add Spoolman conftest with API mock and end-to-end fixtures ([c366e15](https://github.com/Disane87/spoolman-homeassistant/commit/c366e152552b0846892d3e2b04334c5c0cae6d70))
+* add tests for add_trailing_slash helper ([#289](https://github.com/Disane87/spoolman-homeassistant/issues/289)) ([4a4b325](https://github.com/Disane87/spoolman-homeassistant/commit/4a4b32590f7e217090381bc8abe2474eef172a19))
+* make characterization snapshot deterministic across machines ([7a366a2](https://github.com/Disane87/spoolman-homeassistant/commit/7a366a2f43f9deadffd5adb37f63e4576815edcf))
+* phase 2 complete - service, config flow, options flow, coordinator tests ([06721ae](https://github.com/Disane87/spoolman-homeassistant/commit/06721ae42609f1a1c248e75552c67d6b63624064))
+
+### 🧹 Other
+
+* **deps:** support Home Assistant 2026.10 test stack ([ab31e3f](https://github.com/Disane87/spoolman-homeassistant/commit/ab31e3f45aa24b83a41c5ce3fba03e6cdeb99586)), closes [#871](https://github.com/Disane87/spoolman-homeassistant/issues/871) [#860](https://github.com/Disane87/spoolman-homeassistant/issues/860) [#865](https://github.com/Disane87/spoolman-homeassistant/issues/865)
+* **deps:** update actions/checkout action to v7 ([f7a8202](https://github.com/Disane87/spoolman-homeassistant/commit/f7a82026603db24e328949be1dea9d891fe53521))
+* **deps:** update actions/setup-node action to v7 ([ffa1f7f](https://github.com/Disane87/spoolman-homeassistant/commit/ffa1f7f5c5a0bd613a58c42b500b7a8b4105f741))
+* **deps:** update actions/setup-python action to v6.3.0 ([3a8afb6](https://github.com/Disane87/spoolman-homeassistant/commit/3a8afb6936bc1f0ebfadfdf7160d60452a1f2d9e))
+* **deps:** update actions/setup-python action to v7 ([81261f7](https://github.com/Disane87/spoolman-homeassistant/commit/81261f7ed68446d872c560401417d5a245366221))
+* **deps:** update actions/setup-python action to v7.1.0 ([a1fd2a5](https://github.com/Disane87/spoolman-homeassistant/commit/a1fd2a517a5433873f071eb14a997ac386364b00))
+* **deps:** update actions/stale action to v11 ([998e62f](https://github.com/Disane87/spoolman-homeassistant/commit/998e62fe7f3ef647e68d6ec27c23c06e0eaeeb95))
+* **deps:** update actions/upload-artifact action to v7 ([caf2ade](https://github.com/Disane87/spoolman-homeassistant/commit/caf2ade49d5b3841902b938ea886d5d76cd3a568))
+* **deps:** update dependency colorlog to v6.12.0 ([a0112f1](https://github.com/Disane87/spoolman-homeassistant/commit/a0112f1c96d689e46018f8c71567b8c7aa75cf3d))
+* **deps:** update dependency node to v26 ([602097d](https://github.com/Disane87/spoolman-homeassistant/commit/602097df8ac73c2dc107e406ff6a535cb594fa08))
+* **deps:** update dependency pytest-homeassistant-custom-component to v0.13.339 ([03d3284](https://github.com/Disane87/spoolman-homeassistant/commit/03d328438c8bd4deddfebcc835209a0bd769ee92))
+* **deps:** update dependency pytest-homeassistant-custom-component to v0.13.340 ([7e399d3](https://github.com/Disane87/spoolman-homeassistant/commit/7e399d38f6c1dd05d3339de31fd9762922d64fd5))
+* **deps:** update dependency python ([a5a25dd](https://github.com/Disane87/spoolman-homeassistant/commit/a5a25dd19919cd3659acb12d1742a038264e1504))
+* **deps:** update dependency python ([0a7abbe](https://github.com/Disane87/spoolman-homeassistant/commit/0a7abbedd2ef87f55bf338be915990f7b4e83a72))
+* **deps:** update dependency python ([c9b3d35](https://github.com/Disane87/spoolman-homeassistant/commit/c9b3d35d556f2f37cbb86db3584d7c9dfd39891f))
+* **deps:** update dependency python to 3.15 ([8060fbc](https://github.com/Disane87/spoolman-homeassistant/commit/8060fbc2eb7a896a27813ce109902bb7763016ca))
+* **deps:** update dependency ruff to v0.15.13 ([2db8188](https://github.com/Disane87/spoolman-homeassistant/commit/2db8188125427f8f2b1530a457e2e549f5c23f51))
+* **deps:** update dependency ruff to v0.15.14 ([50544f7](https://github.com/Disane87/spoolman-homeassistant/commit/50544f70bba82f0979037c2a0573e9215a3594f6))
+* **deps:** update dependency ruff to v0.15.15 ([53a6575](https://github.com/Disane87/spoolman-homeassistant/commit/53a6575f6c64bd92c316c25143aecb2abc38ddaa))
+* **deps:** update dependency ruff to v0.15.16 ([b24004d](https://github.com/Disane87/spoolman-homeassistant/commit/b24004de870a6fe6cd6a00987498b4a120f9fdb7))
+* **deps:** update dependency ruff to v0.15.17 ([b77a13b](https://github.com/Disane87/spoolman-homeassistant/commit/b77a13b01b4427a174dbd84e6e5ad53c53e45af4))
+* **deps:** update dependency ruff to v0.15.18 ([fc365ac](https://github.com/Disane87/spoolman-homeassistant/commit/fc365acbde69fba0a0fe40513a6bdfd059aa7424))
+* **deps:** update dependency ruff to v0.15.19 ([81c113d](https://github.com/Disane87/spoolman-homeassistant/commit/81c113d4a77d964490a5da6764d3b3dc9b403741))
+* **deps:** update dependency ruff to v0.15.20 ([6404e6d](https://github.com/Disane87/spoolman-homeassistant/commit/6404e6de6e50bcfa5247615fa284406836f402c6))
+* **deps:** update dependency ruff to v0.15.21 ([db8bb03](https://github.com/Disane87/spoolman-homeassistant/commit/db8bb03cbd1dfe05c42e68aee1d1a503adf6e5b5))
+* **deps:** update dependency ruff to v0.16.0 ([343d6ae](https://github.com/Disane87/spoolman-homeassistant/commit/343d6ae9a103e07b1d09fab5cbda47f41f649c71))
+* **deps:** update dependency ruff to v0.16.1 ([ac08b8f](https://github.com/Disane87/spoolman-homeassistant/commit/ac08b8fa80dfc309d120ea38d7ec55c12e84c7fd))
+* **deps:** update dependency ruff to v0.16.10 ([284c48b](https://github.com/Disane87/spoolman-homeassistant/commit/284c48bd8607dca65460835d8bd3a1c467be6459))
+* **deps:** update dependency ruff to v0.16.2 ([fa9a0fb](https://github.com/Disane87/spoolman-homeassistant/commit/fa9a0fb32a4abab3cfc946ae813dd08ce2219cbd))
+* **deps:** update dependency ruff to v0.16.7 ([23cc3a7](https://github.com/Disane87/spoolman-homeassistant/commit/23cc3a713ed7f986bfc1ade48b3955a0cbf498a0))
+* **deps:** update dependency ruff to v0.16.8 ([e3057ed](https://github.com/Disane87/spoolman-homeassistant/commit/e3057ed9668058618d4d8e0b549399a4885a894a))
+* **deps:** update dependency ruff to v0.16.9 ([f91341a](https://github.com/Disane87/spoolman-homeassistant/commit/f91341abb0c0f394a27f932421235435a1a15dad))
+* **deps:** update dependency ruff to v0.17.0 ([ea66fa9](https://github.com/Disane87/spoolman-homeassistant/commit/ea66fa9c1565fa73a94d689c6502e0a9facb4ba2))
+* **deps:** update python docker tag to v3.15 ([1520201](https://github.com/Disane87/spoolman-homeassistant/commit/15202015e6b83cc395da56b2509f7bea97696ff4))
+* **deps:** update ruff to 0.17.6, pip, mypy >=2.1.0, pytest-cov >=7.1.0 ([918886e](https://github.com/Disane87/spoolman-homeassistant/commit/918886ef97169e037711ac045ecb83ae8c4612cb)), closes [#897](https://github.com/Disane87/spoolman-homeassistant/issues/897) [#855](https://github.com/Disane87/spoolman-homeassistant/issues/855) [#864](https://github.com/Disane87/spoolman-homeassistant/issues/864) [#862](https://github.com/Disane87/spoolman-homeassistant/issues/862)
+* **deps:** upgrade dev/test stack to Python 3.14 + Home Assistant 2026.5.4 ([f7c9556](https://github.com/Disane87/spoolman-homeassistant/commit/f7c9556154399e4263c8284f13cf1ebc9eeac160))
+* merge main into dev to prepare release ([b0065f9](https://github.com/Disane87/spoolman-homeassistant/commit/b0065f9e91d6823ef9f6e728fd14b2c3038d2f3d)), references [#847](https://github.com/Disane87/spoolman-homeassistant/issues/847)
+* **release:** 📢 1.4.0-dev.3 ([a3d2233](https://github.com/Disane87/spoolman-homeassistant/commit/a3d223347d3e433a33dcd4aad3822e5adc9fc0e5))
+* **release:** 📢 1.4.0-dev.4 ([51cec72](https://github.com/Disane87/spoolman-homeassistant/commit/51cec72cc7bce3f16ed6990f555884f7e523ba9a))
+* **release:** 📢 1.4.0-dev.5 ([d7c2824](https://github.com/Disane87/spoolman-homeassistant/commit/d7c2824305fa02158d34aa66b2f97d9150e62c0d))
+* **release:** 📢 1.4.0-dev.6 ([ab71df6](https://github.com/Disane87/spoolman-homeassistant/commit/ab71df6bf294a5895ecd28f2efe3d5c42552f443))
+* untrack tests/ directory so test suite can be versioned ([bcaffe1](https://github.com/Disane87/spoolman-homeassistant/commit/bcaffe11c97434380b6f192fb73e0b8b52f4442e))
+
+### 🚀 Features
+
+* **devx:** non-root vscode user for Dev Container ([d777365](https://github.com/Disane87/spoolman-homeassistant/commit/d7773652c6574be00068593819a78ba7c9cb2ed5))
+* **devx:** VS Code Dev Container for Test Explorer integration ([22b997a](https://github.com/Disane87/spoolman-homeassistant/commit/22b997a080541af3cd06ae1bf53e7fb313320933))
+* **i18n:** add Swedish translation ([#882](https://github.com/Disane87/spoolman-homeassistant/issues/882)) ([8e7676f](https://github.com/Disane87/spoolman-homeassistant/commit/8e7676fa85a8f236e68236b4c7f2313e0cf8e59a))
+* **phase 4.4-4.5:** translations + per-module strict typing ([d63594b](https://github.com/Disane87/spoolman-homeassistant/commit/d63594bf5e0e57db721d5767fa5975a94e209e9e))
+* **phase 4:** platinum compliance — first_refresh, parallel_updates, diagnostics, options reload, manifest, quality_scale.yaml ([6aae130](https://github.com/Disane87/spoolman-homeassistant/commit/6aae1305087775c8d27bf203914faeeb56bfea57))
+* **phase 5:** platinum badge in README, ruff scope to integration paths ([26f3827](https://github.com/Disane87/spoolman-homeassistant/commit/26f3827b4d907dbf502a792d8423ace1dc0feefa))
+* **platinum:** migrate to ConfigEntry.runtime_data (typed SpoolmanRuntimeData) ([7c5564e](https://github.com/Disane87/spoolman-homeassistant/commit/7c5564eb6b8e4a1e7f2792e9cade5af6068da46b))
+* **platinum:** mypy --strict clean across the entire integration (28 files) ([112cabb](https://github.com/Disane87/spoolman-homeassistant/commit/112cabbde88ae5ecc0c34b3e40257db1bced2089))
+* **platinum:** mypy --strict clean on the integration core ([1117e49](https://github.com/Disane87/spoolman-homeassistant/commit/1117e49f8302577eddf3e66e0a1031bb157da6d0))
+* **platinum:** strict typing on filament_color_hex, spool_location, spool_used_percentage; remove unused base.py ([79650a7](https://github.com/Disane87/spoolman-homeassistant/commit/79650a73d1e05e18ba2bf06cb5642e7837e23df2))
+
+### 🛠️ Fixes
+
+* **coordinator:** satisfy mypy strict for spool_count map ([39f3696](https://github.com/Disane87/spoolman-homeassistant/commit/39f36964feb3eb2c6565f76cfc128587a418ea39))
+* **image:** accept alpha-enabled RRGGBBAA multi-color hex values ([#852](https://github.com/Disane87/spoolman-homeassistant/issues/852)) ([bfa7aa5](https://github.com/Disane87/spoolman-homeassistant/commit/bfa7aa5594edc938598c99bba46cffac34fc6f69))
+* **locations:** include empty Locations-page entries ([#854](https://github.com/Disane87/spoolman-homeassistant/issues/854)) ([897b0fe](https://github.com/Disane87/spoolman-homeassistant/commit/897b0fe15d0e3477e0d4bd31d33ad92a2c4e01c1)), closes [#839](https://github.com/Disane87/spoolman-homeassistant/issues/839)
+* **naming:** avoid doubled spool name on HA 2026.10 for low-filament and location entities ([033bd72](https://github.com/Disane87/spoolman-homeassistant/commit/033bd72a181ab9f2219ad22c01b96495edfb0770))
+* **release:** stamp manifest.json version so HA shows the real version ([c82e805](https://github.com/Disane87/spoolman-homeassistant/commit/c82e805011a3604e59c2a720f2c87851679f34aa)), closes [#854](https://github.com/Disane87/spoolman-homeassistant/issues/854)
+* resolve open issues [#850](https://github.com/Disane87/spoolman-homeassistant/issues/850) [#851](https://github.com/Disane87/spoolman-homeassistant/issues/851) [#887](https://github.com/Disane87/spoolman-homeassistant/issues/887) [#888](https://github.com/Disane87/spoolman-homeassistant/issues/888) [#898](https://github.com/Disane87/spoolman-homeassistant/issues/898) [#901](https://github.com/Disane87/spoolman-homeassistant/issues/901) ([fea7006](https://github.com/Disane87/spoolman-homeassistant/commit/fea70066131be2028e66031cb7427ede9a4f3b61))
+* restore scripts/, ignore .claude/ ([12ea0a0](https://github.com/Disane87/spoolman-homeassistant/commit/12ea0a04db8e0b18e4d44fde1172159f276073f3))
+
 ## [1.4.0-dev.6](https://github.com/Disane87/spoolman-homeassistant/compare/v1.4.0-dev.5...v1.4.0-dev.6) (2026-11-25)
 
 ### 🧪 Tests
