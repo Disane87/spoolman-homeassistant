@@ -4,7 +4,7 @@ import logging
 import os
 from typing import Any, cast
 
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -65,16 +65,21 @@ class SpoolmanSensor(SpoolmanEntity, SensorEntity):
         self.entity_id = self._make_entity_id("sensor", description.entity_id_suffix)
         self._attr_device_info = self._make_device_info()
 
+    @property
+    def native_value(self) -> Any:
+        """Return the value extracted from the spool dict by ``value_fn``."""
+        return self.entity_description.value_fn(self._spool)
+
     @property  # type: ignore[misc]
     def state(self) -> Any:
-        """Return the value extracted from the spool dict by ``value_fn``.
+        """Return the state; numeric sensors go through HA unit conversion (#898).
 
-        Overrides ``state`` rather than ``native_value`` so timestamp-class
-        sensors that store ISO strings (the legacy convention) keep their
-        raw string state. Migrating to ``native_value`` would force a
-        datetime parse and change the snapshotted state representation.
+        Timestamp sensors keep their raw ISO string (legacy convention);
+        ``native_value`` would force a datetime parse and change the state.
         """
-        return self.entity_description.value_fn(self._spool)
+        if self.device_class == SensorDeviceClass.TIMESTAMP:
+            return self.native_value
+        return super().state
 
 
 _LOGGER = logging.getLogger(__name__)

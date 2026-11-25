@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Start a local Home Assistant with this integration loaded.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+CONFIG_DIR="${CONFIG_DIR:-/config}"
+mkdir -p "${CONFIG_DIR}"
+[ -f "${CONFIG_DIR}/configuration.yaml" ] || hass --config "${CONFIG_DIR}" --script ensure_config
+# Load custom_components from the repo without copying/symlinking.
+export PYTHONPATH="${PYTHONPATH:-}:${PWD}/custom_components"
+hass --config "${CONFIG_DIR}" --debug

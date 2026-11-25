@@ -66,6 +66,9 @@ share/*
 scripts/*
 !/scripts/publish.sh
 !/scripts/install-hooks.sh
+!/scripts/setup
+!/scripts/develop
+!/scripts/lint
 
 # vimmy stuff
 *.swp

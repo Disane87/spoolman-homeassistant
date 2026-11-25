@@ -16,6 +16,7 @@ from homeassistant.helpers.entity import generate_entity_id
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from ..const import (
+    CONF_CREATE_AREAS,
     CONF_URL,
     DOMAIN,
     EVENT_THRESHOLD_EXCEEDED,
@@ -110,11 +111,14 @@ class Spool(CoordinatorEntity[Any], SensorEntity):
             manufacturer="https://github.com/Donkie/Spoolman",
             model="Spoolman Location Hub",
             configuration_url=self.config[CONF_URL],
-            suggested_area=location_name,
+            suggested_area=location_name
+            if self.config.get(CONF_CREATE_AREAS, True)
+            else None,
             sw_version=f"{spoolman_info.get('version', 'unknown')} ({spoolman_info.get('git_commit', 'unknown')})",
         )
 
-        # Create spool device with location as via_device
+        # Spool device; its link to the location hub is set via via_device_id
+        # below (the DeviceInfo via_device tuple is deprecated, #887).
         spool_device_info = DeviceInfo(
             identifiers={
                 (DOMAIN, self.config[CONF_URL], f"spool_{self._spool['id']}")  # type: ignore[arg-type]
@@ -122,7 +126,6 @@ class Spool(CoordinatorEntity[Any], SensorEntity):
             name=spool_name,
             manufacturer=vendor_name if vendor_name else "Unknown",
             model=f"{self._filament.get('material', 'Unknown')} - {self._filament.get('name', 'Unknown')}",
-            via_device=(DOMAIN, self.config[CONF_URL], f"location_{location_name}"),  # type: ignore[typeddict-item]
             configuration_url=self.config[CONF_URL],
             sw_version=f"Spool ID: {self._spool['id']}",
         )
@@ -132,7 +135,7 @@ class Spool(CoordinatorEntity[Any], SensorEntity):
             device_registry = dr.async_get(self.coordinator.hass)
 
             # Create or get location hub
-            device_registry.async_get_or_create(
+            location_device = device_registry.async_get_or_create(
                 config_entry_id=self.coordinator.config_entry.entry_id,
                 **location_device_info,
             )
@@ -142,6 +145,15 @@ class Spool(CoordinatorEntity[Any], SensorEntity):
                 config_entry_id=self.coordinator.config_entry.entry_id,
                 **spool_device_info,
             )
+            # async_update_device works on all supported HA versions; the
+            # via_device_id kwarg of async_get_or_create is newer.
+            if spool_device.via_device_id != location_device.id:
+                spool_device = (
+                    device_registry.async_update_device(
+                        spool_device.id, via_device_id=location_device.id
+                    )
+                    or spool_device
+                )
 
             # Only update entity if it already exists, otherwise device_info will be used during entity creation
             entity_registry = er.async_get(self.coordinator.hass)
@@ -186,26 +198,24 @@ class Spool(CoordinatorEntity[Any], SensorEntity):
 
         self.assign_name_and_location()
 
+        # Always publish the new state, even when usage can't be calculated
+        # (#850: filaments without a weight never refreshed remaining weight).
         if self._filament.get("weight") is None:
-            _LOGGER.warning(
-                "SpoolManCoordinator: Spool with ID '%s' has no 'weight' set or property is missing in filament. Can't calculate usage. Skipping.",
+            _LOGGER.debug(
+                "SpoolManCoordinator: Spool with ID '%s' has no 'weight' set in filament. Can't calculate usage.",
                 self._spool["id"],
             )
-            return
-
-        if self._spool.get("used_weight") is None:
-            _LOGGER.warning(
-                "SpoolManCoordinator: Spool with ID '%s' has no 'used_weight' set or property is missing in filament. Can't calculate usage. Skipping.",
+        elif self._spool.get("used_weight") is None:
+            _LOGGER.debug(
+                "SpoolManCoordinator: Spool with ID '%s' has no 'used_weight' set. Can't calculate usage.",
                 self._spool["id"],
             )
-            return
-
-        self._spool["used_percentage"] = (
-            round(self._spool["used_weight"] / self._filament["weight"], 3) * 100
-        )
-
-        if self._spool["archived"] is False:
-            self.check_for_threshold(self._spool, self._spool["used_percentage"])
+        else:
+            self._spool["used_percentage"] = (
+                round(self._spool["used_weight"] / self._filament["weight"], 3) * 100
+            )
+            if self._spool["archived"] is False:
+                self.check_for_threshold(self._spool, self._spool["used_percentage"])
 
         self.async_write_ha_state()
 
@@ -276,10 +286,10 @@ class Spool(CoordinatorEntity[Any], SensorEntity):
             return flat_dict
         return {}
 
-    @property  # type: ignore[misc]
-    def state(self) -> float | int:
-        """Return the remaining weight of the spool (g)."""
-        value = round(self._spool.get("remaining_weight", 0), 3)
+    @property
+    def native_value(self) -> float | int:
+        """Return the remaining weight of the spool (g); HA converts units (#898)."""
+        value = round(self._spool.get("remaining_weight") or 0, 3)
         return value if isinstance(value, int | float) else 0
 
     async def async_update(self) -> None:

@@ -6,7 +6,7 @@ import asyncio
 import logging
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -141,21 +141,28 @@ class SpoolManCoordinator(DataUpdateCoordinator["CoordinatorData"]):
 
         # Calculate total remaining weight for each filament from non-archived spools
         filament_remaining_weights = {}
+        filament_spool_counts: dict[Any, int] = {}
         for spool in spools:
             if not spool.get("archived", False):  # Only count non-archived spools
                 filament_id = spool.get("filament", {}).get("id")
+                if filament_id is not None:
+                    filament_spool_counts[filament_id] = (
+                        filament_spool_counts.get(filament_id, 0) + 1
+                    )
                 remaining_weight = spool.get("remaining_weight", 0)
                 if filament_id is not None and remaining_weight is not None:
                     if filament_id not in filament_remaining_weights:
                         filament_remaining_weights[filament_id] = 0
                     filament_remaining_weights[filament_id] += remaining_weight
 
-        # Add total remaining weight to each filament
+        # Add total remaining weight and active spool count to each filament
+        # (spool_count is used by the README filament card, #888).
         for filament in filaments:
             filament_id = filament.get("id")
             filament["total_remaining_weight"] = filament_remaining_weights.get(
                 filament_id, 0
             )
+            filament["spool_count"] = filament_spool_counts.get(filament_id, 0)
 
         # Ensure the attribute exists consistently for all spools.
         for spool in spools:
