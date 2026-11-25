@@ -1,5 +1,5 @@
 # Test dependencies — pin majors, allow patches.
-pytest>=9,<10
+pytest>=9.2.0,<10
 # Pinned exactly: this package pins an exact Home Assistant version, so a
 # floating spec lets a patch release (e.g. 0.13.335 -> HA 2026.6.0b2) drag in
 # a pre-release HA and break the characterization snapshots. 0.13.333 pins the
