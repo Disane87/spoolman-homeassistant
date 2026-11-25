@@ -125,7 +125,7 @@ We've got you covered! This project includes a fully configured Dev Container th
 
 6. **✨ Linting and Code Quality:**
    ```bash
-   # Run pylint
+   # Lint + format with ruff
    ./scripts/lint
 
    # Format code with black

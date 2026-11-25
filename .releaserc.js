@@ -59,7 +59,8 @@ module.exports = {
                 assets: [
                     "hacs.json",
                     "CHANGELOG.md",
-                    "README.md"
+                    "README.md",
+                    "custom_components/spoolman/manifest.json"
                 ]
             }
         ],

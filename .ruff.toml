@@ -2,6 +2,17 @@
 
 target-version = "py310"
 
+# Exclude vendored / local-dev artefacts so lint only checks our integration.
+extend-exclude = [
+    "custom_components/hacs",       # local HACS install for dev testing
+    "config",                        # local HA config dir
+    "Lib",                           # leftover Windows venv
+    "lib64",                         # leftover Windows venv
+    "Scripts",                       # leftover Windows venv
+    ".venv*",                        # any venv
+    "Include",                       # leftover Windows venv
+]
+
 [lint]
 select = [
     "B007",    # Loop control variable {name} not used within loop body
