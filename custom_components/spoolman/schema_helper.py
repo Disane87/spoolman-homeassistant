@@ -1,7 +1,11 @@
 """Schema helper."""
 
 from typing import Any
-import voluptuous as vol
+
+try:  # HA >= 2026.10 validates with probatio (voluptuous-compatible API)
+    import probatio as vol
+except ImportError:  # older HA
+    import voluptuous as vol  # type: ignore[no-redef]
 import homeassistant.helpers.config_validation as cv
 from .const import (
     CONF_CREATE_AREAS,

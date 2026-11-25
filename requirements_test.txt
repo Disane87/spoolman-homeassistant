@@ -4,10 +4,10 @@ pytest>=9,<10
 # floating spec lets a patch release (e.g. 0.13.335 -> HA 2026.6.0b2) drag in
 # a pre-release HA and break the characterization snapshots. 0.13.333 pins the
 # newest stable HA (2026.5.4) and syrupy 5.1.0 — keep them in lockstep here.
-pytest-homeassistant-custom-component==0.13.340
+pytest-homeassistant-custom-component==0.13.375
 pytest-cov>=7.1.0
-pytest-asyncio>=0.24
+pytest-asyncio>=1.4.0
 aioresponses>=0.7.6
-syrupy>=4.7
+syrupy>=5.3.2
 mypy>=2.1.0
 freezegun>=1.5

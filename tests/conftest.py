@@ -9,13 +9,16 @@ existing API client byte-stable through phase 3.
 
 from __future__ import annotations
 
+import inspect
 import json
 import re
 from collections.abc import AsyncGenerator
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
+from aiohttp import ClientResponse
 from aioresponses import aioresponses
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -24,6 +27,18 @@ from custom_components.spoolman.const import DOMAIN
 from .const import MOCK_CONFIG_DATA, MOCK_URL
 
 pytest_plugins = ["pytest_homeassistant_custom_component"]
+
+# shortcut: aioresponses 0.7.9 does not pass the ``stream_writer`` argument that
+# aiohttp >= 3.14 requires on ClientResponse; default it to a no-op writer.
+# Remove once aioresponses supports aiohttp 3.14.
+if "stream_writer" in inspect.signature(ClientResponse.__init__).parameters:
+    _orig_response_init = ClientResponse.__init__
+
+    def _response_init(self: Any, *args: Any, **kwargs: Any) -> None:
+        kwargs.setdefault("stream_writer", SimpleNamespace(output_size=0))
+        _orig_response_init(self, *args, **kwargs)
+
+    ClientResponse.__init__ = _response_init  # type: ignore[method-assign]
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 

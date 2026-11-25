@@ -10,7 +10,7 @@ determine when to alert users about low filament levels.
 import logging
 from typing import Any
 
-from homeassistant.components.binary_sensor import (
+from homeassistant.components.binary_sensor import (  # type: ignore[attr-defined]  # not re-exported for mypy on HA >= 2026.10, but present at runtime
     BinarySensorDeviceClass,
     BinarySensorEntity,
 )
