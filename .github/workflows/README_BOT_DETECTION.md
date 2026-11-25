@@ -83,12 +83,6 @@ if: |
 - **WICHTIG**: Checkout entfernt (Sicherheit bei `pull_request_target`)
 - Nutzt nur GitHub API für Datei-Analyse
 
-### ✅ check-pr-target-branch.yml
-- Event: Bereits `pull_request_target` ✅
-- Bot-Check: ✅ NEU
-- Fork-Support: ✅
-- Maintainer-Check: ✅
-
 ### ✅ welcome.yml
 - Event: Bereits `pull_request_target` ✅
 - Bot-Check: ✅ NEU

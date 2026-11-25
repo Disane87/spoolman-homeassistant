@@ -65,12 +65,5 @@ module.exports = {
     "@semantic-release/changelog"
     // NOTE: @semantic-release/git and @semantic-release/github are intentionally excluded for dry-run testing
   ],
-  branches: [
-    "main",
-    {
-      name: "dev",
-      prerelease: true,
-      channel: "dev"
-    }
-  ]
+  branches: ["main"]
 };

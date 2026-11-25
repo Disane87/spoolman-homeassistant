@@ -62,7 +62,7 @@ Fixes #
 - [ ] ⚠️ My changes generate no new warnings or errors
 - [ ] 🧪 I have added tests that prove my fix is effective or that my feature works
 - [ ] ✅ New and existing unit tests pass locally with my changes
-- [ ] 🌿 I am merging into the `dev` branch (not `main`)
+- [ ] 🌿 I am merging into the `main` branch
 - [ ] 📝 My commits follow the [Conventional Commits](https://www.conventionalcommits.org/) specification
 - [ ] 🔄 I have updated the integration version in `manifest.json` if needed
 - [ ] 🌍 I have updated translations if I changed user-facing strings
@@ -113,7 +113,7 @@ Example commit messages:
 - [ ] Tests are adequate
 - [ ] Documentation is updated
 - [ ] Breaking changes are documented
-- [ ] Ready to merge to `dev`
+- [ ] Ready to merge to `main`
 
 ### Post-Merge Tasks
 - [ ] Update CHANGELOG if needed

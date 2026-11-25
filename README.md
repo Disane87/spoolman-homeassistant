@@ -723,7 +723,7 @@ We'd love to have you on board! Check out our [Contributing Guidelines](CONTRIBU
 
 **🏃‍♂️ Quick Start for Developers:**
 - 📦 Use the included Dev Container - everything's ready to go!
-- 🌿 Merge PRs to the `dev` branch (PRs against `main` will be rejected)
+- 🌿 Open PRs against the `main` branch
 - 💾 Use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) for automatic versioning
 - 💻 Visual Studio Code recommended (everything works out of the box)
 
