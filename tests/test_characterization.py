@@ -39,7 +39,8 @@ async def test_all_entities_snapshot(
                 "state": state.state if state else None,
                 "attributes": (
                     {
-                        k: v
+                        # str(): HA >= 2026.10 uses StrEnum attribute keys.
+                        str(k): v
                         for k, v in state.attributes.items()
                         # Filter wall-clock and image-cache attributes that are
                         # non-deterministic between runs but represent no

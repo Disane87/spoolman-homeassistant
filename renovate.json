@@ -19,5 +19,14 @@
   },
   "pin": {
     "automerge": true
-  }
+  },
+  "packageRules": [
+    {
+      "description": "Stay on Python 3.14 until Home Assistant's dependencies ship 3.15 wheels (Pillow, numpy, ...)",
+      "matchPackageNames": [
+        "python"
+      ],
+      "allowedVersions": "<3.15"
+    }
+  ]
 }
