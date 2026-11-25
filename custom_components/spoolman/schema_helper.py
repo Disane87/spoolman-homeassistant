@@ -4,6 +4,7 @@ from typing import Any
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 from .const import (
+    CONF_CREATE_AREAS,
     CONF_NOTIFICATION_THRESHOLD_CRITICAL,
     CONF_NOTIFICATION_THRESHOLD_INFO,
     CONF_NOTIFICATION_THRESHOLD_WARNING,
@@ -92,6 +93,10 @@ class SchemaHelper:
                 vol.Required(
                     CONF_SHOW_ARCHIVED,
                     default=get_default_value(CONF_SHOW_ARCHIVED, False),
+                ): bool,
+                vol.Required(
+                    CONF_CREATE_AREAS,
+                    default=get_default_value(CONF_CREATE_AREAS, True),
                 ): bool,
                 vol.Optional(
                     KLIPPER_URL,

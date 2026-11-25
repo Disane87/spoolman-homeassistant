@@ -15,7 +15,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import generate_entity_id
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from ..const import CONF_URL, DOMAIN, SPOOLMAN_INFO_PROPERTY
+from ..const import CONF_CREATE_AREAS, CONF_URL, DOMAIN, SPOOLMAN_INFO_PROPERTY
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -92,7 +92,9 @@ class Filament(CoordinatorEntity[Any], SensorEntity):
             manufacturer="https://github.com/Donkie/Spoolman",
             model="Spoolman",
             configuration_url=self.config[CONF_URL],
-            suggested_area=location_name,
+            suggested_area=location_name
+            if self.config.get(CONF_CREATE_AREAS, True)
+            else None,
             sw_version=f"{spoolman_info.get('version', 'unknown')} ({spoolman_info.get('git_commit', 'unknown')})",
         )
         if self._attr_device_info is None:
@@ -163,9 +165,9 @@ class Filament(CoordinatorEntity[Any], SensorEntity):
             return flat_dict
         return {}
 
-    @property  # type: ignore[misc]
-    def state(self) -> float | int:
-        """Return the total remaining weight across all spools (g)."""
+    @property
+    def native_value(self) -> float | int:
+        """Return the total remaining weight across all spools (g); HA converts units (#898)."""
         value = round(self._filament.get("total_remaining_weight", 0), 3)
         return value if isinstance(value, int | float) else 0
 

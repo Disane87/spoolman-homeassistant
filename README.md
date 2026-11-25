@@ -128,7 +128,7 @@ Glad you asked! Here's the good stuff:
 - 📦 **Archive Support**: Old spools? Group them in an "Archived" device
 - 🖨️ ~~**Klipper Integration**: Track active spools in your Klipper setup~~ — **deprecated, scheduled for removal** (see banner above; use Moonraker's native Spoolman integration instead)
 - 🤖 **Automation Services**: `patch_spool` and `use_spool_filament` for automation magic
-- 🎯 **Auto Areas**: Assigns device areas automatically (won't overwrite yours!)
+- 🎯 **Auto Areas**: Assigns device areas automatically (won't overwrite yours!) — can be turned off in the integration options ("Create Home Assistant areas from Spoolman locations")
 - 💾 **Database Friendly**: Dedicated sensors = no more bloated databases
 
 > [!NOTE]
@@ -332,11 +332,11 @@ cards:
             icon_color: "#{{ state_attr(entity, 'color_hex') }}"
             icon: mdi:printer-3d-nozzle
             badge_icon: |
-              {% if state_attr(entity, 'spool_count') > 1 %}
+              {% if (state_attr(entity, 'spool_count') or 0) > 1 %}
                 mdi:layers
               {% endif %}
             badge_color: |
-              {% if state_attr(entity, 'spool_count') > 1 %}
+              {% if (state_attr(entity, 'spool_count') or 0) > 1 %}
                 blue
               {% else %}
                 default_color
