@@ -77,20 +77,6 @@ class SpoolLowFilament(CoordinatorEntity, BinarySensorEntity):
             config_entry.data.get(CONF_NOTIFICATION_THRESHOLD_WARNING, 75),
         )
 
-        # Get spool name
-        filament = self._spool.get("filament", {})
-        vendor_name = filament.get("vendor", {}).get("name")
-
-        if filament.get("name") and filament.get("material"):
-            if vendor_name:
-                spool_name = (
-                    f"{vendor_name} {filament['name']} {filament.get('material')}"
-                )
-            else:
-                spool_name = f"{filament['name']} {filament.get('material')}"
-        else:
-            spool_name = f"Spoolman Spool {self._spool['id']}"
-
         self.entity_id = generate_entity_id(
             "binary_sensor.{}",
             f"spoolman_spool_{spool_data['id']}_low_filament",
@@ -99,8 +85,10 @@ class SpoolLowFilament(CoordinatorEntity, BinarySensorEntity):
         self._attr_unique_id = (
             f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_low_filament"
         )
-        self._attr_has_entity_name = False
-        self._attr_name = f"{spool_name} Low Filament"
+        # Modern naming: HA prefixes the spool device name. Legacy naming
+        # doubled the spool name on HA >= 2026.10.
+        self._attr_has_entity_name = True
+        self._attr_name = "Low Filament"
         self._attr_device_class = BinarySensorDeviceClass.PROBLEM
         self._attr_icon = "mdi:alert-circle"
 

@@ -133,25 +133,12 @@ class SpoolLocationSelect(CoordinatorEntity[Any], SelectEntity):
         self._attr_unique_id = (
             f"spoolman_{self._entry.entry_id}_spool_{spool_data['id']}_location"
         )
-        self._attr_has_entity_name = False
+        # Modern naming: HA prefixes the spool device name. Legacy naming
+        # doubled the spool name on HA >= 2026.10.
+        self._attr_has_entity_name = True
+        self._attr_name = "Location"
         self._attr_icon = ICON
         self._attr_available = True
-
-        # Set initial name
-        filament = self._spool.get("filament", {})
-        vendor_name = filament.get("vendor", {}).get("name")
-
-        if filament.get("name") and filament.get("material"):
-            if vendor_name:
-                spool_name = (
-                    f"{vendor_name} {filament['name']} {filament.get('material')}"
-                )
-            else:
-                spool_name = f"{filament['name']} {filament.get('material')}"
-        else:
-            spool_name = f"Spoolman Spool {self._spool['id']}"
-
-        self._attr_name = f"{spool_name} Location"
 
         # Set device info to match spool device
         from homeassistant.helpers.device_registry import DeviceInfo
