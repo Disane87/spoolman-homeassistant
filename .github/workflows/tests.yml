@@ -20,7 +20,8 @@ jobs:
       - name: DEBUG snapshots
         run: |
           ls -la tests/snapshots; head -3 tests/snapshots/test_characterization.ambr | od -c | head -5
-          pytest tests/test_characterization.py --snapshot-details -p no:randomly -vv 2>&1 | grep -vE '^E  ' | tail -40 || true
+          pytest tests/test_characterization.py --snapshot-details -p no:randomly -vv 2>&1 | grep -iE 'snapshot|ambr|unused|location|exist' | grep -v '^E   *[+-]' | head -40 || true
+          python -c "from pytest_homeassistant_custom_component import syrupy as s; import inspect; print(inspect.getsource(s.HomeAssistantSnapshotExtension))" | head -40 || true
           python -c "import syrupy, pytest_homeassistant_custom_component as p; print(syrupy.__file__, p.__file__)"
           pip list 2>/dev/null | grep -iE 'syrupy|pytest'
       - name: Run pytest
