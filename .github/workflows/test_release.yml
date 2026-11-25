@@ -12,14 +12,14 @@ jobs:
       contents: read
     steps:
       - name: "Checkout the repository"
-        uses: "actions/checkout@v6"
+        uses: "actions/checkout@v7"
         with:
           fetch-depth: 0
 
       - name: "Setup Node"
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: 26
 
       - name: "Install dependencies"
         run: |

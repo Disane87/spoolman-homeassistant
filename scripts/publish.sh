@@ -12,11 +12,23 @@ branchName="$2"
 commitsLength="$3"
 timestamp="$4"
 
-mkdir dist
+# manifest.json mit der Release-Version stempeln. Muss VOR dem Zippen
+# passieren, damit das ausgelieferte Zip die korrekte Version enthält
+# (Home Assistant zeigt die 'version' aus der manifest.json an).
+manifestFile="custom_components/spoolman/manifest.json"
+if [ -f "$manifestFile" ]; then
+  jq ".version = \"${nextReleaseVersion}\"" "$manifestFile" > manifest.tmp.json
+  mv manifest.tmp.json "$manifestFile"
+  echo "Die Eigenschaft 'version' in '$manifestFile' wurde auf '${nextReleaseVersion}' gesetzt."
+else
+  echo "Die Datei '$manifestFile' wurde nicht gefunden."
+fi
 
 # Befehl ausführen, um das ZIP-Archiv zu erstellen
 zipCommand="zip ../../dist/spoolman-homeassistant_${nextReleaseVersion}.zip . -r"
 echo "Führe folgenden Befehl aus: $zipCommand"
+
+mkdir ./dist/
 
 (cd ./custom_components/spoolman && ls -la && $zipCommand)
 

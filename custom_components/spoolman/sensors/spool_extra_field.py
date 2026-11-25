@@ -10,7 +10,8 @@ from homeassistant.components.sensor import (
     SensorEntity,
     SensorStateClass,
 )
-from homeassistant.core import callback
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import generate_entity_id
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -47,11 +48,16 @@ def _device_class_for(field_type: str | None, unit: str | None) -> tuple[Any, st
     return None, "mdi:tag-outline"
 
 
-class SpoolExtraField(CoordinatorEntity, SensorEntity):
+class SpoolExtraField(CoordinatorEntity[Any], SensorEntity):
     """Sensor for spool extra field - dynamically created for each extra field."""
 
     def __init__(
-        self, hass, coordinator, spool_data, config_entry, field_key: str
+        self,
+        hass: HomeAssistant,
+        coordinator: Any,
+        spool_data: dict[str, Any],
+        config_entry: ConfigEntry,
+        field_key: str,
     ) -> None:
         """Initialize the extra field sensor."""
         super().__init__(coordinator)
@@ -137,7 +143,7 @@ class SpoolExtraField(CoordinatorEntity, SensorEntity):
                 self._spool = spool_data
         self.async_write_ha_state()
 
-    @property
+    @property  # type: ignore[misc]
     def state(self) -> Any:
         """Return the state of the extra field."""
         extra_data = self._spool.get("extra", {})
@@ -159,6 +165,6 @@ class SpoolExtraField(CoordinatorEntity, SensorEntity):
             "spool_id": self.spool_id,
         }
 
-    async def async_update(self):
+    async def async_update(self) -> None:
         """Fetch the latest data from the coordinator."""
         await self.coordinator.async_request_refresh()

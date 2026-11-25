@@ -2,9 +2,11 @@ name: PR Tests
 
 on:
     pull_request:
-        branches: ['dev']
-        paths: ['custom_components/**']
+        branches: ['dev', 'main']
+        paths: ['custom_components/**', 'tests/**', 'pyproject.toml', 'requirements*.txt']
 
 jobs:
   lint:
     uses: ./.github/workflows/lint.yml
+  tests:
+    uses: ./.github/workflows/tests.yml
