@@ -1,0 +1,89 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Spoolman",
+                "description": "Anslut Home Assistant till din Spoolman-instans.",
+                "data": {
+                    "spoolman_url": "Spoolman URL (incl. protocol)",
+                    "update-interval": "uppdateringsintervall (minuter)",
+                    "show_archived": "Visa arkiverade spoolar",
+                    "create_areas": "Skapa Home Assistant-områden från Spoolman",
+                    "notification_threshold_info": "Info tröskell (%)",
+                    "notification_threshold_warning": "Varnings tröskell (%)",
+                    "notification_threshold_critical": "Kritisk tröskel (%)",
+                    "klipper_url": "Klipper URL (föråldrad)",
+                    "klipper_url_desc": "Valfri Moonraker/Klipper URL — föråldrad, använd Moonrakers inbyggda Spoolman-integration"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Kunde inte ansluta till Spoolman",
+            "invalid_url": "Ogiltig URL",
+            "klipper_cannot_connect": "Kunde inte ansluta till Klipper/Moonraker",
+            "already_configured": "Enheten är redan konfigurerad"
+        },
+        "abort": {
+            "already_configured": "Den här Spoolman-instansen är redan konfigurerad"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Spoolman alternativ",
+                "data": {
+                    "spoolman_url": "Spoolman URL (inkl. protokoll)",
+                    "update-interval": "uppdateringsintervall (minuter)",
+                    "show_archived": "Visa arkiverade spoolar",
+                    "create_areas": "Skapa Home Assistant-områden från Spoolman",
+                    "notification_threshold_info": "Info tröskell (%)",
+                    "notification_threshold_warning": "Varnings tröskell (%)",
+                    "notification_threshold_critical": "Kritisk tröskel (%)",
+                    "klipper_url": "Klipper URL (föråldrad)",
+                    "klipper_url_desc": "Valfri Moonraker/Klipper URL — föråldrad"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Kunde inte ansluta till Spoolman"
+        }
+    },
+    "exceptions": {
+        "patch_spool_failed": {
+            "message": "Failed to patch spool {spool_id}: {error}"
+        },
+        "use_spool_filament_failed": {
+            "message": "Kunde inte ange använt filament från spole {spool_id}: {error}"
+        }
+    },
+    "services": {
+        "patch_spool": {
+            "name": "Update spool",
+            "description": "Uppdatera ett eller flera fält för en Spoolman-spool."
+            "fields": {
+                "id": {
+                    "name": "Spool ID",
+                    "description": "Numerisk Spoolman spool ID."
+                }
+            }
+        },
+        "use_spool_filament": {
+            "name": "Använt filament",
+            "description": "Fyll i användning av filament.",
+            "fields": {
+                "id": {
+                    "name": "Spool ID",
+                    "description": "numerisk Spoolman spool ID."
+                },
+                "use_length": {
+                    "name": "använd längd (mm)",
+                    "description": "Längd av filament använt, i millimeter."
+                },
+                "use_weight": {
+                    "name": "Använd vikt (g)",
+                    "description": "Vikt av filament använt, i gram."
+                }
+            }
+        }
+    }
+}
