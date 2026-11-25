@@ -13,10 +13,10 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
         - name: "Checkout the repository"
-          uses: "actions/checkout@v6"
+          uses: "actions/checkout@v7"
 
         - name: "Set up Python"
-          uses: actions/setup-python@v6.2.0
+          uses: actions/setup-python@v7.1.0
           with:
             python-version: "3.14"
             cache: "pip"
@@ -24,5 +24,7 @@ jobs:
         - name: "Install requirements"
           run: python3 -m pip install -r requirements.txt
 
-        - name: "Run"
-          run: python3 -m ruff check .
+        - name: "Run ruff check"
+          run: python3 -m ruff check custom_components/spoolman tests
+        - name: "Run ruff format check"
+          run: python3 -m ruff format --check custom_components/spoolman tests

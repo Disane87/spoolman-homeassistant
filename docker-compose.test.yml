@@ -1,0 +1,24 @@
+# Local test runner. Requires Docker Desktop (Windows/macOS) or Docker Engine (Linux).
+#
+# Quick start:
+#   docker compose -f docker-compose.test.yml run --rm test
+#
+# Generate / refresh snapshots:
+#   docker compose -f docker-compose.test.yml run --rm test --snapshot-update
+#
+# Open an interactive shell:
+#   docker compose -f docker-compose.test.yml run --rm --entrypoint bash test
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    volumes:
+      - ./custom_components:/workspace/custom_components
+      - ./tests:/workspace/tests
+      - ./pyproject.toml:/workspace/pyproject.toml
+      - ./requirements.txt:/workspace/requirements.txt
+      - ./requirements_test.txt:/workspace/requirements_test.txt
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
