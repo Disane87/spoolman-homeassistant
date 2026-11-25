@@ -21,6 +21,8 @@ import pytest
 from aiohttp import ClientResponse
 from aioresponses import aioresponses
 from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant_custom_component.syrupy import HomeAssistantSnapshotExtension
+from syrupy.assertion import SnapshotAssertion
 
 from custom_components.spoolman.const import DOMAIN
 
@@ -188,6 +190,16 @@ def mock_spoolman_api(
         )
 
         yield mocked
+
+
+@pytest.fixture
+def snapshot(snapshot: SnapshotAssertion) -> SnapshotAssertion:
+    """Pin the HA snapshot extension (tests/snapshots/*.ambr).
+
+    Which plugin's ``snapshot`` fixture wins depends on plugin load order; on
+    CI the plain syrupy one won and looked in ``__snapshots__`` instead.
+    """
+    return snapshot.use_extension(HomeAssistantSnapshotExtension)
 
 
 @pytest.fixture

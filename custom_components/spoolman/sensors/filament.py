@@ -16,6 +16,7 @@ from homeassistant.helpers.entity import generate_entity_id
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from ..const import CONF_CREATE_AREAS, CONF_URL, DOMAIN, SPOOLMAN_INFO_PROPERTY
+from ..helpers.device_info import device_info_dict
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -99,12 +100,12 @@ class Filament(CoordinatorEntity[Any], SensorEntity):
         )
         if self._attr_device_info is None:
             self._attr_device_info = device_info
-        elif self._attr_device_info.get("name") != location_name:
+        elif device_info_dict(self._attr_device_info).get("name") != location_name:
             # Must update entry since async_write_ha_state does not update device
             if self.coordinator.config_entry is not None:
                 device = dr.async_get(self.coordinator.hass).async_get_or_create(
                     config_entry_id=self.coordinator.config_entry.entry_id,
-                    **device_info,
+                    **device_info_dict(device_info),
                 )
             self.registry_entry = er.async_get(
                 self.coordinator.hass

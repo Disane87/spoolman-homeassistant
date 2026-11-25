@@ -41,9 +41,8 @@ We've got you covered with issues tagged as **"good first issue"** - these are p
 
 Let's keep things organized! Here's how we handle branches:
 
-- 🎯 **Merge your PR to the `dev` branch** - This is where all the magic happens! (PRs against `main` will be rejected)
-- 🏠 The `main` branch is our "production" version - only stable releases here
-- 🚀 The `dev` branch is where we test new stuff before it goes live
+- 🎯 **Open your PR against the `main` branch** - it is protected, so every change goes through a PR with passing checks
+- 🚀 Every merge to `main` with a `feat`/`fix` commit triggers an automatic release
 
 ## 💬 Commit Messages
 
@@ -291,7 +290,7 @@ Prefer to keep things local? That's cool too! Here's how:
 
 ## CI/CD Requirements
 
-- Adhering to these guidelines is crucial because our CI/CD pipeline depends on this workflow. The `dev` branch is used for testing and validation, while `main` is reserved for stable releases.
+- Adhering to these guidelines is crucial because our CI/CD pipeline depends on this workflow. Every PR to `main` must pass lint and tests before it can be merged.
 
 ## General Guidelines
 

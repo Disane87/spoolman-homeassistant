@@ -31,19 +31,6 @@ This document describes all automated workflows in this repository to help maint
 
 ---
 
-### 3. 🚫 Check PR Target Branch (`check-pr-target-branch.yml`)
-**Triggers:** PRs targeting `main` branch
-
-**What it does:**
-- ✅ Detects PRs incorrectly targeting `main` instead of `dev`
-- ✅ Posts helpful comment explaining the branching strategy
-- ✅ Adds `needs information` label
-- ✅ Fails the check to prevent accidental merges
-
-**Why:** Enforces branching strategy (dev → main) and prevents production issues.
-
----
-
 ### 4. 📏 PR Size Labeler (`pr-size-labeler.yml`)
 **Triggers:** PRs opened/synchronized
 

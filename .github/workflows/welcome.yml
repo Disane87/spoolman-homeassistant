@@ -46,7 +46,7 @@ jobs:
             Thank you so much for contributing to the Spoolman Home Assistant Integration!
 
             **Before we can merge:**
-            - [ ] Make sure your PR targets the `dev` branch (not `main`)
+            - [ ] Make sure your PR targets the `main` branch
             - [ ] All tests pass ✅
             - [ ] You've followed our commit message format ([Conventional Commits](https://www.conventionalcommits.org/))
             - [ ] Documentation is updated if needed
