@@ -6,7 +6,7 @@ import asyncio
 import logging
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -141,7 +141,7 @@ class SpoolManCoordinator(DataUpdateCoordinator["CoordinatorData"]):
 
         # Calculate total remaining weight for each filament from non-archived spools
         filament_remaining_weights = {}
-        filament_spool_counts: dict[int, int] = {}
+        filament_spool_counts: dict[Any, int] = {}
         for spool in spools:
             if not spool.get("archived", False):  # Only count non-archived spools
                 filament_id = spool.get("filament", {}).get("id")
