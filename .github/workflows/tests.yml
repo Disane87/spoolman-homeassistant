@@ -19,20 +19,9 @@ jobs:
         run: pip install -r requirements_test.txt
       - name: DEBUG snapshots
         run: |
-          cat > /tmp/dbg.py <<'PY'
-          import sys, locale
-          from syrupy.extensions.amber.serializer import AmberDataSerializer
-          print(sys.version, locale.getpreferredencoding(), sys.flags.utf8_mode)
-          p = "tests/snapshots/test_characterization.ambr"
-          try:
-              d = AmberDataSerializer.read_file(p)
-              print("names:", [s.name for s in d])
-          except Exception as e:
-              import traceback; traceback.print_exc()
-          PY
-          python /tmp/dbg.py
-          pytest tests/test_characterization.py -p no:cacheprovider 2>&1 | tail -3
-          env | grep -iE 'PYTEST|SYRUPY|LANG|LC_|PYTHON' || true
+          pytest tests/test_characterization.py -p no:cacheprovider --snapshot-update 2>&1 | grep -iE "snapshot|passed|failed" | tail -5
+          git status --short tests; git diff --stat; git diff | head -60
+          git checkout -- tests
       - name: Run pytest
         run: pytest
       - name: Upload coverage XML
