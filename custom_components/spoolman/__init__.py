@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 from typing import Any
 
 import homeassistant.helpers.config_validation as cv
@@ -16,6 +17,7 @@ from custom_components.spoolman.schema_helper import SchemaHelper
 from .const import (
     CONF_URL,
     DOMAIN,
+    LEGACY_IMAGE_PATH,
     SPOOLMAN_API_WRAPPER,
     SPOOLMAN_PATCH_SPOOL_SERVICENAME,
     SPOOLMAN_USE_SPOOL_FILAMENT_SERVICENAME,
@@ -67,6 +69,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: SpoolmanConfigEntry) -> 
 
     # Clean up old location devices from previous versions
     await _async_remove_old_location_devices(hass, entry)
+
+    # Entity pictures are inline now; drop the publicly served PNGs of
+    # previous versions.
+    await hass.async_add_executor_job(
+        _remove_legacy_images, Path(hass.config.path(LEGACY_IMAGE_PATH))
+    )
 
     # Clean up orphaned spool devices (deleted in Spoolman)
     if coordinator.data:
@@ -174,6 +182,19 @@ async def async_get_data(hass: HomeAssistant) -> list[dict[str, Any]]:
     _LOGGER.debug("__init__.async_get_data")
     api = hass.data[DOMAIN][SPOOLMAN_API_WRAPPER]
     return await api.get_spools({"allow_archived": False})  # type: ignore[no-any-return]
+
+
+def _remove_legacy_images(image_dir: Path) -> None:
+    """Delete the spool/filament PNGs older versions wrote to www/."""
+    if not image_dir.is_dir():
+        return
+    for pattern in ("spool_*.png", "filament_*.png"):
+        for image in image_dir.glob(pattern):
+            image.unlink(missing_ok=True)
+    try:
+        image_dir.rmdir()
+    except OSError:
+        _LOGGER.debug("Keeping %s, it contains other files", image_dir)
 
 
 async def _async_remove_old_location_devices(

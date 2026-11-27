@@ -1,20 +1,18 @@
 """Spoolman home assistant sensor platform."""
 
+import base64
 import logging
-import os
+import re
 from typing import Any, cast
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from PIL import Image, ImageDraw
 
 from .const import (
     DEFAULT_SPOOL_COLOR_HEX,
     DOMAIN,
-    LOCAL_IMAGE_PATH,
-    PUBLIC_IMAGE_PATH,
 )
 from .entity import SpoolmanEntity
 from .models import SpoolData
@@ -101,8 +99,6 @@ async def async_setup_entry(  # noqa: C901
     existing_spool_ids: set[int] = set()
     existing_extra_fields: dict[tuple[int, str], Any] = {}
 
-    image_dir = hass.config.path(PUBLIC_IMAGE_PATH)
-
     async def _build_entities_for_spool(spool: dict[str, Any], idx: int) -> list[Any]:
         """Build the full sensor stack for a single spool.
 
@@ -112,9 +108,7 @@ async def async_setup_entry(  # noqa: C901
         instantiated from :data:`SENSOR_DESCRIPTIONS`.
         """
         entities: list[Any] = []
-        image_url = await hass.async_add_executor_job(
-            _generate_entity_picture, spool, image_dir
-        )
+        image_url = _generate_entity_picture(spool)
 
         # Complex sensors first — these have custom logic that doesn't
         # fit the description pattern (image generation, computed state,
@@ -139,9 +133,7 @@ async def async_setup_entry(  # noqa: C901
         # description registry.
         filament = spool.get("filament", {})
         if filament.get("color_hex"):
-            filament_image_url = await hass.async_add_executor_job(
-                _generate_filament_entity_picture, filament, image_dir
-            )
+            filament_image_url = _generate_filament_entity_picture(filament)
             entities.append(
                 FilamentColorHex(
                     hass, coordinator, spool, config_entry, filament_image_url
@@ -221,9 +213,7 @@ async def async_setup_entry(  # noqa: C901
         # Per-filament Filament device sensor (separate from per-spool stack).
         filament_data = coordinator.data.get("filaments", [])
         for idx, filament in enumerate(filament_data):
-            filament_image_url = await hass.async_add_executor_job(
-                _generate_filament_entity_picture, filament, image_dir
-            )
+            filament_image_url = _generate_filament_entity_picture(filament)
             all_entities.append(
                 Filament(
                     hass, coordinator, filament, idx, config_entry, filament_image_url
@@ -237,114 +227,80 @@ async def async_setup_entry(  # noqa: C901
     coordinator.async_add_listener(add_dynamic_entities)
 
 
-def _generate_entity_picture(spool_data: dict[str, Any], image_dir: str) -> str | None:
-    """Generate an entity picture with the specified color(s) and save it to the www directory."""
-    filament = spool_data.get("filament", {})
+_HEX_COLOR_RE = re.compile(r"^[0-9A-Fa-f]{6}(?:[0-9A-Fa-f]{2})?$")
+_IMAGE_SIZE = 100
 
-    # Retrieve color(s)
-    multi_color_hexes = filament.get("multi_color_hexes", "").split(",")
-    color_hex = filament.get("color_hex", DEFAULT_SPOOL_COLOR_HEX)
-    multi_color_direction = filament.get("multi_color_direction", "coaxial")
 
-    # Determine colors: prioritize multi_color_hexes if available
-    if multi_color_hexes and any(c.strip() for c in multi_color_hexes):
-        colors = [c.strip() for c in multi_color_hexes if len(c.strip()) in (6, 8)]
-    elif color_hex:
-        colors = [color_hex]
+def _build_color_svg_data_uri(colors: list[str], direction: str) -> str:
+    """Return a color swatch as an inline SVG data URI.
+
+    The swatch is embedded in the entity_picture attribute instead of being
+    written to ``www/``, which Home Assistant serves under ``/local/`` without
+    authentication. Colors are expected as validated RRGGBB[AA] hex strings;
+    only the RGB part is used, like the previous PNG images.
+    """
+    size = _IMAGE_SIZE
+    rects: list[str] = []
+    if len(colors) > 1 and direction in ("coaxial", "longitudinal"):
+        step = size / len(colors)
+        for i, color in enumerate(colors):
+            if direction == "coaxial":
+                x, y, w, h = i * step, 0, step, size
+            else:
+                x, y, w, h = 0, i * step, size, step
+            rects.append(
+                f'<rect x="{x:g}" y="{y:g}" width="{w:g}" height="{h:g}" '
+                f'fill="#{color[:6]}"/>'
+            )
     else:
+        rects.append(f'<rect width="{size}" height="{size}" fill="#{colors[0][:6]}"/>')
+
+    svg = (
+        '<svg xmlns="http://www.w3.org/2000/svg" '
+        f'width="{size}" height="{size}" viewBox="0 0 {size} {size}" '
+        'shape-rendering="crispEdges">'
+        f'<rect width="{size}" height="{size}" fill="#{DEFAULT_SPOOL_COLOR_HEX}"/>'
+        f"{''.join(rects)}</svg>"
+    )
+    return "data:image/svg+xml;base64," + base64.b64encode(svg.encode()).decode()
+
+
+def _filament_colors(filament: dict[str, Any]) -> list[str]:
+    """Return the valid hex colors of a filament, multi-color first."""
+    multi_color_hexes = (filament.get("multi_color_hexes") or "").split(",")
+    colors = [c.strip() for c in multi_color_hexes if _HEX_COLOR_RE.match(c.strip())]
+    if colors:
+        return colors
+    color_hex = (filament.get("color_hex") or "").strip()
+    if _HEX_COLOR_RE.match(color_hex):
+        return [color_hex]
+    return []
+
+
+def _generate_entity_picture(spool_data: dict[str, Any]) -> str | None:
+    """Return an entity picture showing the color(s) of a spool's filament."""
+    filament = spool_data.get("filament", {})
+    colors = _filament_colors(filament)
+    if not colors:
         _LOGGER.warning(
             "SpoolManCoordinator: Spool with ID '%s' has no valid color information.",
             spool_data.get("id", "unknown"),
         )
         return None
-
-    # Create image
-    image_size = (100, 100)
-    image = Image.new("RGB", image_size, int(DEFAULT_SPOOL_COLOR_HEX, 16))
-    draw = ImageDraw.Draw(image)
-
-    # Draw colors
-    if len(colors) > 1:
-        if multi_color_direction == "coaxial":
-            step = image_size[0] // len(colors)
-            for i, color in enumerate(colors):
-                draw.rectangle(
-                    [(i * step, 0), ((i + 1) * step - 1, image_size[1])],
-                    fill=f"#{color}",
-                )
-        elif multi_color_direction == "longitudinal":
-            step = image_size[1] // len(colors)
-            for i, color in enumerate(colors):
-                draw.rectangle(
-                    [(0, i * step), (image_size[0], (i + 1) * step - 1)],
-                    fill=f"#{color}",
-                )
-    else:
-        # Single color fallback
-        draw.rectangle([(0, 0), image_size], fill=f"#{colors[0]}")
-
-    # Save the image
-    image_name = f"spool_{spool_data.get('id', 'unknown')}.png"
-    os.makedirs(image_dir, exist_ok=True)
-    image_path = os.path.join(image_dir, image_name)
-    image.save(image_path)
-
-    # Return the URL for the saved image
-    return f"{LOCAL_IMAGE_PATH}/{image_name}"
+    return _build_color_svg_data_uri(
+        colors, filament.get("multi_color_direction", "coaxial")
+    )
 
 
-def _generate_filament_entity_picture(
-    filament_data: dict[str, Any], image_dir: str
-) -> str | None:
-    """Generate a filament entity picture with the specified color(s) and save it to the www directory."""
-
-    # Retrieve color(s)
-    multi_color_hexes = filament_data.get("multi_color_hexes", "").split(",")
-    color_hex = filament_data.get("color_hex", DEFAULT_SPOOL_COLOR_HEX)
-    multi_color_direction = filament_data.get("multi_color_direction", "coaxial")
-
-    # Determine colors: prioritize multi_color_hexes if available
-    if multi_color_hexes and any(c.strip() for c in multi_color_hexes):
-        colors = [c.strip() for c in multi_color_hexes if len(c.strip()) in (6, 8)]
-    elif color_hex:
-        colors = [color_hex]
-    else:
+def _generate_filament_entity_picture(filament_data: dict[str, Any]) -> str | None:
+    """Return an entity picture showing the color(s) of a filament."""
+    colors = _filament_colors(filament_data)
+    if not colors:
         _LOGGER.warning(
             "SpoolManCoordinator: Filament with ID '%s' has no valid color information.",
             filament_data.get("id", "unknown"),
         )
         return None
-
-    # Create image
-    image_size = (100, 100)
-    image = Image.new("RGB", image_size, int(DEFAULT_SPOOL_COLOR_HEX, 16))
-    draw = ImageDraw.Draw(image)
-
-    # Draw colors
-    if len(colors) > 1:
-        if multi_color_direction == "coaxial":
-            step = image_size[0] // len(colors)
-            for i, color in enumerate(colors):
-                draw.rectangle(
-                    [(i * step, 0), ((i + 1) * step - 1, image_size[1])],
-                    fill=f"#{color}",
-                )
-        elif multi_color_direction == "longitudinal":
-            step = image_size[1] // len(colors)
-            for i, color in enumerate(colors):
-                draw.rectangle(
-                    [(0, i * step), (image_size[0], (i + 1) * step - 1)],
-                    fill=f"#{color}",
-                )
-    else:
-        # Single color fallback
-        draw.rectangle([(0, 0), image_size], fill=f"#{colors[0]}")
-
-    # Save the image
-    image_name = f"filament_{filament_data.get('id', 'unknown')}.png"
-    os.makedirs(image_dir, exist_ok=True)
-    image_path = os.path.join(image_dir, image_name)
-    image.save(image_path)
-
-    # Return the URL for the saved image
-    return f"{LOCAL_IMAGE_PATH}/{image_name}"
+    return _build_color_svg_data_uri(
+        colors, filament_data.get("multi_color_direction", "coaxial")
+    )
