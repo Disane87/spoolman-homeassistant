@@ -180,8 +180,8 @@ rules:
     status: done
     comment: |
       The single runtime dependency that talks to a network is aiohttp,
-      already async. Pillow (for image generation) runs in the executor
-      via hass.async_add_executor_job.
+      already async. Entity pictures are inline SVG data URIs built in
+      memory; no Pillow or file I/O.
   inject-websession:
     status: done
     comment: |

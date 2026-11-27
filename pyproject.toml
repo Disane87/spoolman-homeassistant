@@ -106,5 +106,5 @@ strict = true
 warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
-module = ["homeassistant.*", "pytest_homeassistant_custom_component.*", "aioresponses.*", "syrupy.*", "PIL.*"]
+module = ["homeassistant.*", "pytest_homeassistant_custom_component.*", "aioresponses.*", "syrupy.*"]
 ignore_missing_imports = true

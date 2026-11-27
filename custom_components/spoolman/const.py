@@ -12,8 +12,9 @@ CONF_NOTIFICATION_THRESHOLD_INFO = "notification_threshold_info"
 CONF_NOTIFICATION_THRESHOLD_WARNING = "notification_threshold_warning"
 CONF_NOTIFICATION_THRESHOLD_CRITICAL = "notification_threshold_critical"
 
-PUBLIC_IMAGE_PATH = "www/spoolman_images"
-LOCAL_IMAGE_PATH = "/local/spoolman_images"
+# Older versions wrote entity pictures here, where HA serves them under
+# /local/ without authentication. Removed on setup, see _remove_legacy_images.
+LEGACY_IMAGE_PATH = "www/spoolman_images"
 DEFAULT_SPOOL_COLOR_HEX = "FFFFFF"
 
 EVENT_THRESHOLD_EXCEEDED = "spoolman_spool_threshold_exceeded"
